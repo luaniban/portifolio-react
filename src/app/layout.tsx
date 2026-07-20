@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,19 +12,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
+const poppins = Poppins({
   variable: "--font-display",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "Luan Ibanhez — Desenvolvedor Full Stack",
+  title: "Luan Ibanhez | Desenvolvedor Full Stack",
   description:
-    "Desenvolvedor Full Stack. Construo produtos web completos com Laravel, Livewire, React e Next.js — do banco de dados ao deploy.",
+    "Desenvolvedor Full Stack. Construo produtos web completos com Laravel, Livewire, React e Next.js, do banco de dados ao deploy.",
   openGraph: {
-    title: "Luan Ibanhez — Desenvolvedor Full Stack",
+    title: "Luan Ibanhez | Desenvolvedor Full Stack",
     description:
-      "Produtos web completos com Laravel, Livewire, React e Next.js — do banco de dados ao deploy.",
+      "Produtos web completos com Laravel, Livewire, React e Next.js, do banco de dados ao deploy.",
     locale: "pt_BR",
     type: "website",
   },
@@ -32,12 +33,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable}`}>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable}`}>
         <script
-          // Marca que há JS ativo antes do primeiro paint: o estado escondido
-          // das animações de entrada só se aplica em html.js (sem JS, tudo visível).
-          dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }}
+          // Aplica o tema salvo (ou a preferência do sistema) antes do primeiro
+          // paint, evitando flash da cor errada; também marca html.js para as
+          // animações de entrada, que só ficam ocultas quando há JS ativo.
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t)}catch(e){}try{if('scrollRestoration' in history){history.scrollRestoration='manual'}window.scrollTo(0,0)}catch(e){}document.documentElement.classList.add('js')",
+          }}
         />
         {children}
       </body>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Header from "../components/Header";
+import PhpEvolution from "../components/PhpEvolution";
 import Reveal from "../components/Reveal";
 
 const projects = [
@@ -17,7 +18,7 @@ const projects = [
     number: "02",
     title: "Livro Digital",
     description:
-      "Biblioteca digital interativa para gerenciar, explorar e personalizar experiências de leitura — upload de acervo, filtros e leitura de PDF direto no navegador.",
+      "Biblioteca digital interativa para gerenciar, explorar e personalizar experiências de leitura, com upload de acervo, filtros e leitura de PDF direto no navegador.",
     image: "/projects/livro-digital.png",
     url: "https://livrodigital.luanibanhez.tech/",
     tags: ["Laravel", "Livewire", "Tailwind", "PDF"],
@@ -37,7 +38,7 @@ const projects = [
     number: "04",
     title: "Quizzard",
     description:
-      "Plataforma gamificada de perguntas e respostas com aprendizado adaptativo por machine learning para crianças de 6 a 10 anos — trilhas por matéria, energia, recordes e serviço de ML que ajusta a dificuldade ao desempenho de cada aluno.",
+      "Plataforma gamificada de perguntas e respostas com aprendizado adaptativo por machine learning para crianças de 6 a 10 anos, com trilhas por matéria, energia, recordes e serviço de ML que ajusta a dificuldade ao desempenho de cada aluno.",
     image: "/projects/quizzard.png",
     url: "https://github.com/Zakly-Educacao/Quizzard-frontend",
     tags: ["Next.js", "Laravel", "FastAPI", "Machine Learning", "Docker"],
@@ -45,7 +46,7 @@ const projects = [
   },
   {
     number: "05",
-    title: "Paideia — Bug no Anzol",
+    title: "Paideia: Bug no Anzol",
     description:
       "Sistema educacional gamificado desenvolvido em hackathon: banco de questões da BNCC, pontos, XP e ranking, loja de personagens, desafios ao vivo via WebSocket e dashboards para alunos, professores e gestores. Atuei como desenvolvedor backend da equipe.",
     image: "/projects/bug-no-anzol.png",
@@ -66,35 +67,23 @@ const stack = [
   "TypeScript",
   "Tailwind CSS",
   "MySQL",
-  "PostgreSQL",
-  "Redis",
   "Git",
   "GitHub Actions",
-  "AWS",
-  "Nginx",
   "Linux",
   "Docker",
 ];
 
 const timeline = [
   {
-    period: "Out 2024 — Atual",
-    title: "Estagiário em Desenvolvimento Full Stack PHP",
-    place: "Secretaria de Educação — Prefeitura de Caraguatatuba",
-    kind: "Experiência",
+    period: "Fev 2021 a Dez 2023",
+    title: "Técnico em Informática integrado ao Ensino Médio",
+    place: "Instituto Federal de São Paulo (IFSP)",
+    kind: "Formação",
     description:
-      "Desenvolvo, evoluo e mantenho aplicações web em PHP 7/8 e Laravel usadas pelas equipes da Secretaria: APIs RESTful, autenticação com Sanctum, modelagem MySQL com Eloquent e manutenção de sistemas em produção, com Git em fluxo colaborativo, deploys e CI/CD.",
+      "Base sólida em lógica, programação e infraestrutura, onde nasceu o gosto por transformar ideias em software.",
   },
   {
-    period: "2026",
-    title: "Palestrante e Instrutor de Tecnologia",
-    place: "IFSP Caraguatatuba — Extensão",
-    kind: "Ensino",
-    description:
-      "Ministrei minicursos de PHP, Laravel, MVC, desenvolvimento backend e APIs, fortalecendo comunicação e compartilhamento de conhecimento.",
-  },
-  {
-    period: "Fev 2024 — Atual",
+    period: "Fev 2024 até hoje",
     title: "Tecnólogo em Análise e Desenvolvimento de Sistemas",
     place: "Instituto Federal de São Paulo (IFSP)",
     kind: "Formação",
@@ -102,20 +91,30 @@ const timeline = [
       "Graduação em andamento com foco em engenharia de software, banco de dados e desenvolvimento de aplicações.",
   },
   {
-    period: "Fev 2021 — Dez 2023",
-    title: "Técnico em Informática integrado ao Ensino Médio",
-    place: "Instituto Federal de São Paulo (IFSP)",
-    kind: "Formação",
+    period: "Out 2024 até hoje",
+    title: "Estagiário em Desenvolvimento Full Stack PHP",
+    place: "Secretaria de Educação, Prefeitura de Caraguatatuba",
+    kind: "Experiência",
     description:
-      "Base sólida em lógica, programação e infraestrutura, onde nasceu o gosto por transformar ideias em software.",
+      "Desenvolvo, evoluo e mantenho aplicações web em PHP 7/8 e Laravel usadas pelas equipes da Secretaria: APIs RESTful, autenticação com Sanctum, modelagem MySQL com Eloquent e manutenção de sistemas em produção, com Git em fluxo colaborativo, deploys e CI/CD.",
+  },
+  {
+    period: "2026",
+    title: "Palestrante e Instrutor de Tecnologia",
+    place: "IFSP Caraguatatuba, Extensão",
+    kind: "Ensino",
+    description:
+      "Ministrei minicursos de PHP, Laravel, MVC, desenvolvimento backend e APIs, fortalecendo comunicação e compartilhamento de conhecimento.",
   },
 ];
 
 const facts = [
   { value: "3+", label: "produtos em produção" },
-  { value: "Full", label: "stack — do banco ao deploy" },
-  { value: "E2E", label: "UI, API, dados e infra" },
+  { value: "Full", label: "stack do banco ao deploy" },
+  { value: "Do zero", label: "da ideia ao site no ar" },
 ];
+
+const githubStats = [{ value: "753", label: "contribuições no último ano" }];
 
 function ArrowUpRight({ className = "" }: { className?: string }) {
   return (
@@ -139,6 +138,14 @@ function BrowserFrame({ url, children }: { url: string; children: React.ReactNod
       </div>
       {children}
     </div>
+  );
+}
+
+function RevealLine({ children, accent = false }: { children: React.ReactNode; accent?: boolean }) {
+  return (
+    <span className="text-reveal-line">
+      <span className={accent ? "grad-text" : undefined}>{children}</span>
+    </span>
   );
 }
 
@@ -167,16 +174,15 @@ export default function Home() {
 
               <Reveal delay={80}>
                 <h1 id="hero-title">
-                  Ideias viram
-                  <br />
-                  <span className="grad-text">produtos no ar.</span>
+                  <RevealLine>Ideias viram</RevealLine>
+                  <RevealLine accent>produtos no ar.</RevealLine>
                 </h1>
               </Reveal>
 
               <Reveal delay={160}>
                 <p className="hero-sub">
                   Sou <strong>Luan Ibanhez</strong>. Projeto, desenvolvo e publico aplicações web
-                  completas — interface, regras de negócio, banco de dados e deploy.
+                  completas: interface, regras de negócio, banco de dados e deploy.
                 </p>
               </Reveal>
 
@@ -238,16 +244,18 @@ export default function Home() {
         </section>
 
         {/* ---------------- MARQUEE ---------------- */}
-        <div className="marquee" aria-hidden="true">
-          <div className="marquee-track">
-            {[...stack, ...stack].map((item, i) => (
-              <span key={`${item}-${i}`}>
-                {item}
-                <i className="marquee-dot" />
-              </span>
-            ))}
+        <Reveal>
+          <div className="marquee" aria-hidden="true">
+            <div className="marquee-track">
+              {[...stack, ...stack].map((item, i) => (
+                <span key={`${item}-${i}`}>
+                  {item}
+                  <i className="marquee-dot" />
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* ---------------- PROJETOS ---------------- */}
         <section className="projects" id="projetos" aria-labelledby="projects-title">
@@ -258,15 +266,14 @@ export default function Home() {
                   <span>01</span> Projetos selecionados
                 </p>
                 <h2 id="projects-title">
-                  Sistemas reais, em uso,
-                  <br />
-                  <span className="grad-text">de ponta a ponta.</span>
+                  <RevealLine>Sistemas reais, em uso,</RevealLine>
+                  <RevealLine accent>de ponta a ponta.</RevealLine>
                 </h2>
               </div>
             </Reveal>
 
             <div className="project-list">
-              {projects.map((project, index) => (
+              {projects.map((project) => (
                 <Reveal key={project.title} as="article" className="project-row" delay={60}>
                   <a
                     className="project-media"
@@ -320,9 +327,8 @@ export default function Home() {
                 <span>02</span> Sobre mim
               </p>
               <h2 id="about-title">
-                Tecnologia com
-                <br />
-                <span className="grad-text">propósito.</span>
+                <RevealLine>Tecnologia com</RevealLine>
+                <RevealLine accent>propósito.</RevealLine>
               </h2>
             </Reveal>
 
@@ -363,29 +369,39 @@ export default function Home() {
                   <span>03</span> Trajetória
                 </p>
                 <h2 id="journey-title">
-                  Experiência, ensino
-                  <br />
-                  <span className="grad-text">e formação.</span>
+                  <RevealLine>Experiência, ensino</RevealLine>
+                  <RevealLine accent>e formação.</RevealLine>
                 </h2>
               </div>
             </Reveal>
 
-            <ol className="timeline">
-              {timeline.map((item, index) => (
-                <Reveal as="li" key={item.title} className="timeline-item" delay={index * 60}>
-                  <span className="timeline-dot" aria-hidden="true" />
-                  <div className="timeline-meta">
-                    <span className="timeline-period">{item.period}</span>
-                    <span className="timeline-kind">{item.kind}</span>
-                  </div>
-                  <div className="timeline-content">
-                    <h3>{item.title}</h3>
-                    <p className="timeline-place">{item.place}</p>
-                    <p className="timeline-desc">{item.description}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </ol>
+            <div className="journey-layout">
+              <ol className="timeline">
+                {timeline.map((item, index) => (
+                  <Reveal
+                    as="li"
+                    key={item.title}
+                    className="timeline-item"
+                    delay={index * 60}
+                    timelineStep={index}
+                  >
+                    <span className="timeline-dot" aria-hidden="true" />
+                    <div className="timeline-meta">
+                      <span className="timeline-period">{item.period}</span>
+                      <span className="timeline-kind">{item.kind}</span>
+                    </div>
+                    <div className="timeline-content">
+                      <h3>{item.title}</h3>
+                      <p className="timeline-place">{item.place}</p>
+                      <p className="timeline-desc">{item.description}</p>
+                      <PhpEvolution stage={index} compact />
+                    </div>
+                  </Reveal>
+                ))}
+              </ol>
+
+              <PhpEvolution />
+            </div>
 
             <Reveal delay={120}>
               <div className="journey-cta">
@@ -398,17 +414,76 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ---------------- GITHUB ---------------- */}
+        <section className="github" id="github" aria-labelledby="github-title">
+          <div className="container">
+            <Reveal>
+              <div className="section-head">
+                <p className="section-kicker">
+                  <span>04</span> GitHub
+                </p>
+                <h2 id="github-title">
+                  <RevealLine>Código todo dia,</RevealLine>
+                  <RevealLine accent>de verdade.</RevealLine>
+                </h2>
+              </div>
+            </Reveal>
+
+            <div className="github-layout">
+              <Reveal delay={80} className="github-info">
+                <p className="github-lead">
+                  <strong>Commit é rotina, não exceção.</strong>
+                </p>
+
+                <dl className="github-stats">
+                  {githubStats.map((stat) => (
+                    <div key={stat.label}>
+                      <dt>{stat.value}</dt>
+                      <dd>{stat.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <a
+                  className="btn btn-ghost"
+                  href="https://github.com/luaniban"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ver perfil completo <ArrowUpRight />
+                </a>
+              </Reveal>
+
+              <Reveal delay={160} className="github-graph-wrap">
+                <a
+                  className="github-graph"
+                  href="https://github.com/luaniban"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Abrir perfil do GitHub de Luan Ibanhez"
+                >
+                  <Image
+                    src="/github/contributions.png"
+                    alt="Gráfico de contribuições do GitHub de Luan Ibanhez: 753 contribuições no último ano"
+                    width={1494}
+                    height={360}
+                  />
+                </a>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         {/* ---------------- CONTATO ---------------- */}
         <section className="contact" id="contato" aria-labelledby="contact-title">
           <div className="container">
             <Reveal className="contact-card">
               <p className="section-kicker">
-                <span>04</span> Contato
+                <span>05</span> Contato
               </p>
               <h2 id="contact-title">
-                Tem uma ideia?
-                <br />
-                <span className="grad-text">Vamos tirá-la do papel.</span>
+                <RevealLine>Tem uma ideia?</RevealLine>
+                <RevealLine accent>Vamos tirá-la do papel.</RevealLine>
               </h2>
               <div className="contact-actions">
                 <a className="btn btn-primary btn-lg" href="mailto:luanibanhez.dev@gmail.com">
@@ -435,16 +510,15 @@ export default function Home() {
       </main>
 
       <footer className="footer">
-        <div className="container footer-inner">
-          <a href="#inicio" className="logo footer-logo">
-            <span className="logo-mark" aria-hidden="true" />
-            luan<span className="logo-accent">.ibanhez</span>
+        <Reveal className="container footer-inner">
+          <a href="#inicio" className="logo logo-image footer-logo">
+            <Image className="brand-avatar" src="/avatar-logo.png" alt="" width={64} height={64} />
           </a>
           <p>Projetado &amp; desenvolvido por Luan Ibanhez · {new Date().getFullYear()}</p>
           <a href="#inicio" className="footer-top">
             Voltar ao topo ↑
           </a>
-        </div>
+        </Reveal>
       </footer>
     </>
   );
