@@ -104,7 +104,7 @@ const timeline = [
     place: "IFSP Caraguatatuba, Extensão",
     kind: "Ensino",
     description:
-      "Ministrei minicursos de PHP, Laravel, MVC, desenvolvimento backend e APIs, fortalecendo comunicação e compartilhamento de conhecimento.",
+      "Ministrei cursos de HTML, Tailwind CSS, PHP, Laravel, MVC, desenvolvimento backend e APIs. Todos tiveram certificação, fortalecendo minha comunicação e compartilhamento de conhecimento.",
   },
 ];
 
