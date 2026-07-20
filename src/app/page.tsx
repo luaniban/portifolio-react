@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Header from "../components/Header";
 import PhpEvolution from "../components/PhpEvolution";
+import ProjectScrollTransition from "../components/ProjectScrollTransition";
 import Reveal from "../components/Reveal";
 
 const projects = [
@@ -153,6 +154,7 @@ export default function Home() {
   return (
     <>
       <Header />
+      <ProjectScrollTransition />
 
       <main id="inicio">
         {/* ---------------- HERO ---------------- */}
@@ -214,7 +216,8 @@ export default function Home() {
                 {heroProjects.map((project, index) => (
                   <a
                     key={project.title}
-                    className={`stage-card stage-card-${index + 1}`}
+                    className={`stage-card stage-card-${index + 1}${index === 0 ? " shared-project-source" : ""}`}
+                    data-shared-project-source={index === 0 || undefined}
                     href={project.url}
                     target="_blank"
                     rel="noreferrer"
@@ -276,7 +279,8 @@ export default function Home() {
               {projects.map((project) => (
                 <Reveal key={project.title} as="article" className="project-row" delay={60}>
                   <a
-                    className="project-media"
+                    className={`project-media${project.number === "01" ? " shared-project-target" : ""}`}
+                    data-shared-project-target={project.number === "01" || undefined}
                     href={project.url}
                     target="_blank"
                     rel="noreferrer"
