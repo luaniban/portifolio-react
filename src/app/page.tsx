@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Header from "../components/Header";
+import { useLanguage } from "../components/LanguageProvider";
+import LinkedinPostsLink from "../components/LinkedinPostsLink";
 import PhpEvolution from "../components/PhpEvolution";
 import ProjectScrollTransition from "../components/ProjectScrollTransition";
 import Reveal from "../components/Reveal";
 
-const projects = [
+const projectsPt = [
   {
     number: "01",
     title: "Rede Questionários",
@@ -57,7 +61,58 @@ const projects = [
   },
 ];
 
-const heroProjects = [projects[0], projects[1], projects[4]];
+const projectsEn = [
+  {
+    number: "01",
+    title: "Questionnaire Network",
+    description:
+      "A complete educational assessment platform: questionnaires by grade and term, answer-sheet scanning by camera and QR Code, automatic grading, and dashboards with indicators by school, class, and student.",
+    image: "/projects/questionarios-rede.png",
+    url: "https://questionarios-rede.luanibanhez.tech/",
+    tags: ["Laravel", "Livewire", "Computer vision", "Dashboards"],
+    highlight: "Answer-sheet scanner + comparative charts",
+  },
+  {
+    number: "02",
+    title: "Digital Book",
+    description:
+      "An interactive digital library to manage, explore, and personalize reading experiences, with collection uploads, filters, and PDF reading directly in the browser.",
+    image: "/projects/livro-digital.png",
+    url: "https://livrodigital.luanibanhez.tech/",
+    tags: ["Laravel", "Livewire", "Tailwind", "PDF"],
+    highlight: "Smooth reading directly in the browser",
+  },
+  {
+    number: "03",
+    title: "IT Service Desk",
+    description:
+      "A support hub for opening, prioritizing, and tracking requests, bringing users and the technical team closer through real-time updates.",
+    image: "/projects/chamados.png",
+    url: "https://chamados.luanibanhez.tech/",
+    tags: ["Laravel", "Reverb", "WebSockets", "Real time"],
+    highlight: "Real-time notifications",
+  },
+  {
+    number: "04",
+    title: "Quizzard",
+    description:
+      "A gamified question-and-answer platform with machine-learning-driven adaptive learning for children aged 6 to 10, with subject paths, energy, records, and an ML service that adjusts difficulty to each student’s performance.",
+    image: "/projects/quizzard.png",
+    url: "https://github.com/Zakly-Educacao/Quizzard-frontend",
+    tags: ["Next.js", "Laravel", "FastAPI", "Machine Learning", "Docker"],
+    highlight: "ML-powered adaptive difficulty",
+  },
+  {
+    number: "05",
+    title: "Paideia: Bug on the Hook",
+    description:
+      "A gamified educational system built at a hackathon: a BNCC question bank, points, XP, rankings, character store, live challenges through WebSocket, and dashboards for students, teachers, and managers. I worked as the team’s backend developer.",
+    image: "/projects/bug-no-anzol.png",
+    url: "https://bugnoanzol.hyanferreira.com.br/",
+    tags: ["Laravel", "Sanctum", "Reverb", "MySQL", "Backend"],
+    highlight: "Hackathon team backend",
+  },
+];
 
 const stack = [
   "Laravel",
@@ -74,7 +129,7 @@ const stack = [
   "Docker",
 ];
 
-const timeline = [
+const timelinePt = [
   {
     period: "Fev 2021 a Dez 2023",
     title: "Técnico em Informática integrado ao Ensino Médio",
@@ -109,13 +164,55 @@ const timeline = [
   },
 ];
 
-const facts = [
+const timelineEn = [
+  {
+    period: "Feb 2021 to Dec 2023",
+    title: "Technical Degree in Information Technology with High School",
+    place: "Federal Institute of São Paulo (IFSP)",
+    kind: "Education",
+    description:
+      "A solid foundation in logic, programming, and infrastructure, where my interest in turning ideas into software began.",
+  },
+  {
+    period: "Feb 2024 to present",
+    title: "Associate Degree in Systems Analysis and Development",
+    place: "Federal Institute of São Paulo (IFSP)",
+    kind: "Education",
+    description:
+      "Degree in progress focused on software engineering, databases, and application development.",
+  },
+  {
+    period: "Oct 2024 to present",
+    title: "PHP Full Stack Development Intern",
+    place: "Caraguatatuba Department of Education",
+    kind: "Experience",
+    description:
+      "I develop, improve, and maintain PHP 7/8 and Laravel web applications used by the Department’s teams: RESTful APIs, Sanctum authentication, MySQL modeling with Eloquent, and production system maintenance with Git, collaborative workflows, deployments, and CI/CD.",
+  },
+  {
+    period: "2026",
+    title: "Technology Speaker and Instructor",
+    place: "IFSP Caraguatatuba, Extension Program",
+    kind: "Teaching",
+    description:
+      "I taught courses on HTML, Tailwind CSS, PHP, Laravel, MVC, backend development, and APIs. Every course included a certificate, strengthening my communication and knowledge-sharing skills.",
+  },
+];
+
+const factsPt = [
   { value: "3+", label: "produtos em produção" },
   { value: "Full", label: "stack do banco ao deploy" },
   { value: "Do zero", label: "da ideia ao site no ar" },
 ];
 
-const githubStats = [{ value: "753", label: "contribuições no último ano" }];
+const factsEn = [
+  { value: "3+", label: "production products" },
+  { value: "Full", label: "stack from database to deployment" },
+  { value: "From scratch", label: "from idea to a live site" },
+];
+
+const githubStatsPt = [{ value: "753", label: "contribuições no último ano" }];
+const githubStatsEn = [{ value: "753", label: "contributions in the last year" }];
 
 function ArrowUpRight({ className = "" }: { className?: string }) {
   return (
@@ -150,7 +247,110 @@ function RevealLine({ children, accent = false }: { children: React.ReactNode; a
   );
 }
 
+function CommitWalker({ className }: { className: string }) {
+  return (
+    <span className={`commit-walker ${className}`}>
+      <span className="commit-walker-motion">
+        <span className="commit-walker-body" />
+        <span className="commit-walker-arm is-left" />
+        <span className="commit-walker-arm is-right" />
+        <span className="commit-walker-leg is-left" />
+        <span className="commit-walker-leg is-right" />
+      </span>
+    </span>
+  );
+}
+
 export default function Home() {
+  const { language } = useLanguage();
+  const isEnglish = language === "en";
+  const projects = isEnglish ? projectsEn : projectsPt;
+  const heroProjects = [projects[0], projects[1], projects[4]];
+  const timeline = isEnglish ? timelineEn : timelinePt;
+  const facts = isEnglish ? factsEn : factsPt;
+  const githubStats = isEnglish ? githubStatsEn : githubStatsPt;
+  const copy = isEnglish
+    ? {
+        heroKicker: "Full Stack Developer",
+        heroTitle: ["Ideas become", "products that ship."],
+        heroSub: "I’m",
+        heroSubEnd: ". I design, build, and launch complete web applications: interface, business rules, database, and deployment.",
+        viewProjects: "View projects",
+        systemsPreview: "Preview of published systems",
+        scrollProjects: "Scroll to projects",
+        selectedProjects: "Selected projects",
+        projectsTitle: ["Real systems, in use,", "end to end."],
+        openProject: "Open",
+        openProjectAria: "Open",
+        technologies: "Technologies used",
+        visitProject: "Visit project",
+        about: "About me",
+        aboutTitle: ["Technology with", "purpose."],
+        aboutLead: "I enjoy turning confusing processes into simple experiences. My work combines",
+        aboutLeadStrong: "logic, design, and product thinking",
+        aboutLeadEnd: "to build systems people genuinely enjoy using.",
+        aboutText: "I work across every application layer: I design the interface, structure business rules, databases, integrations, and handle deployment. This end-to-end view helps me deliver with more consistency and less friction.",
+        skills: "Stack & tools",
+        journey: "Journey",
+        journeyTitle: ["Experience, teaching", "and education."],
+        resumeQuestion: "Want the complete version with every detail?",
+        downloadResume: "Download résumé (PDF)",
+        githubTitle: ["Code every day,", "for real."],
+        githubLead: "Committing is a habit, not an exception.",
+        viewProfile: "View full profile",
+        githubAria: "Open Luan Ibanhez’s GitHub profile",
+        githubAlt: "GitHub contributions graph for Luan Ibanhez: 753 contributions in the last year",
+        postsTitle: ["What I build,", "I share here."],
+        postsSummary: "10 posts about projects, Laravel, education, and the courses I teach.",
+        allPosts: "View all posts",
+        contact: "Contact",
+        contactTitle: ["Have an idea?", "Let’s bring it to life."],
+        talk: "Talk to me",
+        contactMail: "or email me directly at",
+        footer: "Designed & developed by Luan Ibanhez",
+        top: "Back to top ↑",
+      }
+    : {
+        heroKicker: "Desenvolvedor Full Stack",
+        heroTitle: ["Ideias viram", "produtos no ar."],
+        heroSub: "Sou",
+        heroSubEnd: ". Projeto, desenvolvo e publico aplicações web completas: interface, regras de negócio, banco de dados e deploy.",
+        viewProjects: "Ver projetos",
+        systemsPreview: "Prévia dos sistemas publicados",
+        scrollProjects: "Rolar para os projetos",
+        selectedProjects: "Projetos selecionados",
+        projectsTitle: ["Sistemas reais, em uso,", "de ponta a ponta."],
+        openProject: "Abrir sistema",
+        openProjectAria: "Abrir",
+        technologies: "Tecnologias utilizadas",
+        visitProject: "Visitar projeto",
+        about: "Sobre mim",
+        aboutTitle: ["Tecnologia com", "propósito."],
+        aboutLead: "Gosto de transformar processos confusos em experiências simples. Meu trabalho une",
+        aboutLeadStrong: "lógica, design e visão de produto",
+        aboutLeadEnd: "para criar sistemas que as pessoas realmente gostam de usar.",
+        aboutText: "Atuo em todas as camadas de uma aplicação: desenho a interface, estruturo regras de negócio, banco de dados, integrações e faço o deploy. Essa visão de ponta a ponta me ajuda a entregar com mais consistência e menos atrito.",
+        skills: "Stack & ferramentas",
+        journey: "Trajetória",
+        journeyTitle: ["Experiência, ensino", "e formação."],
+        resumeQuestion: "Quer a versão completa, com todos os detalhes?",
+        downloadResume: "Baixar currículo (PDF)",
+        githubTitle: ["Código todo dia,", "de verdade."],
+        githubLead: "Commit é rotina, não exceção.",
+        viewProfile: "Ver perfil completo",
+        githubAria: "Abrir perfil do GitHub de Luan Ibanhez",
+        githubAlt: "Gráfico de contribuições do GitHub de Luan Ibanhez: 753 contribuições no último ano",
+        postsTitle: ["O que eu construo,", "compartilho por aqui."],
+        postsSummary: "10 publicações sobre projetos, Laravel, educação e os cursos que ministro.",
+        allPosts: "Ver todos os posts",
+        contact: "Contato",
+        contactTitle: ["Tem uma ideia?", "Vamos tirá-la do papel."],
+        talk: "Fale comigo",
+        contactMail: "ou escreva direto para",
+        footer: "Projetado & desenvolvido por Luan Ibanhez",
+        top: "Voltar ao topo ↑",
+      };
+
   return (
     <>
       <Header />
@@ -170,28 +370,27 @@ export default function Home() {
               <Reveal>
                 <p className="hero-kicker">
                   <span className="kicker-pulse" aria-hidden="true" />
-                  Desenvolvedor Full Stack
+                  {copy.heroKicker}
                 </p>
               </Reveal>
 
               <Reveal delay={80}>
                 <h1 id="hero-title">
-                  <RevealLine>Ideias viram</RevealLine>
-                  <RevealLine accent>produtos no ar.</RevealLine>
+                  <RevealLine>{copy.heroTitle[0]}</RevealLine>
+                  <RevealLine accent>{copy.heroTitle[1]}</RevealLine>
                 </h1>
               </Reveal>
 
               <Reveal delay={160}>
                 <p className="hero-sub">
-                  Sou <strong>Luan Ibanhez</strong>. Projeto, desenvolvo e publico aplicações web
-                  completas: interface, regras de negócio, banco de dados e deploy.
+                  {copy.heroSub} <strong>Luan Ibanhez</strong>{copy.heroSubEnd}
                 </p>
               </Reveal>
 
               <Reveal delay={240}>
                 <div className="hero-actions">
                   <a className="btn btn-primary" href="#projetos">
-                    Ver projetos <ArrowUpRight />
+                    {copy.viewProjects} <ArrowUpRight />
                   </a>
                   <a className="btn btn-ghost" href="mailto:luanibanhez.dev@gmail.com">
                     luanibanhez.dev@gmail.com
@@ -212,7 +411,7 @@ export default function Home() {
             </div>
 
             <Reveal delay={200} className="hero-stage-wrap">
-              <div className="hero-stage" aria-label="Prévia dos sistemas publicados">
+              <div className="hero-stage" aria-label={copy.systemsPreview}>
                 {heroProjects.map((project, index) => (
                   <a
                     key={project.title}
@@ -221,7 +420,7 @@ export default function Home() {
                     href={project.url}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`Abrir ${project.title}`}
+                    aria-label={`${copy.openProjectAria} ${project.title}`}
                   >
                     <BrowserFrame url={project.url}>
                       <div className="stage-image">
@@ -241,7 +440,7 @@ export default function Home() {
             </Reveal>
           </div>
 
-          <a className="hero-scroll" href="#projetos" aria-label="Rolar para os projetos">
+          <a className="hero-scroll" href="#projetos" aria-label={copy.scrollProjects}>
             <span />
           </a>
         </section>
@@ -266,11 +465,11 @@ export default function Home() {
             <Reveal>
               <div className="section-head">
                 <p className="section-kicker">
-                  <span>01</span> Projetos selecionados
+                  <span>01</span> {copy.selectedProjects}
                 </p>
                 <h2 id="projects-title">
-                  <RevealLine>Sistemas reais, em uso,</RevealLine>
-                  <RevealLine accent>de ponta a ponta.</RevealLine>
+                  <RevealLine>{copy.projectsTitle[0]}</RevealLine>
+                  <RevealLine accent>{copy.projectsTitle[1]}</RevealLine>
                 </h2>
               </div>
             </Reveal>
@@ -284,7 +483,7 @@ export default function Home() {
                     href={project.url}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`Abrir ${project.title} em nova aba`}
+                    aria-label={`${copy.openProjectAria} ${project.title}`}
                   >
                     <BrowserFrame url={project.url}>
                       <div className="project-image">
@@ -297,7 +496,7 @@ export default function Home() {
                       </div>
                     </BrowserFrame>
                     <span className="project-open" aria-hidden="true">
-                      Abrir sistema <ArrowUpRight />
+                      {copy.openProject} <ArrowUpRight />
                     </span>
                   </a>
 
@@ -308,13 +507,13 @@ export default function Home() {
                     <h3>{project.title}</h3>
                     <p className="project-highlight">{project.highlight}</p>
                     <p className="project-desc">{project.description}</p>
-                    <ul className="tag-list" aria-label="Tecnologias utilizadas">
+                    <ul className="tag-list" aria-label={copy.technologies}>
                       {project.tags.map((tag) => (
                         <li key={tag}>{tag}</li>
                       ))}
                     </ul>
                     <a className="project-link" href={project.url} target="_blank" rel="noreferrer">
-                      Visitar projeto <ArrowUpRight />
+                      {copy.visitProject} <ArrowUpRight />
                     </a>
                   </div>
                 </Reveal>
@@ -328,31 +527,28 @@ export default function Home() {
           <div className="container about-layout">
             <Reveal className="about-head">
               <p className="section-kicker">
-                <span>02</span> Sobre mim
+                <span>02</span> {copy.about}
               </p>
               <h2 id="about-title">
-                <RevealLine>Tecnologia com</RevealLine>
-                <RevealLine accent>propósito.</RevealLine>
+                <RevealLine>{copy.aboutTitle[0]}</RevealLine>
+                <RevealLine accent>{copy.aboutTitle[1]}</RevealLine>
               </h2>
             </Reveal>
 
             <div className="about-body">
               <Reveal delay={80}>
                 <p className="about-lead">
-                  Gosto de transformar processos confusos em experiências simples. Meu trabalho une{" "}
-                  <strong>lógica, design e visão de produto</strong> para criar sistemas que as
-                  pessoas realmente gostam de usar.
+                  {copy.aboutLead}{" "}
+                  <strong>{copy.aboutLeadStrong}</strong>{" "}{copy.aboutLeadEnd}
                 </p>
                 <p className="about-text">
-                  Atuo em todas as camadas de uma aplicação: desenho a interface, estruturo regras
-                  de negócio, banco de dados, integrações e faço o deploy. Essa visão de ponta a
-                  ponta me ajuda a entregar com mais consistência e menos atrito.
+                  {copy.aboutText}
                 </p>
               </Reveal>
 
               <Reveal delay={140}>
                 <div className="skills">
-                  <p className="skills-title">Stack &amp; ferramentas</p>
+                  <p className="skills-title">{copy.skills}</p>
                   <ul>
                     {stack.map((skill) => (
                       <li key={skill}>{skill}</li>
@@ -370,11 +566,11 @@ export default function Home() {
             <Reveal>
               <div className="section-head">
                 <p className="section-kicker">
-                  <span>03</span> Trajetória
+                  <span>03</span> {copy.journey}
                 </p>
                 <h2 id="journey-title">
-                  <RevealLine>Experiência, ensino</RevealLine>
-                  <RevealLine accent>e formação.</RevealLine>
+                  <RevealLine>{copy.journeyTitle[0]}</RevealLine>
+                  <RevealLine accent>{copy.journeyTitle[1]}</RevealLine>
                 </h2>
               </div>
             </Reveal>
@@ -409,9 +605,9 @@ export default function Home() {
 
             <Reveal delay={120}>
               <div className="journey-cta">
-                <p>Quer a versão completa, com todos os detalhes?</p>
+                <p>{copy.resumeQuestion}</p>
                 <a className="btn btn-ghost" href="/curriculo-luan-ibanhez.pdf" download>
-                  Baixar currículo (PDF) <ArrowUpRight />
+                  {copy.downloadResume} <ArrowUpRight />
                 </a>
               </div>
             </Reveal>
@@ -427,8 +623,8 @@ export default function Home() {
                   <span>04</span> GitHub
                 </p>
                 <h2 id="github-title">
-                  <RevealLine>Código todo dia,</RevealLine>
-                  <RevealLine accent>de verdade.</RevealLine>
+                  <RevealLine>{copy.githubTitle[0]}</RevealLine>
+                  <RevealLine accent>{copy.githubTitle[1]}</RevealLine>
                 </h2>
               </div>
             </Reveal>
@@ -436,7 +632,7 @@ export default function Home() {
             <div className="github-layout">
               <Reveal delay={80} className="github-info">
                 <p className="github-lead">
-                  <strong>Commit é rotina, não exceção.</strong>
+                  <strong>{copy.githubLead}</strong>
                 </p>
 
                 <dl className="github-stats">
@@ -454,7 +650,7 @@ export default function Home() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Ver perfil completo <ArrowUpRight />
+                  {copy.viewProfile} <ArrowUpRight />
                 </a>
               </Reveal>
 
@@ -464,17 +660,55 @@ export default function Home() {
                   href="https://github.com/luaniban"
                   target="_blank"
                   rel="noreferrer"
-                  aria-label="Abrir perfil do GitHub de Luan Ibanhez"
+                  aria-label={copy.githubAria}
                 >
                   <Image
                     src="/github/contributions.png"
-                    alt="Gráfico de contribuições do GitHub de Luan Ibanhez: 753 contribuições no último ano"
+                    alt={copy.githubAlt}
                     width={1494}
                     height={360}
                   />
+                  <span className="github-walkers" aria-hidden="true">
+                    <CommitWalker className="walker-east walker-one" />
+                    <CommitWalker className="walker-west walker-two" />
+                    <CommitWalker className="walker-east walker-three is-waving" />
+                    <CommitWalker className="walker-west walker-four is-hopping" />
+                    <CommitWalker className="walker-emerge" />
+                  </span>
                 </a>
               </Reveal>
             </div>
+          </div>
+        </section>
+
+        {/* ---------------- POSTS ---------------- */}
+        <section className="posts posts-preview" id="posts" aria-labelledby="posts-title">
+          <div className="container">
+            <Reveal>
+              <div className="section-head posts-head">
+                <p className="section-kicker">
+                  <span>05</span> LinkedIn
+                </p>
+                <h2 id="posts-title">
+                  <RevealLine>{copy.postsTitle[0]}</RevealLine>
+                  <RevealLine accent>{copy.postsTitle[1]}</RevealLine>
+                </h2>
+              </div>
+            </Reveal>
+
+            <Reveal delay={100}>
+              <div className="posts-overview" data-linkedin-profile-source>
+                <Image src="/linkedin-profile.png" alt="Luan Ibanhez de Almeida" width={400} height={400} />
+                <div>
+                  <p className="posts-overview-kicker">LinkedIn</p>
+                  <h3>Luan Ibanhez de Almeida</h3>
+                  <p>{copy.postsSummary}</p>
+                </div>
+                <LinkedinPostsLink>
+                  {copy.allPosts} <ArrowUpRight />
+                </LinkedinPostsLink>
+              </div>
+            </Reveal>
           </div>
         </section>
 
@@ -483,15 +717,15 @@ export default function Home() {
           <div className="container">
             <Reveal className="contact-card">
               <p className="section-kicker">
-                <span>05</span> Contato
+                <span>06</span> {copy.contact}
               </p>
               <h2 id="contact-title">
-                <RevealLine>Tem uma ideia?</RevealLine>
-                <RevealLine accent>Vamos tirá-la do papel.</RevealLine>
+                <RevealLine>{copy.contactTitle[0]}</RevealLine>
+                <RevealLine accent>{copy.contactTitle[1]}</RevealLine>
               </h2>
               <div className="contact-actions">
                 <a className="btn btn-primary btn-lg" href="mailto:luanibanhez.dev@gmail.com">
-                  Fale comigo <ArrowUpRight />
+                  {copy.talk} <ArrowUpRight />
                 </a>
                 <a
                   className="btn btn-ghost btn-lg"
@@ -506,7 +740,7 @@ export default function Home() {
                 </a>
               </div>
               <p className="contact-mail">
-                ou escreva direto para <a href="mailto:luanibanhez.dev@gmail.com">luanibanhez.dev@gmail.com</a>
+                {copy.contactMail} <a href="mailto:luanibanhez.dev@gmail.com">luanibanhez.dev@gmail.com</a>
               </p>
             </Reveal>
           </div>
@@ -518,9 +752,9 @@ export default function Home() {
           <a href="#inicio" className="logo logo-image footer-logo">
             <Image className="brand-avatar" src="/avatar-logo.png" alt="" width={64} height={64} />
           </a>
-          <p>Projetado &amp; desenvolvido por Luan Ibanhez · {new Date().getFullYear()}</p>
+          <p>{copy.footer} · {new Date().getFullYear()}</p>
           <a href="#inicio" className="footer-top">
-            Voltar ao topo ↑
+            {copy.top}
           </a>
         </Reveal>
       </footer>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "./LanguageProvider";
 
-const stages = [
+const stagesPt = [
   {
     label: "PHP básico",
     file: "hello.php",
@@ -52,6 +53,56 @@ const stages = [
   },
 ] as const;
 
+const stagesEn = [
+  {
+    label: "Basic PHP",
+    file: "hello.php",
+    code: ['<?php', '', '$name = "Luan";', 'echo "Hello, {$name}!";'],
+  },
+  {
+    label: "Logic and functions",
+    file: "AverageCalculator.php",
+    code: [
+      '<?php',
+      '',
+      'function calculateAverage(array $grades): float',
+      '{',
+      '    return array_sum($grades) / count($grades);',
+      '}',
+    ],
+  },
+  {
+    label: "Organized code",
+    file: "ProjectService.php",
+    code: [
+      '<?php',
+      '',
+      'final class ProjectService',
+      '{',
+      '    public function create(array $data): Project',
+      '    {',
+      '        return Project::query()->create($data);',
+      '    }',
+      '}',
+    ],
+  },
+  {
+    label: "Laravel controller",
+    file: "ProjectController.php",
+    code: [
+      '<?php',
+      '',
+      'final class ProjectController extends Controller',
+      '{',
+      '    public function index(ProjectService $service)',
+      '    {',
+      '        return ProjectResource::collection($service->all());',
+      '    }',
+      '}',
+    ],
+  },
+] as const;
+
 function renderLine(line: string) {
   const parts = line.split(/(\$[\w]+|\b(?:class|extends|final|function|namespace|public|return|use)\b|"[^"]*")/g);
 
@@ -80,6 +131,8 @@ type PhpEvolutionProps = {
 };
 
 export default function PhpEvolution({ stage: fixedStage, compact = false }: PhpEvolutionProps) {
+  const { language } = useLanguage();
+  const stages = language === "en" ? stagesEn : stagesPt;
   const [activeStage, setActiveStage] = useState(0);
   const stage = Math.min(Math.max(fixedStage ?? activeStage, 0), stages.length - 1);
   const currentStage = stages[stage];
@@ -124,11 +177,11 @@ export default function PhpEvolution({ stage: fixedStage, compact = false }: Php
   return (
     <aside
       className={`php-evolution${compact ? " is-compact" : ""}`}
-      aria-label={`Evolução do código PHP: ${currentStage.label}`}
+      aria-label={language === "en" ? `PHP code evolution: ${currentStage.label}` : `Evolução do código PHP: ${currentStage.label}`}
     >
       {!compact && (
         <div className="php-evolution-head">
-          <p>O código evolui com a trajetória</p>
+          <p>{language === "en" ? "The code evolves with the journey" : "O código evolui com a trajetória"}</p>
           <span aria-live="polite">
             {String(stage + 1).padStart(2, "0")} / {String(stages.length).padStart(2, "0")}
           </span>
@@ -167,7 +220,7 @@ export default function PhpEvolution({ stage: fixedStage, compact = false }: Php
       </div>
 
       {!compact && (
-        <ol className="code-progress" aria-label="Etapas da evolução do código">
+        <ol className="code-progress" aria-label={language === "en" ? "Code evolution stages" : "Etapas da evolução do código"}>
           {stages.map((item, index) => (
             <li className={index <= stage ? "is-active" : ""} key={item.label}>
               <span aria-hidden="true" />

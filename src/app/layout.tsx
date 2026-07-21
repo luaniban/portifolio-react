@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LanguageProvider } from "../components/LanguageProvider";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -41,10 +42,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           // animações de entrada, que só ficam ocultas quando há JS ativo.
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t)}catch(e){}try{if('scrollRestoration' in history){history.scrollRestoration='manual'}window.scrollTo(0,0)}catch(e){}document.documentElement.classList.add('js')",
+              "try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t);var l=localStorage.getItem('language');if(l==='en'){document.documentElement.setAttribute('data-language','en');document.documentElement.lang='en'}}catch(e){}try{if('scrollRestoration' in history){history.scrollRestoration='manual'}window.scrollTo(0,0)}catch(e){}document.documentElement.classList.add('js')",
           }}
         />
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

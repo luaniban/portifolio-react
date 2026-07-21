@@ -1,0 +1,30 @@
+Muita gente começa projetos em Laravel (ou qualquer framework) colocando toda a lógica direto no controller.
+
+E sim… funciona.
+
+Você consegue validar, acessar o banco, aplicar regras de negócio e retornar dados — tudo dentro de um único método.
+
+Mas o problema não é “funcionar”.
+O problema é manter, escalar e evoluir isso depois.
+
+Quando o projeto cresce, esse tipo de abordagem gera:
+
+* Controllers enormes e difíceis de entender
+* Regras de negócio espalhadas
+* Código difícil de testar
+* Alto acoplamento entre camadas
+
+Uma forma muito mais organizada (e usada em projetos profissionais) é separar responsabilidades:
+
+Request → validação dos dados
+Service → regras de negócio
+Model → acesso ao banco
+Resource → padronização da resposta
+
+Isso deixa o controller limpo, simples e direto ao ponto.
+
+O resultado? Código mais organizado, testável e fácil de manter.
+
+No fim, não é só sobre fazer funcionar — é sobre construir algo que continue funcionando bem no futuro 🚀
+
+#Laravel #PHP #CleanCode #DesenvolvimentoDeSoftware #Backend

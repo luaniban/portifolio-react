@@ -1,0 +1,16 @@
+30 horas sem dormir por causa do maior hackathon de Caraguatatuba.
+
+Além do desafio proposto pelo tema, nosso grupo tinha um desafio próprio: queríamos saber se seríamos capazes de entregar algo escalável, funcional e com ideias inovadoras em tão pouco tempo. Queríamos entender até onde conseguiríamos chegar construindo um sistema completo.
+Nosso tema foi gamificação na educação. A ideia era pensar em como transformar o aprendizado em algo mais envolvente para os alunos, sem deixar de lado a análise pedagógica por parte dos professores.
+Criamos um sistema com sessão ao vivo para aulas, desafios entre os próprios alunos, personagens personalizados com níveis e tiers, do comum ao lendário, conquistas, missões, XP, energia, rankings, pontos para gastar em uma loja e uma mecânica importante: mesmo quando o estudante errava uma questão, ele ainda recebia alguns pontos, para não associar o erro a uma experiência negativa.
+Na visão administrativa, o professor conseguia acompanhar gráficos de desempenho da turma, visualizar dificuldades dos alunos, analisar o desempenho por questões e acompanhar a evolução da sala. Também pensamos em uma visão de gestor, com dados mais amplos da escola, administração de professores, turmas, alunos e acompanhamento geral dos resultados.
+No fim, fiquei muito satisfeito com o nosso projeto. Acho que, além do conhecimento técnico aplicado, entregamos algo ainda mais importante: carinho e amor pelo que fazemos.
+Nosso frontend não se contentava se duas seções lado a lado não estivessem perfeitamente alinhadas. No backend, eu não saía de um controller até sentir que ele estava bem estruturado e o mais escalável possível. Nosso designer pensava em cada conquista, personagem, nome e significado da logo para que tudo tivesse conexão com a educação. E nosso responsável pela documentação e apresentação sempre nos consultava, sugerindo o que fazia sentido implementar ou não de acordo com a proposta final.
+
+Quero agradecer ao Robert Cortez Rudi, Hyan Ferreira e Emerson Soares.
+
+Estávamos fazendo aquilo porque gostamos. Gostamos de tecnologia, de programação, de resolver problemas e de construir algo com propósito.
+
+Acredito que conseguimos entregar isso aos avaliadores sem precisar dizer em palavras.
+
+#Hackathon #Tecnologia #Programação #Educação #Gamificação #DesenvolvimentoWeb

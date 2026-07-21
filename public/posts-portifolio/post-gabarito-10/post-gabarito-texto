@@ -1,0 +1,14 @@
+Corrigir uma turma inteira de gabaritos agora leva segundos, não mais uma tarde inteira.
+
+Essa é uma das funcionalidades que desenvolvi. Cada aluno recebe uma folha de respostas com um QR Code exclusivo e, na hora de corrigir, o professor tem dois caminhos, os dois que mostro no vídeo:
+
+Leitura pela câmera: aponta o celular para a folha e a correção acontece na hora.
+
+Envio de foto ou PDF: dá para subir várias folhas de uma vez, em lote.
+
+O sistema identifica o aluno, lê as alternativas marcadas e já exibe a correção na tela, com o gabarito destacado e o total de acertos. E, antes de salvar, o professor confere tudo. Se uma questão ficou em branco ou com marcação dupla, o sistema avisa.
+
+O resultado é direto. Menos tempo de digitação e mais tempo para o que realmente importa, acompanhar de perto cada aluno.
+
+#EducaçãoPública #PHP #Laravel #LaravelDeveloper #DesenvolvimentoWeb
+#Tecnologia
