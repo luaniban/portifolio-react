@@ -240,8 +240,6 @@ export default function Header() {
         <a href="mailto:luanibanhez.dev@gmail.com" onClick={() => setOpen(false)} className="mobile-nav-cta">
           luanibanhez.dev@gmail.com
         </a>
-        <ThemeToggle className="mobile-nav-theme-toggle" theme={theme} onToggle={toggleTheme} language={language} />
-        <LanguageSwitcher className="mobile-language-switcher" language={language} onChange={setLanguage} />
       </nav>
     </header>
   );

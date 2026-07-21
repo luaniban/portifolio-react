@@ -2793,9 +2793,7 @@ html.js .reveal.is-visible .text-reveal-line:nth-child(2) > span {
 
 @media (max-width: 860px) {
   .desktop-nav,
-  .header-cta,
-  .header-theme-toggle,
-  .header-language-switcher {
+  .header-cta {
     display: none;
   }
 
@@ -2829,6 +2827,12 @@ html.js .reveal.is-visible .text-reveal-line:nth-child(2) > span {
     height: 40px;
     padding-inline: 9px;
     border-radius: 10px;
+  }
+
+  .header-theme-toggle,
+  .header-language-switcher .language-toggle {
+    width: 38px;
+    height: 38px;
   }
 
   .mobile-nav {
@@ -2868,16 +2872,6 @@ html.js .reveal.is-visible .text-reveal-line:nth-child(2) > span {
     font-size: 0.76rem !important;
   }
 
-  .mobile-nav-theme-toggle {
-    width: 38px;
-    height: 38px;
-    margin-top: 0.35rem;
-  }
-
-  .mobile-language-switcher .language-toggle {
-    width: 38px;
-    height: 38px;
-  }
 }
 
 @media (max-width: 560px) {
