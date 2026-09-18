@@ -93,48 +93,76 @@ const projetos: Projeto[] = [
   },
 ];
 
-// Recortes das quatro cavernas na arte, em % da própria imagem.
-const cavernas = [
-  { left: "28.6%", top: "25.8%", width: "17.8%", height: "13%" },
-  { left: "63.6%", top: "26.8%", width: "17.8%", height: "12.5%" },
-  { left: "20.7%", top: "57.2%", width: "18.7%", height: "12.2%" },
-  { left: "69.7%", top: "58.2%", width: "18.2%", height: "12.2%" },
+const trajetoria = [
+  { periodo: "2021–2023", titulo: "Técnico em Informática", lugar: "IFSP" },
+  { periodo: "2024–hoje", titulo: "Tecnólogo em ADS", lugar: "IFSP" },
+  { periodo: "2024–hoje", titulo: "Estagiário Full Stack PHP", lugar: "Prefeitura de Caraguá" },
+  { periodo: "2026", titulo: "Palestrante e instrutor", lugar: "IFSP Caraguatatuba" },
 ];
 
+const contatos = [
+  { rotulo: "E-mail", valor: "luanibanhez.dev@gmail.com", url: "mailto:luanibanhez.dev@gmail.com" },
+  { rotulo: "LinkedIn", valor: "linkedin.com/in/luanibanhez", url: "https://linkedin.com/in/luanibanhez" },
+  { rotulo: "GitHub", valor: "github.com/luaniban", url: "https://github.com/luaniban" },
+];
 
-function ItemProjeto({ projeto }: { projeto: Projeto }) {
-  return (
-    <li className="item-projeto">
+// Encaixes da arte, em % da própria imagem: os oito nichos escavados na rocha
+// e as placas de madeira. Se a arte mudar, é aqui que se ajusta.
+const nichos = [
+  { left: "31.7%", top: "15%", width: "22.9%", height: "4.1%" },
+  { left: "61.8%", top: "15%", width: "22.5%", height: "4.1%" },
+  { left: "31.2%", top: "21.4%", width: "23.4%", height: "4.3%" },
+  { left: "61.8%", top: "21.4%", width: "24.1%", height: "4.3%" },
+  { left: "31.2%", top: "27.8%", width: "23.3%", height: "4.1%" },
+  { left: "62%", top: "27.8%", width: "24.3%", height: "4.1%" },
+  { left: "31.2%", top: "34.2%", width: "23.3%", height: "4.1%" },
+  { left: "62%", top: "34.2%", width: "24.1%", height: "4.1%" },
+];
+
+const placas = {
+  sobre: { left: "44.5%", top: "40.8%", width: "38%", height: "3.6%" },
+  trajetoria: { left: "33.2%", top: "56.9%", width: "21.2%", height: "2.2%" },
+  commits: { left: "26.5%", top: "75.2%", width: "29%", height: "2.4%" },
+  github: { left: "62.5%", top: "75.4%", width: "22.5%", height: "1.8%" },
+  contato: { left: "30%", top: "85.3%", width: "38%", height: "2.4%" },
+};
+
+function Nicho({ projeto, posicao }: { projeto: Projeto; posicao: React.CSSProperties }) {
+  const conteudo = (
+    <>
       <Image
-        className="item-projeto-imagem"
+        className="nicho-tela"
         src={projeto.image}
         alt={`Tela do sistema ${projeto.title}`}
         width={1440}
         height={900}
-        sizes="(max-width: 860px) 100vw, 520px"
+        sizes="420px"
       />
+      <span className="nicho-nome">{projeto.title}</span>
+    </>
+  );
 
-      <div>
-        <h3>
-          {projeto.number} — {projeto.title}
-        </h3>
-        <p className="item-projeto-linha">{projeto.highlight}</p>
+  return (
+    <article className="nicho" style={posicao}>
+      {projeto.url ? (
+        <a className="nicho-alvo" href={projeto.url} target="_blank" rel="noreferrer">
+          {conteudo}
+        </a>
+      ) : (
+        <div className="nicho-alvo">{conteudo}</div>
+      )}
+
+      <div className="nicho-painel">
+        <h3>{projeto.title}</h3>
+        <p className="nicho-linha">{projeto.highlight}</p>
         <p>{projeto.description}</p>
-        <p className="item-projeto-tags">{projeto.tags.join(" · ")}</p>
-        {projeto.url && (
-          <a href={projeto.url} target="_blank" rel="noreferrer">
-            {projeto.url.replace("https://", "").replace(/\/$/, "")}
-          </a>
-        )}
+        <p className="nicho-tags">{projeto.tags.join(" · ")}</p>
       </div>
-    </li>
+    </article>
   );
 }
 
-// Modelo em branco. A única coisa viva na página é o mascote caindo, que
-// segue a linha do trajeto desenhada sobre o <main> inteiro. Cada seção
-// abaixo está vazia e separada, pronta para receber o conteúdo novo; a
-// altura mínima delas está no CSS (.section) só para dar curso à queda.
+// A arte é o site inteiro: cada seção fica sobre o trecho dela que lhe cabe.
 export default function Home() {
   return (
     <>
@@ -143,83 +171,131 @@ export default function Home() {
       <main id="inicio">
         <MascotScrollGuide />
 
-        {/* Section 1: a montanha de onde o mascote cai. O ponto marcado com
-            data-mascot-start é o pico, onde a linha do trajeto começa. */}
-        <section className="section section-1" id="section-1">
-          <div className="container" />
+        <div className="mapa">
+          <Image className="mapa-arte" src="/montanha-site.png" alt="" fill sizes="100vw" priority />
+          <span className="mapa-pico" data-mascot-start aria-hidden="true" />
 
-          <div className="mountain" aria-hidden="true">
-            <Image src="/montanha.png" alt="" fill priority sizes="100vw" />
-            <span className="mountain-peak" data-mascot-start />
-          </div>
-        </section>
-
-        {/* Section 2: a arte com as quatro cavernas. Cada vão guarda um
-            projeto; ao passar o mouse, a descrição abre por cima da arte. */}
-        <section className="section section-2" id="section-2">
-          <div className="cavernas">
-            <Image src="/montanha-cavernas.png" alt="" fill sizes="100vw" priority />
-
-            {projetos.slice(0, 4).map((projeto, indice) => (
-              <article className="caverna" key={projeto.title} style={cavernas[indice]}>
-                <a className="caverna-alvo" href={projeto.url} target="_blank" rel="noreferrer">
-                  <Image
-                    className="caverna-tela"
-                    src={projeto.image}
-                    alt={`Tela do sistema ${projeto.title}`}
-                    width={1440}
-                    height={900}
-                    sizes="320px"
-                  />
-                  <span className="caverna-nome">{projeto.title}</span>
-                </a>
-
-                <div className="caverna-painel">
-                  <h3>{projeto.title}</h3>
-                  <p className="caverna-linha">{projeto.highlight}</p>
-                  <p>{projeto.description}</p>
-                  <p className="caverna-tags">{projeto.tags.join(" · ")}</p>
-                </div>
-              </article>
+          {/* projetos: os oito nichos escavados na rocha */}
+          <section className="mapa-secao section-1" id="section-1" aria-label="Projetos">
+            {projetos.map((projeto, indice) => (
+              <Nicho key={projeto.title} projeto={projeto} posicao={nichos[indice]} />
             ))}
-          </div>
+          </section>
 
-          {/* telas estreitas: a arte não comporta as cavernas, então os mesmos
-              projetos aparecem em lista */}
-          <div className="container cavernas-lista">
-            <h2 className="bloco-titulo">Projetos</h2>
-            <ol className="lista-projetos">
-              {projetos.slice(0, 4).map((projeto) => (
-                <ItemProjeto key={projeto.title} projeto={projeto} />
+          {/* sobre mim: a placa grande ao lado do letreiro */}
+          <section className="mapa-secao section-2" id="section-2" aria-label="Sobre mim">
+            <div className="placa" style={placas.sobre}>
+              <p className="placa-destaque">Desenvolvedor Full Stack</p>
+              <p>
+                Projeto, desenvolvo e publico aplicações web completas: interface, regras de negócio,
+                banco de dados e deploy.
+              </p>
+              <p className="placa-nota">
+                Estagiário na Secretaria de Educação de Caraguatatuba · Tecnólogo em ADS no IFSP
+              </p>
+            </div>
+          </section>
+
+          {/* trajetória */}
+          <section className="mapa-secao section-3" id="section-3" aria-label="Trajetória">
+            <ol className="placa placa-lista" style={placas.trajetoria}>
+              {trajetoria.map((item) => (
+                <li key={item.titulo}>
+                  <span className="placa-rotulo">{item.periodo}</span>
+                  {item.titulo} · {item.lugar}
+                </li>
               ))}
             </ol>
-          </div>
-        </section>
+          </section>
 
-        {/* Section 3: os outros quatro projetos, ainda na versão simples, à
-            espera da próxima parte da arte. */}
-        <section className="section section-3" id="section-3">
-          <div className="container">
-            <h2 className="bloco-titulo">Projetos (continuação)</h2>
-            <ol className="lista-projetos">
-              {projetos.slice(4).map((projeto) => (
-                <ItemProjeto key={projeto.title} projeto={projeto} />
+          {/* commits e GitHub */}
+          <section className="mapa-secao section-4" id="section-4" aria-label="GitHub">
+            <div className="placa" style={placas.commits}>
+              <Image
+                className="placa-grafico"
+                src="/github/contributions.png"
+                alt="Gráfico de contribuições do GitHub de Luan Ibanhez"
+                width={880}
+                height={180}
+              />
+            </div>
+
+            <div className="placa placa-centro" style={placas.github}>
+              <a href="https://github.com/luaniban" target="_blank" rel="noreferrer">
+                github.com/luaniban
+              </a>
+            </div>
+          </section>
+
+          {/* contato */}
+          <section className="mapa-secao section-5" id="section-5" aria-label="Contato">
+            <ul className="placa placa-contato" style={placas.contato}>
+              {contatos.map((contato) => (
+                <li key={contato.rotulo}>
+                  <span className="placa-rotulo">{contato.rotulo}</span>
+                  <a href={contato.url} target="_blank" rel="noreferrer">
+                    {contato.valor}
+                  </a>
+                </li>
               ))}
-            </ol>
-          </div>
-        </section>
+            </ul>
+          </section>
+        </div>
 
-        <section className="section section-4" id="section-4">
-          <div className="container" />
-        </section>
+        {/* telas estreitas: a arte não comporta os encaixes, então o mesmo
+            conteúdo aparece em lista */}
+        <div className="container mapa-lista">
+          <h2 className="bloco-titulo">Projetos</h2>
+          <ol className="lista-projetos">
+            {projetos.map((projeto) => (
+              <li className="item-projeto" key={projeto.title}>
+                <Image
+                  className="item-projeto-imagem"
+                  src={projeto.image}
+                  alt={`Tela do sistema ${projeto.title}`}
+                  width={1440}
+                  height={900}
+                  sizes="100vw"
+                />
+                <div>
+                  <h3>
+                    {projeto.number} — {projeto.title}
+                  </h3>
+                  <p className="item-projeto-linha">{projeto.highlight}</p>
+                  <p>{projeto.description}</p>
+                  <p className="item-projeto-tags">{projeto.tags.join(" · ")}</p>
+                  {projeto.url && (
+                    <a href={projeto.url} target="_blank" rel="noreferrer">
+                      {projeto.url.replace("https://", "").replace(/\/$/, "")}
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
 
-        <section className="section section-5" id="section-5">
-          <div className="container" />
-        </section>
+          <h2 className="bloco-titulo">Trajetória</h2>
+          <ol className="lista-simples">
+            {trajetoria.map((item) => (
+              <li key={item.titulo}>
+                <span className="placa-rotulo">{item.periodo}</span>
+                {item.titulo} · {item.lugar}
+              </li>
+            ))}
+          </ol>
 
-        <section className="section section-6" id="section-6">
-          <div className="container" />
-        </section>
+          <h2 className="bloco-titulo">Contato</h2>
+          <ul className="lista-simples">
+            {contatos.map((contato) => (
+              <li key={contato.rotulo}>
+                <span className="placa-rotulo">{contato.rotulo}</span>
+                <a href={contato.url} target="_blank" rel="noreferrer">
+                  {contato.valor}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </main>
 
       <SiteFooter />
