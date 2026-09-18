@@ -199,7 +199,7 @@ main {
 .mapa {
   position: relative;
   width: 100%;
-  aspect-ratio: 2560 / 7680;
+  aspect-ratio: 2048 / 6144;
   background: #0d1428;
 }
 
@@ -210,8 +210,8 @@ main {
 /* o pico, de onde o mascote cai */
 .mapa-pico {
   position: absolute;
-  left: 83.9%;
-  top: 7.63%;
+  left: 83.74%;
+  top: 7.6%;
   width: 1px;
   height: 1px;
 }
