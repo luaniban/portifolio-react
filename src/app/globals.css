@@ -230,6 +230,212 @@ main {
   z-index: 2;
 }
 
+/* ================================================================
+   SEÇÃO 2: a montanha com cavernas
+   ================================================================ */
+.section-cavernas {
+  padding-block: 0;
+  overflow: hidden;
+}
+
+.cavernas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+}
+
+.cavernas > img {
+  object-fit: cover;
+}
+
+/* cada caverna ocupa o vão da arte; a posição vem do style inline */
+.caverna {
+  position: absolute;
+  z-index: 2;
+}
+
+.caverna:hover,
+.caverna:focus-within {
+  z-index: 3;
+}
+
+.caverna-alvo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.caverna-tela {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 4px;
+  opacity: 0.85;
+  transition: opacity 180ms ease;
+}
+
+.caverna-alvo:hover .caverna-tela,
+.caverna-alvo:focus-visible .caverna-tela {
+  opacity: 1;
+}
+
+.caverna-nome {
+  position: absolute;
+  right: 0;
+  bottom: -1.5rem;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: #c3cadb;
+  text-align: center;
+}
+
+/* o quadrado da descrição abre a partir do centro da caverna */
+.caverna-painel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 20rem);
+  padding: 1rem 1.125rem;
+  border: 1px solid #3a4257;
+  border-radius: 6px;
+  background: #10131c;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.9);
+  /* o painel é só leitura: não pode roubar o clique do projeto embaixo */
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -50%) scale(0.9);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+}
+
+.caverna:hover .caverna-painel,
+.caverna:focus-within .caverna-painel {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.caverna-painel h3 {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: #eceef3;
+}
+
+.caverna-painel p {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: #b9bfcd;
+}
+
+.caverna-painel .caverna-linha {
+  color: #eceef3;
+}
+
+.caverna-painel .caverna-tags {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: #8e97ab;
+}
+
+/* a lista só aparece quando a arte deixa de comportar as cavernas */
+.cavernas-lista {
+  display: none;
+  padding-block: var(--section-space);
+}
+
+@media (max-width: 860px) {
+  .section-cavernas .cavernas {
+    display: none;
+  }
+
+  .cavernas-lista {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caverna-painel {
+    transition: none;
+  }
+}
+
+/* ================================================================
+   SEÇÃO 2: projetos, versão simples
+   Mesmo céu da seção 1, para a arte da montanha continuar daqui.
+   ================================================================ */
+.section-sky {
+  background: #10131c;
+  color: #eceef3;
+}
+
+.bloco-titulo {
+  margin: 0 0 2.5rem;
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.lista-projetos {
+  display: grid;
+  gap: 3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-projeto {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+
+.item-projeto-imagem {
+  width: 100%;
+  height: auto;
+}
+
+.item-projeto h3 {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.item-projeto p {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-base);
+  color: #b9bfcd;
+}
+
+.item-projeto-linha {
+  color: #eceef3 !important;
+}
+
+.item-projeto-tags,
+.item-projeto a {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.item-projeto a {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #86a4e6;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .item-projeto {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .footer {
   position: relative;
   z-index: 2;

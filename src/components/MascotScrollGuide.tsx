@@ -81,6 +81,9 @@ const TRAIL_CURVES: [number, number, number, number, number, number][] = [
 ];
 const TRAIL_SAMPLES = 480;
 
+// Sola do pé de apoio na pose 1, medida no PNG e relativa ao centro do quadro.
+const MASCOT_FOOT = { x: -0.047, y: 0.4121 };
+
 type Point = { x: number; y: number };
 
 const buildTrail = (mapX: (x: number) => number, mapY: (y: number) => number, start?: Point) => {
@@ -140,21 +143,26 @@ export default function MascotScrollGuide() {
     let trailHeight = 0;
     let samples: { x: number; y: number }[] = [];
 
-    // Ponto de partida: os pés do mascote em cima de [data-mascot-start]
-    // (o pico da montanha). O guia é centralizado, então subimos meia altura.
+    // Ponto de partida: a sola do pé em cima de [data-mascot-start] (o pico da
+    // montanha). Descontamos do centro do quadro o vetor até o pé, já girado e
+    // escalado como o CSS faz, para o apoio cair exatamente no pico.
     const startOnAnchor = (trailRect: DOMRect): Point | undefined => {
       const anchor = document.querySelector<HTMLElement>("[data-mascot-start]");
       if (!anchor) return undefined;
 
       const rect = anchor.getBoundingClientRect();
-      // 0.38: distância do centro do quadro até a sola do pé na primeira pose
-      const footHeight = guide.offsetHeight * mascotScrollSteps[0].scale * 0.38;
+      const { rotate, scale } = mascotScrollSteps[0];
+      const radians = (rotate * Math.PI) / 180;
+      const footX = MASCOT_FOOT.x * guide.offsetWidth * scale;
+      const footY = MASCOT_FOOT.y * guide.offsetHeight * scale;
 
       return {
-        // o pé de apoio fica à esquerda do centro do quadro; o deslocamento
-        // devolve o mascote para cima do pico
-        x: rect.left + rect.width / 2 - trailRect.left + guide.offsetWidth * 0.055,
-        y: rect.top + rect.height / 2 - trailRect.top - footHeight,
+        x:
+          rect.left + rect.width / 2 - trailRect.left -
+          (footX * Math.cos(radians) - footY * Math.sin(radians)),
+        y:
+          rect.top + rect.height / 2 - trailRect.top -
+          (footX * Math.sin(radians) + footY * Math.cos(radians)),
       };
     };
 
