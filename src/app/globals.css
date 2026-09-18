@@ -191,9 +191,9 @@ main {
   border-top: 0;
 }
 
-/* Seção 1: a montanha. O fundo da seção usa a mesma cor chapada da arte,
-   então a imagem encosta nas bordas sem emenda visível. */
-.section-mountain {
+/* Section 1: o fundo usa a mesma cor chapada da arte, então a imagem
+   encosta nas bordas sem emenda visível. */
+.section-1 {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -231,9 +231,9 @@ main {
 }
 
 /* ================================================================
-   SEÇÃO 2: a montanha com cavernas
+   SECTION 2: a arte com os vãos dos projetos
    ================================================================ */
-.section-cavernas {
+.section-2 {
   padding-block: 0;
   overflow: hidden;
 }
@@ -350,7 +350,7 @@ main {
 }
 
 @media (max-width: 860px) {
-  .section-cavernas .cavernas {
+  .section-2 .cavernas {
     display: none;
   }
 
@@ -366,10 +366,10 @@ main {
 }
 
 /* ================================================================
-   SEÇÃO 2: projetos, versão simples
-   Mesmo céu da seção 1, para a arte da montanha continuar daqui.
+   SECTIONS 2 e 3: mesmo céu da section 1, para a arte continuar daqui
    ================================================================ */
-.section-sky {
+.section-2,
+.section-3 {
   background: #10131c;
   color: #eceef3;
 }

@@ -143,9 +143,9 @@ export default function Home() {
       <main id="inicio">
         <MascotScrollGuide />
 
-        {/* Seção 1: a montanha de onde o mascote cai. O ponto marcado com
+        {/* Section 1: a montanha de onde o mascote cai. O ponto marcado com
             data-mascot-start é o pico, onde a linha do trajeto começa. */}
-        <section className="section section-mountain" id="secao-1">
+        <section className="section section-1" id="section-1">
           <div className="container" />
 
           <div className="mountain" aria-hidden="true">
@@ -154,9 +154,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Seção 2: a montanha com as quatro cavernas. Cada caverna guarda
-            um projeto; ao passar o mouse, a descrição abre por cima da arte. */}
-        <section className="section section-sky section-cavernas" id="secao-2">
+        {/* Section 2: a arte com as quatro cavernas. Cada vão guarda um
+            projeto; ao passar o mouse, a descrição abre por cima da arte. */}
+        <section className="section section-2" id="section-2">
           <div className="cavernas">
             <Image src="/montanha-cavernas.png" alt="" fill sizes="100vw" priority />
 
@@ -196,9 +196,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Seção 3: os outros quatro projetos, ainda na versão simples, à
-            espera da próxima parte da montanha. */}
-        <section className="section section-sky" id="secao-3">
+        {/* Section 3: os outros quatro projetos, ainda na versão simples, à
+            espera da próxima parte da arte. */}
+        <section className="section section-3" id="section-3">
           <div className="container">
             <h2 className="bloco-titulo">Projetos (continuação)</h2>
             <ol className="lista-projetos">
@@ -209,15 +209,15 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section" id="secao-4">
+        <section className="section section-4" id="section-4">
           <div className="container" />
         </section>
 
-        <section className="section" id="secao-5">
+        <section className="section section-5" id="section-5">
           <div className="container" />
         </section>
 
-        <section className="section" id="secao-6">
+        <section className="section section-6" id="section-6">
           <div className="container" />
         </section>
       </main>
