@@ -51,15 +51,17 @@ export default function ProjectScrollTransition() {
       const height = between(sourceRect.height, targetRect.height, progress);
 
       const entering = clamp(progress / 0.06, 0, 1);
-      const leaving = clamp((1 - progress) / 0.1, 0, 1);
+      // o destino fica vazio até a prévia pousar nele; aí os dois trocam de lugar
+      const landed = progress >= 1;
 
       transition.style.setProperty("--morph-x", `${x}px`);
       transition.style.setProperty("--morph-y", `${y}px`);
       transition.style.setProperty("--morph-width", `${width}px`);
       transition.style.setProperty("--morph-height", `${height}px`);
       transition.style.setProperty("--morph-rotate", `${between(-2, 0, progress)}deg`);
-      transition.style.opacity = String(Math.min(entering, leaving));
+      transition.style.opacity = landed ? "0" : String(entering);
       source.style.opacity = String(1 - entering);
+      target.classList.toggle("is-awaiting-morph", !landed);
     };
 
     const measure = () => {
@@ -67,7 +69,8 @@ export default function ProjectScrollTransition() {
       sourceRect = documentRect(source);
       targetRect = documentRect(target);
       startAt = Math.max(0, sourceRect.top - window.innerHeight * 0.48);
-      endAt = Math.max(startAt + 1, targetRect.top - window.innerHeight * 0.42);
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      endAt = Math.max(startAt + 1, Math.min(targetRect.top - window.innerHeight * 0.42, maxScroll));
       update();
     };
 
@@ -82,6 +85,7 @@ export default function ProjectScrollTransition() {
     return () => {
       window.cancelAnimationFrame(frame);
       source.style.opacity = "";
+      target.classList.remove("is-awaiting-morph");
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
     };
@@ -91,11 +95,6 @@ export default function ProjectScrollTransition() {
     <div className="project-scroll-morph" ref={transitionRef} aria-hidden="true">
       <div className="morph-browser-frame">
         <div className="morph-browser-bar">
-          <span className="morph-browser-dots">
-            <i />
-            <i />
-            <i />
-          </span>
           <span className="morph-browser-url">questionarios-rede.luanibanhez.tech</span>
         </div>
         <div className="morph-browser-preview">

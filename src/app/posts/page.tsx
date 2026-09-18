@@ -15,15 +15,11 @@ export default function PostsPage() {
       <main className="posts-page" id="inicio">
         <section className="posts posts-page-section" aria-labelledby="posts-page-title">
           <div className="container">
-            <div className="section-head posts-head">
-              <p className="section-kicker">
-                <span>{isEnglish ? "Posts" : "Posts"}</span> LinkedIn
-              </p>
+            <div className="section-head">
               <h1 id="posts-page-title" className="posts-page-title">
-                {isEnglish ? "What I build," : "O que eu construo,"}
-                <br />
-                <span className="grad-text">{isEnglish ? "I share here." : "compartilho por aqui."}</span>
+                Posts
               </h1>
+              <div className="section-meta">{isEnglish ? "Selected LinkedIn posts" : "Publicações selecionadas do LinkedIn"}</div>
             </div>
 
             <LinkedinPosts />

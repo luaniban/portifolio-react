@@ -179,23 +179,14 @@ export default function PhpEvolution({ stage: fixedStage, compact = false }: Php
       className={`php-evolution${compact ? " is-compact" : ""}`}
       aria-label={language === "en" ? `PHP code evolution: ${currentStage.label}` : `Evolução do código PHP: ${currentStage.label}`}
     >
-      {!compact && (
-        <div className="php-evolution-head">
-          <p>{language === "en" ? "The code evolves with the journey" : "O código evolui com a trajetória"}</p>
-          <span aria-live="polite">
-            {String(stage + 1).padStart(2, "0")} / {String(stages.length).padStart(2, "0")}
-          </span>
-        </div>
-      )}
-
       <div className="code-window">
         <div className="code-window-bar" aria-hidden="true">
-          <div className="code-window-dots">
-            <i />
-            <i />
-            <i />
-          </div>
           <span>{currentStage.file}</span>
+          {!compact && (
+            <span className="code-window-count">
+              {String(stage + 1).padStart(2, "0")} / {String(stages.length).padStart(2, "0")}
+            </span>
+          )}
         </div>
 
         <div className="code-stage" key={stage}>

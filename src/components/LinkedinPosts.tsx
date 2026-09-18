@@ -274,6 +274,22 @@ The result is simple: less time typing and more time for what matters, following
 #PublicEducation #PHP #Laravel #LaravelDeveloper #WebDevelopment #Technology`,
 };
 
+export type PostPreview = {
+  order: number;
+  excerpt: string;
+  media: Media;
+};
+
+// Resumo das publicações em destaque para a home: primeiro parágrafo e primeira mídia.
+export function getFeaturedPostPreviews(language: "pt" | "en"): PostPreview[] {
+  return posts
+    .filter((post) => featuredPostOrders.has(post.order))
+    .map((post) => {
+      const text = language === "en" ? englishPostText[post.order] ?? post.text : post.text;
+      return { order: post.order, excerpt: text.split("\n\n")[0], media: post.media[0] };
+    });
+}
+
 function LinkedinIcon() {
   return <span className="linkedin-icon" aria-hidden="true">in</span>;
 }

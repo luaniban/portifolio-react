@@ -23,20 +23,6 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    // Cada bloco de texto recebe um pequeno atraso próprio. Assim, ao entrar
-    // na viewport, a leitura acompanha o movimento em vez de todo o conteúdo
-    // aparecer de uma vez.
-    const textTargets = Array.from(
-      el.querySelectorAll<HTMLElement>(
-        "p, h1, h2, h3, h4, dt, dd, li, .project-number, .project-link, .timeline-period, .timeline-kind, .stage-label, .project-open, .browser-url"
-      )
-    ).filter((target) => !target.querySelector(".text-reveal-line"));
-
-    textTargets.forEach((target, index) => {
-      target.classList.add("scroll-text");
-      target.style.setProperty("--text-delay", `${Math.min(index * 55, 440)}ms`);
-    });
-
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       el.classList.add("is-visible");
       return;

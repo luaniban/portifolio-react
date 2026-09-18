@@ -137,18 +137,16 @@ export default function Header() {
   const { language, setLanguage } = useLanguage();
   const copy = language === "en"
     ? {
-        links: [["Projects", "#projetos"], ["About", "#sobre"], ["Journey", "#trajetoria"], ["GitHub", "#github"], ["Posts", "/posts"], ["Contact", "#contato"]] as const,
+        links: [["Projects", "#projetos"], ["Stack", "#sobre"], ["Journey", "#trajetoria"], ["GitHub", "#github"], ["Posts", "/posts"], ["Contact", "#contato"]] as const,
         navigation: "Main navigation",
-        available: "Available to talk",
         home: "Luan Ibanhez, home",
         openMenu: "Open menu",
         closeMenu: "Close menu",
         languageMenu: "Select language",
       }
     : {
-        links: [["Projetos", "#projetos"], ["Sobre", "#sobre"], ["Trajetória", "#trajetoria"], ["GitHub", "#github"], ["Posts", "/posts"], ["Contato", "#contato"]] as const,
+        links: [["Projetos", "#projetos"], ["Stack", "#sobre"], ["Trajetória", "#trajetoria"], ["GitHub", "#github"], ["Posts", "/posts"], ["Contato", "#contato"]] as const,
         navigation: "Navegação principal",
-        available: "Disponível para conversar",
         home: "Luan Ibanhez, início",
         openMenu: "Abrir menu",
         closeMenu: "Fechar menu",
@@ -190,15 +188,18 @@ export default function Header() {
   return (
     <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
       <div className="header-inner container">
-        <a href={pathname === "/" ? "#inicio" : "/"} className="logo logo-image" aria-label={copy.home}>
-          <Image
-            className="brand-avatar"
-            src="/avatar-logo.png"
-            alt=""
-            width={64}
-            height={64}
-            priority
-          />
+        <a href={pathname === "/" ? "#inicio" : "/"} className="logo" aria-label={copy.home}>
+          <span className="logo-image">
+            <Image
+              className="brand-avatar"
+              src="/avatar-logo.png"
+              alt=""
+              width={64}
+              height={64}
+              priority
+            />
+          </span>
+          <span className="logo-name">Luan Ibanhez</span>
         </a>
 
         <nav className="desktop-nav" aria-label={copy.navigation}>
@@ -210,11 +211,6 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
-          <a className="header-cta" href="mailto:luanibanhez.dev@gmail.com">
-            <span className="header-cta-dot" aria-hidden="true" />
-            {copy.available}
-          </a>
-
           <ThemeToggle className="header-theme-toggle" theme={theme} onToggle={toggleTheme} language={language} />
           <LanguageSwitcher className="header-language-switcher" language={language} onChange={setLanguage} />
 
