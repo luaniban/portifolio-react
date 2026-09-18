@@ -1,3 +1,4 @@
+import Image from "next/image";
 import MascotScrollGuide from "../components/MascotScrollGuide";
 import SiteFooter from "../components/SiteFooter";
 import SiteHeader from "../components/SiteHeader";
@@ -14,8 +15,15 @@ export default function Home() {
       <main id="inicio">
         <MascotScrollGuide />
 
-        <section className="section" id="secao-1">
+        {/* Seção 1: a montanha de onde o mascote cai. O ponto marcado com
+            data-mascot-start é o pico, onde a linha do trajeto começa. */}
+        <section className="section section-mountain" id="secao-1">
           <div className="container" />
+
+          <div className="mountain" aria-hidden="true">
+            <Image src="/montanha.png" alt="" fill priority sizes="100vw" />
+            <span className="mountain-peak" data-mascot-start />
+          </div>
         </section>
 
         <section className="section" id="secao-2">

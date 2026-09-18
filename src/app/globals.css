@@ -191,6 +191,40 @@ main {
   border-top: 0;
 }
 
+/* Seção 1: a montanha. O fundo da seção usa a mesma cor chapada da arte,
+   então a imagem encosta nas bordas sem emenda visível. */
+.section-mountain {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100svh;
+  padding-bottom: 0;
+  overflow: hidden;
+  background: #10131c;
+  color: #eceef3;
+}
+
+.mountain {
+  position: relative;
+  width: 100%;
+  margin-top: auto;
+  aspect-ratio: 1930 / 815;
+}
+
+.mountain img {
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+/* o pico, em coordenadas da própria arte: é daqui que o mascote cai */
+.mountain-peak {
+  position: absolute;
+  left: 67.8%;
+  top: 37.9%;
+  width: 1px;
+  height: 1px;
+}
+
 .section > .container {
   position: relative;
   z-index: 2;
@@ -308,7 +342,15 @@ main {
     width: 5.5rem;
   }
 
+  /* a linha some, mas o SVG continua medindo a página para a queda */
   .mascot-scroll-trail {
-    display: none;
+    opacity: 0;
+  }
+
+  /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos
+     sobrar para os lados, mantendo o pico dentro da tela */
+  .mountain {
+    width: 150%;
+    margin-inline: -25%;
   }
 }

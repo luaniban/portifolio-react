@@ -81,11 +81,24 @@ const TRAIL_CURVES: [number, number, number, number, number, number][] = [
 ];
 const TRAIL_SAMPLES = 480;
 
-const buildTrail = (mapX: (x: number) => number, mapY: (y: number) => number) => {
+type Point = { x: number; y: number };
+
+const buildTrail = (mapX: (x: number) => number, mapY: (y: number) => number, start?: Point) => {
   const point = (x: number, y: number) => `${mapX(x).toFixed(2)} ${mapY(y).toFixed(2)}`;
+  const curves = TRAIL_CURVES.map(
+    ([x1, y1, x2, y2, x, y]) => `C ${point(x1, y1)}, ${point(x2, y2)}, ${point(x, y)}`,
+  );
+
+  if (!start) return [`M ${point(...TRAIL_START)}`, ...curves].join(" ");
+
+  // Saindo do pico da montanha: cai colado nele antes de abrir para a direita.
+  const [, , x2, y2, x, y] = TRAIL_CURVES[0];
+  const drop = start.y + (mapY(y) - start.y) * 0.4;
+
   return [
-    `M ${point(...TRAIL_START)}`,
-    ...TRAIL_CURVES.map(([x1, y1, x2, y2, x, y]) => `C ${point(x1, y1)}, ${point(x2, y2)}, ${point(x, y)}`),
+    `M ${start.x.toFixed(2)} ${start.y.toFixed(2)}`,
+    `C ${start.x.toFixed(2)} ${drop.toFixed(2)}, ${point(x2, y2)}, ${point(x, y)}`,
+    ...curves.slice(1),
   ].join(" ");
 };
 
@@ -127,10 +140,29 @@ export default function MascotScrollGuide() {
     let trailHeight = 0;
     let samples: { x: number; y: number }[] = [];
 
+    // Ponto de partida: os pés do mascote em cima de [data-mascot-start]
+    // (o pico da montanha). O guia é centralizado, então subimos meia altura.
+    const startOnAnchor = (trailRect: DOMRect): Point | undefined => {
+      const anchor = document.querySelector<HTMLElement>("[data-mascot-start]");
+      if (!anchor) return undefined;
+
+      const rect = anchor.getBoundingClientRect();
+      // 0.38: distância do centro do quadro até a sola do pé na primeira pose
+      const footHeight = guide.offsetHeight * mascotScrollSteps[0].scale * 0.38;
+
+      return {
+        // o pé de apoio fica à esquerda do centro do quadro; o deslocamento
+        // devolve o mascote para cima do pico
+        x: rect.left + rect.width / 2 - trailRect.left + guide.offsetWidth * 0.055,
+        y: rect.top + rect.height / 2 - trailRect.top - footHeight,
+      };
+    };
+
     // Redesenha o trajeto em pixels, com margem lateral de meia largura do
     // mascote: assim o centro dele pode ficar sempre sobre a linha sem cortar.
     const rebuildTrail = () => {
-      const { width, height } = trail.getBoundingClientRect();
+      const trailRect = trail.getBoundingClientRect();
+      const { width, height } = trailRect;
       if (!width || !height) return;
 
       const margin = (guide.offsetWidth / 2) * maxScale + 12;
@@ -146,6 +178,7 @@ export default function MascotScrollGuide() {
         buildTrail(
           (x) => left + (x / 100) * (right - left),
           (y) => (y / 100) * height,
+          startOnAnchor(trailRect),
         ),
       );
 
