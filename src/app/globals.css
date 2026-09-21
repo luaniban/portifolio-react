@@ -240,6 +240,7 @@ main {
   animation: mascot-pose-in 180ms ease-out both;
 }
 
+/* o trajeto não aparece: o SVG só existe para o mascote medir a queda */
 .mascot-scroll-trail {
   position: absolute;
   z-index: 1;
@@ -248,16 +249,12 @@ main {
   height: 100%;
   overflow: visible;
   pointer-events: none;
+  visibility: hidden;
 }
 
 .mascot-scroll-trail path {
   fill: none;
-  stroke: var(--brand);
-  stroke-width: 1.5;
-  stroke-dasharray: 14 26;
-  stroke-linecap: round;
-  stroke-opacity: 0.34;
-  vector-effect: non-scaling-stroke;
+  stroke: none;
 }
 
 @keyframes mascot-pose-in {
@@ -295,10 +292,6 @@ main {
   .mascot-scroll-guide {
     width: clamp(7rem, 14vw, 8.75rem);
   }
-
-  .mascot-scroll-trail path {
-    stroke-opacity: 0.2;
-  }
 }
 
 @media (max-width: 640px) {
@@ -312,11 +305,6 @@ main {
 
   .mascot-scroll-guide {
     width: 5.5rem;
-  }
-
-  /* a linha some, mas o SVG continua medindo a página para a queda */
-  .mascot-scroll-trail {
-    opacity: 0;
   }
 
   /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos
