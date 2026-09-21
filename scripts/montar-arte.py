@@ -18,16 +18,29 @@ LARGURA, ALTURA_LINHA, LINHAS = 2048, 1536, 4
 
 
 def casar_tom(esquerda: np.ndarray, direita: np.ndarray) -> np.ndarray:
-    """Alinha a peça da direita à da esquerda, linha a linha, com queda suave."""
-    faixa = 10
-    dif = esquerda[:, -faixa:].mean(axis=1) - direita[:, :faixa].mean(axis=1)
-    dif = gaussian_filter1d(dif, sigma=12, axis=0)
+    """Alinha a luz da peça da direita à da esquerda, em duas camadas.
 
-    # a correção vale a peça inteira: quando ela se dissolve no meio do
-    # caminho, a transição vira uma faixa visível no lugar do degrau
+    - Luz geral: diferença mediana na emenda, bem suavizada, aplicada na peça
+      inteira. Corrige a peça mais clara ou mais escura sem criar listras.
+    - Ajuste fino: o que sobra na emenda (uma placa cortada ao meio, por
+      exemplo), aplicado só perto dela e sumindo em 200 px. Aplicado na peça
+      inteira, cada detalhe da emenda vira uma listra atravessando a imagem.
+    """
+    faixa = 24
+    dif = np.median(esquerda[:, -faixa:], axis=1) - np.median(direita[:, :faixa], axis=1)
+
+    geral = np.clip(gaussian_filter1d(dif, sigma=150, axis=0, mode="nearest"), -12, 12)
+    fino = np.clip(gaussian_filter1d(dif - geral, sigma=10, axis=0, mode="nearest"), -25, 25)
+
     largura = direita.shape[1]
-    peso = np.linspace(1.0, 0.85, largura)
-    return np.clip(direita + dif[:, None, :] * peso[None, :, None], 0, 255)
+    peso_geral = np.linspace(1.0, 0.5, largura)
+    alcance = 200
+    peso_fino = np.zeros(largura)
+    rampa = np.clip(1 - np.arange(alcance) / alcance, 0, 1)
+    peso_fino[:alcance] = (np.cos(np.pi * (1 - rampa)) + 1) / 2
+
+    correcao = geral[:, None, :] * peso_geral[None, :, None] + fino[:, None, :] * peso_fino[None, :, None]
+    return np.clip(direita + correcao, 0, 255)
 
 
 def casar_tom_horizontal(cima: np.ndarray, baixo: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -36,10 +49,10 @@ def casar_tom_horizontal(cima: np.ndarray, baixo: np.ndarray) -> tuple[np.ndarra
     A correção é por coluna (o degrau muda conforme o conteúdo), limitada e com
     queda curta: correção longa escorre para dentro dos nichos e suja a arte.
     """
-    faixa = 10
-    dif = cima[-faixa:].mean(axis=0) - baixo[:faixa].mean(axis=0)
-    dif = gaussian_filter1d(dif, sigma=25, axis=0)
-    dif = np.clip(dif, -14, 14)
+    faixa = 24
+    dif = np.median(cima[-faixa:], axis=0) - np.median(baixo[:faixa], axis=0)
+    dif = gaussian_filter1d(dif, sigma=150, axis=0, mode="nearest")
+    dif = np.clip(dif, -12, 12)
 
     alcance = 220
     queda = np.clip(1 - np.arange(alcance) / alcance, 0, 1)
