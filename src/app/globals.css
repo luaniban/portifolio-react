@@ -412,15 +412,16 @@ main {
   object-fit: cover;
 }
 
-/* título no céu, entre a lua (16,6–23,7% da largura) e o mascote no cume
-   (a partir de 77%). Fica no alto para caber inteiro na primeira tela mesmo
-   em telas baixas. */
+/* título no céu, entre a lua (16,6–23,7% da largura, 4,8–7,5% da altura) e o
+   mascote no cume. A nuvem de cima fica ao lado da lua e a parte larga logo
+   abaixo dela; medido para não encostar na lua, no mascote nem na montanha
+   de 641 a 2560 px, com a base inteira na primeira tela a partir de 1280×720. */
 .mapa-titulo {
   position: absolute;
   z-index: 2;
-  left: 26.3%;
-  top: 3%;
-  width: 48%;
+  left: 20%;
+  top: 4.4%;
+  width: 59%;
   aspect-ratio: 1999 / 786;
   margin: 0;
 }
@@ -560,6 +561,53 @@ main {
   }
 }
 
+/* ================================================================
+   TRAJETÓRIA: as quatro placas à direita da placa "Trajetória". O texto
+   é parte da arte; o hover (ou o foco) aproxima a placa para ler a
+   descrição. Mesmas camadas dos nichos: placas (2), placa ativa (6).
+   ================================================================ */
+.trajetoria {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.placa {
+  position: absolute;
+  z-index: 2;
+  width: 23%;
+  aspect-ratio: 1063 / 1237;
+  /* transform-origin vem de page.tsx: cada placa cresce para dentro do grupo */
+  transition: transform 220ms ease, filter 220ms ease;
+}
+
+.placa:hover,
+.placa:focus-visible {
+  z-index: 6;
+  transform: scale(1.4);
+  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.6));
+}
+
+.placa img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 860px) {
+  .placa:hover,
+  .placa:focus-visible {
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placa {
+    transition: none;
+  }
+}
+
 /* destinos dos links do header: um pouco acima de cada placa da arte */
 .mapa-ancora {
   position: absolute;
@@ -643,6 +691,9 @@ main {
   display: block;
   width: 100%;
   height: auto;
+  /* zoom por pose, a partir da base: deitado na grama, cresce para cima */
+  transform: scale(var(--pose-zoom, 1));
+  transform-origin: center bottom;
   animation: mascot-pose-in 180ms ease-out both;
 }
 
@@ -666,7 +717,7 @@ main {
 @keyframes mascot-pose-in {
   from {
     opacity: 0;
-    transform: translateY(-5px) scale(0.98);
+    transform: translateY(-5px) scale(calc(var(--pose-zoom, 1) * 0.98));
   }
 }
 
@@ -757,6 +808,14 @@ main {
 
   .mascot-scroll-guide {
     width: 5.5rem;
+  }
+
+  /* aqui o mascote é proporcionalmente maior e desce para baixo do título,
+     então o título sobe e passa para a direita da lua */
+  .mapa-titulo {
+    left: 24.5%;
+    top: 1.4%;
+    width: 60.5%;
   }
 
   /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos

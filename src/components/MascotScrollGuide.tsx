@@ -11,6 +11,9 @@ type MascotScrollStep = {
   height: number;
   rotate: number;
   scale: number;
+  // Zoom só da imagem, sem interpolar com a pose vizinha: iguala o tamanho do
+  // boneco quando o desenho ocupa o quadro de um jeito diferente das outras.
+  zoom?: number;
 };
 
 export const mascotScrollSteps: MascotScrollStep[] = [
@@ -69,14 +72,18 @@ export const mascotScrollSteps: MascotScrollStep[] = [
     scale: 1,
   },
   {
-    // pouso: de cara na grama, só nos últimos 4% da rolagem
+    // pouso: de cara na grama, só nos últimos 4% da rolagem. Deitado, o boneco
+    // sai ~35% menor que nas outras poses (medido pelas pupilas); o zoom de
+    // 1,55 iguala à pose 06. A escala fica igual à da 06 para ela não crescer
+    // aos poucos antes do pouso.
     start: 0.96,
     end: 1,
     src: "/mascote-poses-caindo/07-de-cara-na-grama.png",
-    width: 1024,
-    height: 1536,
+    width: 1378,
+    height: 1142,
     rotate: 0,
-    scale: 1.05,
+    scale: 1,
+    zoom: 1.55,
   },
 ];
 
@@ -308,6 +315,7 @@ export default function MascotScrollGuide() {
           width={mascotScrollSteps[activePose].width}
           height={mascotScrollSteps[activePose].height}
           sizes="(max-width: 640px) 88px, (max-width: 1100px) 140px, 184px"
+          style={{ "--pose-zoom": mascotScrollSteps[activePose].zoom ?? 1 } as CSSProperties}
           priority
         />
       </div>
