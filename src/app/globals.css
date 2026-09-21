@@ -412,6 +412,23 @@ main {
   object-fit: cover;
 }
 
+/* título no céu, entre a lua (16,6–23,7% da largura) e o mascote no cume
+   (a partir de 77%). Fica no alto para caber inteiro na primeira tela mesmo
+   em telas baixas. */
+.mapa-titulo {
+  position: absolute;
+  z-index: 2;
+  left: 26.3%;
+  top: 3%;
+  width: 48%;
+  aspect-ratio: 1999 / 786;
+  margin: 0;
+}
+
+.mapa-titulo img {
+  object-fit: contain;
+}
+
 /* o pico, de onde o mascote cai */
 .mapa-pico {
   position: absolute;

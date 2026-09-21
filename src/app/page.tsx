@@ -27,6 +27,15 @@ export default function Home() {
 
         <div className="mapa">
           <Image className="mapa-arte" src="/montanha-v6.png" alt="" fill sizes="100vw" priority />
+          <h1 className="mapa-titulo">
+            <Image
+              src="/titulo-luan-ibanhez.png"
+              alt="Olá, eu sou o Luan Ibanhez, Desenvolvedor Full Stack"
+              fill
+              sizes="48vw"
+              priority
+            />
+          </h1>
           <span className="mapa-pico" data-mascot-start aria-hidden="true" />
           <span className="mapa-chao" data-neblina-fim aria-hidden="true" />
           {ancoras.map(({ id, top }) => (
