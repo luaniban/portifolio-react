@@ -185,10 +185,28 @@ export default function Header() {
     return href;
   }
 
+  // Rola até a seção sem deixar o #seção no endereço: se ficasse, recarregar a
+  // página pularia direto para ela em vez de começar no topo da montanha.
+  function scrollToSection(event: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (!href.startsWith("#") || pathname !== "/") return;
+
+    const target = document.getElementById(href.slice(1));
+    if (!target) return;
+
+    event.preventDefault();
+    target.scrollIntoView({ block: "start" });
+    window.history.replaceState(window.history.state, "", pathname + window.location.search);
+  }
+
   return (
     <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
       <div className="header-inner container">
-        <a href={pathname === "/" ? "#inicio" : "/"} className="logo" aria-label={copy.home}>
+        <a
+          href={pathname === "/" ? "#inicio" : "/"}
+          className="logo"
+          aria-label={copy.home}
+          onClick={(event) => scrollToSection(event, "#inicio")}
+        >
           <span className="logo-image">
             <Image
               className="brand-avatar"
@@ -204,7 +222,7 @@ export default function Header() {
 
         <nav className="desktop-nav" aria-label={copy.navigation}>
           {copy.links.map(([label, href]) => (
-            <a href={navigationHref(href)} key={href}>
+            <a href={navigationHref(href)} key={href} onClick={(event) => scrollToSection(event, href)}>
               {label}
             </a>
           ))}
@@ -229,7 +247,14 @@ export default function Header() {
 
       <nav className={`mobile-nav${open ? " is-open" : ""}`} aria-label={copy.navigation}>
         {copy.links.map(([label, href]) => (
-          <a href={navigationHref(href)} key={href} onClick={() => setOpen(false)}>
+          <a
+            href={navigationHref(href)}
+            key={href}
+            onClick={(event) => {
+              setOpen(false);
+              scrollToSection(event, href);
+            }}
+          >
             {label}
           </a>
         ))}

@@ -35,10 +35,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script
           // Aplica o tema salvo (ou a preferência do sistema) antes do primeiro
           // paint, evitando flash da cor errada; também marca html.js para as
-          // animações de entrada, que só ficam ocultas quando há JS ativo.
+          // animações de entrada, que só ficam ocultas quando há JS ativo. Ao
+          // recarregar, tira o #seção do endereço: a página sempre recomeça no
+          // topo da montanha, e um link /#seção aberto de fora continua valendo.
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t);var l=localStorage.getItem('language');if(l==='en'){document.documentElement.setAttribute('data-language','en');document.documentElement.lang='en'}}catch(e){}try{if('scrollRestoration' in history){history.scrollRestoration='manual'}window.scrollTo(0,0)}catch(e){}document.documentElement.classList.add('js')",
+              "try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t);var l=localStorage.getItem('language');if(l==='en'){document.documentElement.setAttribute('data-language','en');document.documentElement.lang='en'}}catch(e){}try{if('scrollRestoration' in history){history.scrollRestoration='manual'}var n=performance.getEntriesByType('navigation')[0];if(n&&n.type==='reload'&&location.hash){history.replaceState(history.state,'',location.pathname+location.search)}window.scrollTo(0,0)}catch(e){}document.documentElement.classList.add('js')",
           }}
         />
         <LanguageProvider>{children}</LanguageProvider>
