@@ -61,12 +61,22 @@ export const mascotScrollSteps: MascotScrollStep[] = [
   },
   {
     start: 0.82,
-    end: 1,
+    end: 0.96,
     src: "/mascote-poses-caindo/06-estabilizando.png",
     width: 1023,
     height: 1538,
     rotate: 1,
     scale: 1,
+  },
+  {
+    // pouso: de cara na grama, só nos últimos 4% da rolagem
+    start: 0.96,
+    end: 1,
+    src: "/mascote-poses-caindo/07-de-cara-na-grama.png",
+    width: 1024,
+    height: 1536,
+    rotate: 0,
+    scale: 1.05,
   },
 ];
 
