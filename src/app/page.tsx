@@ -14,7 +14,7 @@ export default function Home() {
         <MascotScrollGuide />
 
         <div className="mapa">
-          <Image className="mapa-arte" src="/montanha-v3.png" alt="" fill sizes="100vw" priority />
+          <Image className="mapa-arte" src="/montanha-v4.png" alt="" fill sizes="100vw" priority />
           <span className="mapa-pico" data-mascot-start aria-hidden="true" />
         </div>
       </main>
