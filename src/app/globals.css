@@ -438,6 +438,28 @@ main {
   height: 1px;
 }
 
+/* as telas dos projetos, dentro dos nichos. Ficam na frente do mascote:
+   ele cai por trás do relevo. */
+.nicho-tela {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.nicho-tela img {
+  object-fit: cover;
+  object-position: top;
+}
+
+a.nicho-tela img {
+  transition: filter 150ms ease;
+}
+
+a.nicho-tela:hover img {
+  filter: brightness(1.08);
+}
+
 /* destinos dos links do header: um pouco acima de cada placa da arte */
 .mapa-ancora {
   position: absolute;
