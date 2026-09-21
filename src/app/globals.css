@@ -216,6 +216,60 @@ main {
   height: 1px;
 }
 
+/* onde começa o chão de grama: a neblina some quando ele sobe pela tela */
+.mapa-chao {
+  position: absolute;
+  left: 0;
+  top: 88.57%;
+  width: 100%;
+  height: 1px;
+}
+
+/* ================================================================
+   NEBLINA: fixa no pé da tela, na frente da arte e do mascote.
+   O degradê aqui é o próprio efeito pedido (névoa), não decoração.
+   ================================================================ */
+.neblina {
+  position: fixed;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 34vh;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(196, 210, 238, 0.62) 0%,
+    rgba(196, 210, 238, 0.34) 38%,
+    rgba(196, 210, 238, 0) 100%
+  );
+}
+
+/* bancos de névoa mais densos, derivando devagar de um lado para o outro */
+.neblina::before {
+  content: "";
+  position: absolute;
+  inset: 20% -50% 0;
+  background:
+    radial-gradient(ellipse 22% 55% at 20% 85%, rgba(214, 225, 246, 0.55), transparent 70%),
+    radial-gradient(ellipse 26% 60% at 55% 95%, rgba(214, 225, 246, 0.5), transparent 70%),
+    radial-gradient(ellipse 20% 50% at 85% 88%, rgba(214, 225, 246, 0.5), transparent 70%);
+  animation: neblina-deriva 38s ease-in-out infinite alternate;
+}
+
+@keyframes neblina-deriva {
+  to {
+    transform: translateX(18%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neblina::before {
+    animation: none;
+  }
+}
+
 /* ================================================================
    MASCOTE: uma única pose acompanha o progresso total da página
    ================================================================ */
