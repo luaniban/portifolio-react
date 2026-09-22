@@ -195,6 +195,10 @@ export default function MascotScrollGuide() {
     // Onde ele pousou, em coordenadas da página: depois do pouso ele fica preso
     // ali, em vez de seguir deslizando pela grama com a rolagem.
     let pousoFixo: { x: number; baseNaPagina: number } | null = null;
+    // Altura da tela (0–1) onde começa a linha que o mascote acompanha. Nunca
+    // abaixo do ponto de partida: no celular o pico fica bem alto na tela, e a
+    // linha fixa em 32% já começava com o mascote caindo, longe do pico.
+    let inicioDaLinha = 0.32;
 
     // Ponto de partida: a sola do pé em cima de [data-mascot-start] (o pico da
     // montanha). Descontamos do centro do quadro o vetor até o pé, já girado e
@@ -248,6 +252,9 @@ export default function MascotScrollGuide() {
         const { x, y } = path.getPointAtLength((length * index) / TRAIL_SAMPLES);
         return { x, y };
       });
+
+      const partidaNaPagina = samples[0].y + trailRect.top + window.scrollY;
+      inicioDaLinha = clamp(partidaNaPagina / window.innerHeight, 0, 0.32);
     };
 
     // Ponto do trajeto na altura pedida (primeiro cruzamento), interpolado.
@@ -283,7 +290,7 @@ export default function MascotScrollGuide() {
       const rect = trail.getBoundingClientRect();
       const scaleX = rect.width / trailWidth;
       const scaleY = rect.height / trailHeight;
-      const anchorY = interpolate(0.32, 0.68, progress) * window.innerHeight;
+      const anchorY = interpolate(inicioDaLinha, 0.68, progress) * window.innerHeight;
       const point = pointAtY((anchorY - rect.top) / scaleY);
 
       const x = rect.left + point.x * scaleX;

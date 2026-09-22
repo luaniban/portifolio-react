@@ -905,12 +905,20 @@ main {
     width: 5.5rem;
   }
 
-  /* aqui o mascote é proporcionalmente maior e desce para baixo do título,
-     então o título sobe e passa para a direita da lua */
+  /* o pico fica tão perto do topo que o mascote em pé nele ficava com a
+     cabeça atrás do header: a arte desce 64 px, e a faixa acima tem a mesma
+     cor lisa do topo do céu da arte (e do header), sem emenda */
+  main {
+    padding-top: calc(var(--header-height) + 64px);
+    background: #021b48;
+  }
+
+  /* aqui o mascote é proporcionalmente maior e fica em pé no pico, no canto
+     direito do céu: o título vai para a esquerda e pode passar por cima da lua */
   .mapa-titulo {
-    left: 24.5%;
-    top: 1.4%;
-    width: 60.5%;
+    left: 1.5%;
+    top: 1.8%;
+    width: 66%;
   }
 
   /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos
