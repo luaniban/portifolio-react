@@ -19,10 +19,12 @@ export default function Neblina() {
       const topoDoChao = chao.getBoundingClientRect().top;
       const altura = window.innerHeight;
 
-      // chão abaixo da tela: neblina cheia; chão a 45% da tela: nenhuma
-      const inicio = altura;
-      const fim = altura * 0.45;
-      const opacidade = Math.min(Math.max((topoDoChao - fim) / (inicio - fim), 0), 1);
+      // chão abaixo da tela: neblina cheia; página rolada até o fim: nenhuma.
+      // O fim é onde o chão para quando a rolagem acaba, não uma altura fixa
+      // da tela: com a arte cortada, o chão nunca chega muito alto.
+      const rolagemRestante = document.documentElement.scrollHeight - altura - window.scrollY;
+      const fim = Math.min(topoDoChao - rolagemRestante, altura - 1);
+      const opacidade = Math.min(Math.max((topoDoChao - fim) / (altura - fim), 0), 1);
       neblina.style.opacity = String(opacidade);
     };
 

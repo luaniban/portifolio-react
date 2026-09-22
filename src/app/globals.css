@@ -444,11 +444,26 @@ main {
    encaixados nela. Tudo é medido em % da imagem, e os textos usam vw
    para acompanhar a escala da arte.
    ================================================================ */
+/* a moldura corta a arte na metade do campo de grama (94,29% da altura),
+   para o site terminar logo depois da placa Contato */
 .mapa {
   position: relative;
   width: 100%;
-  aspect-ratio: 2048 / 6144;
+  aspect-ratio: 2048 / 5793;
+  /* clip, e não hidden: com hidden a moldura vira um contêiner rolável, e o
+     scrollIntoView dos links do header rolava a arte por dentro dela; a roda
+     do mouse não desfaz isso e o pico ficava escondido */
+  overflow: clip;
   background: #0d1428;
+}
+
+/* a cena tem o tamanho da arte inteira: as posições em % são dela */
+.mapa-cena {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 2048 / 6144;
 }
 
 .mapa-arte {

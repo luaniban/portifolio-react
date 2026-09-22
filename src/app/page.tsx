@@ -155,30 +155,35 @@ export default function Home() {
         <MascotScrollGuide />
         <Neblina />
 
+        {/* A moldura (.mapa) mostra a arte só até a metade do campo de grama;
+            a cena por dentro segue do tamanho da arte inteira, e todas as
+            posições em % continuam valendo. */}
         <div className="mapa">
-          <Image className="mapa-arte" src="/montanha-v6.png" alt="" fill sizes="100vw" priority />
-          <h1 className="mapa-titulo">
-            <Image
-              src="/titulo-luan-ibanhez.png"
-              alt="Olá, eu sou o Luan Ibanhez, Desenvolvedor Full Stack"
-              fill
-              sizes="(max-width: 640px) 61vw, 54vw"
-              priority
-            />
-          </h1>
-          <span className="mapa-pico" data-mascot-start aria-hidden="true" />
-          <span className="mapa-chao" data-neblina-fim aria-hidden="true" />
-          {projetos.map((projeto, indice) => (
-            <Nicho key={projeto.titulo} projeto={projeto} posicao={telas[indice]} />
-          ))}
-          <ol className="trajetoria" aria-label="Trajetória">
-            {trajetoria.map((placa, indice) => (
-              <Placa key={placa.imagem} placa={placa} posicao={placas[indice]} />
+          <div className="mapa-cena">
+            <Image className="mapa-arte" src="/montanha-v6.png" alt="" fill sizes="100vw" priority />
+            <h1 className="mapa-titulo">
+              <Image
+                src="/titulo-luan-ibanhez.png"
+                alt="Olá, eu sou o Luan Ibanhez, Desenvolvedor Full Stack"
+                fill
+                sizes="(max-width: 640px) 61vw, 54vw"
+                priority
+              />
+            </h1>
+            <span className="mapa-pico" data-mascot-start aria-hidden="true" />
+            <span className="mapa-chao" data-neblina-fim aria-hidden="true" />
+            {projetos.map((projeto, indice) => (
+              <Nicho key={projeto.titulo} projeto={projeto} posicao={telas[indice]} />
             ))}
-          </ol>
-          {ancoras.map(({ id, top }) => (
-            <span key={id} id={id} className="mapa-ancora" style={{ top }} aria-hidden="true" />
-          ))}
+            <ol className="trajetoria" aria-label="Trajetória">
+              {trajetoria.map((placa, indice) => (
+                <Placa key={placa.imagem} placa={placa} posicao={placas[indice]} />
+              ))}
+            </ol>
+            {ancoras.map(({ id, top }) => (
+              <span key={id} id={id} className="mapa-ancora" style={{ top }} aria-hidden="true" />
+            ))}
+          </div>
         </div>
       </main>
 
