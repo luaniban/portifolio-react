@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LanguageProvider } from "../components/LanguageProvider";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Bitter, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
 const plexSans = IBM_Plex_Sans({
@@ -13,6 +13,13 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
+});
+
+// A letra das placas de madeira da arte; usada só nos links que levam a elas.
+const bitter = Bitter({
+  variable: "--font-bitter",
+  subsets: ["latin"],
+  weight: ["500"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${plexSans.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="pt-BR" className={`${plexSans.variable} ${plexMono.variable} ${bitter.variable}`} suppressHydrationWarning>
       <body>
         <script
           // Aplica o tema salvo (ou a preferência do sistema) antes do primeiro

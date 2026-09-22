@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 
 function SunIcon() {
@@ -129,10 +129,49 @@ function LanguageSwitcher({
   );
 }
 
+// Âncoras da página inicial, na ordem da descida.
+const SECTIONS = ["projetos", "sobre", "trajetoria", "github", "contato"];
+
+// A seção atual é a última cuja âncora já chegou perto de onde o clique no
+// link a deixaria (logo abaixo do header). "Perto" vai até 30% da tela, mas no
+// máximo metade da distância para a âncora anterior: no celular as placas
+// ficam próximas e, sem esse limite, clicar em uma marcaria a seguinte.
+function currentSection() {
+  const landing = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+  const reach = window.innerHeight * 0.3;
+  let current: string | null = null;
+  let previousTop: number | null = null;
+
+  for (const id of SECTIONS) {
+    const anchor = document.getElementById(id);
+    if (!anchor) continue;
+    const top = anchor.getBoundingClientRect().top;
+    const slack = previousTop === null ? reach : Math.min(reach, (top - previousTop) / 2);
+    if (top - landing <= slack) current = id;
+    previousTop = top;
+  }
+
+  return current;
+}
+
 export default function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [section, setSection] = useState<string | null>(null);
+  // Depois de um clique no nav, a rolagem suave passa por outras seções e, no
+  // celular, a página acaba antes de a âncora chegar ao header. Enquanto essa
+  // rolagem não termina, o link clicado continua marcado.
+  const followingClick = useRef(false);
+  const settleTimer = useRef<number | undefined>(undefined);
+
+  // A rolagem do clique terminou quando os eventos de scroll param de chegar.
+  function settleAfterScroll() {
+    window.clearTimeout(settleTimer.current);
+    settleTimer.current = window.setTimeout(() => {
+      followingClick.current = false;
+    }, 150);
+  }
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const { language, setLanguage } = useLanguage();
   const copy = language === "en"
@@ -154,11 +193,23 @@ export default function Header() {
       };
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+      if (followingClick.current) {
+        settleAfterScroll();
+        return;
+      }
+      setSection(pathname === "/" ? currentSection() : null);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.clearTimeout(settleTimer.current);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     // O tema é aplicado pelo script de layout antes da pintura. Atualizamos o
@@ -180,6 +231,11 @@ export default function Header() {
     } catch {}
   }
 
+  // Marca o link da seção da montanha em que o visitante está.
+  function currentMark(href: string) {
+    return section !== null && href === `#${section}` ? "location" : undefined;
+  }
+
   function navigationHref(href: string) {
     if (href.startsWith("#") && pathname !== "/") return `/${href}`;
     return href;
@@ -194,6 +250,10 @@ export default function Header() {
     if (!target) return;
 
     event.preventDefault();
+    const id = href.slice(1);
+    setSection(SECTIONS.includes(id) ? id : null);
+    followingClick.current = true;
+    settleAfterScroll();
     target.scrollIntoView({ block: "start" });
     window.history.replaceState(window.history.state, "", pathname + window.location.search);
   }
@@ -217,12 +277,17 @@ export default function Header() {
               priority
             />
           </span>
-          <span className="logo-name">Luan Ibanhez</span>
+          <span className="logo-name"></span>
         </a>
 
         <nav className="desktop-nav" aria-label={copy.navigation}>
           {copy.links.map(([label, href]) => (
-            <a href={navigationHref(href)} key={href} onClick={(event) => scrollToSection(event, href)}>
+            <a
+              href={navigationHref(href)}
+              key={href}
+              aria-current={currentMark(href)}
+              onClick={(event) => scrollToSection(event, href)}
+            >
               {label}
             </a>
           ))}
@@ -250,6 +315,7 @@ export default function Header() {
           <a
             href={navigationHref(href)}
             key={href}
+            aria-current={currentMark(href)}
             onClick={(event) => {
               setOpen(false);
               scrollToSection(event, href);
