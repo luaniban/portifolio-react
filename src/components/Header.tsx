@@ -137,7 +137,7 @@ export default function Header() {
   const { language, setLanguage } = useLanguage();
   const copy = language === "en"
     ? {
-        links: [["Projects", "#projetos"], ["Stack", "#sobre"], ["Journey", "#trajetoria"], ["GitHub", "#github"], ["Posts", "/posts"], ["Contact", "#contato"]] as const,
+        links: [["Projects", "#projetos"], ["Stack", "#sobre"], ["Journey", "#trajetoria"], ["GitHub", "#github"], ["Contact", "#contato"]] as const,
         navigation: "Main navigation",
         home: "Luan Ibanhez, home",
         openMenu: "Open menu",
@@ -145,7 +145,7 @@ export default function Header() {
         languageMenu: "Select language",
       }
     : {
-        links: [["Projetos", "#projetos"], ["Stack", "#sobre"], ["Trajetória", "#trajetoria"], ["GitHub", "#github"], ["Posts", "/posts"], ["Contato", "#contato"]] as const,
+        links: [["Projetos", "#projetos"], ["Stack", "#sobre"], ["Trajetória", "#trajetoria"], ["GitHub", "#github"], ["Contato", "#contato"]] as const,
         navigation: "Navegação principal",
         home: "Luan Ibanhez, início",
         openMenu: "Abrir menu",

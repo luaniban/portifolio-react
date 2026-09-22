@@ -1,5 +1,0 @@
-Desenvolvi um chat bot integrado ao sistema de chamados da Prefeitura, pensado para que os usuários possam relatar problemas específicos que não estão nos chamados. Ao iniciar um novo chat, o usuário é recebido por um bot que é representando de forma estilizada um dos funcionários da equipe de Informática Educativa escolhido aleatóriamente. Essa abordagem torna a experiência mais humanizada e próxima, dando a sensação de atendimento real.
-
-No chat, o bot guia o usuário para detalhar o problema, filtrando as informações necessárias e respondendo de forma dinâmica. Para tornar a interação mais natural, utilizei Alpine.js para criar o efeito de “digitando”, mostrando primeiro os três pontos e depois exibindo a mensagem do bot, e JavaScript para que a conversa faça o scroll automaticamente para baixo, garantindo que o usuário veja sempre a última mensagem.
-
-Na implementação, usei Laravel e Livewire no backend e Tailwind CSS, JS e Alpine.js no frontend. O sistema já está preparado para um futuro chat em tempo real, permitindo que, após o bot filtrar o problema, o usuário possa conversar diretamente com um funcionário pelo próprio chat.
