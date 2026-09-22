@@ -134,14 +134,14 @@ const trajetoria: PlacaTrajetoria[] = [
   },
 ];
 
-// Onde cada placa fica, em % da arte: duas fileiras à direita da placa
-// "Trajetória", lidas da esquerda para a direita, entre o platô do "Sobre mim"
-// e as placas de "Meus commits" e "GitHub". A altura sai do aspect-ratio.
+// Onde cada placa fica, em % da arte: uma em pé em cada um dos quatro platôs
+// que descem à direita da escada, com os pés (97% da altura da placa) a 1,1%
+// abaixo da borda de trás da grama. A altura sai do aspect-ratio.
 const placas = [
-  { left: "51%", top: "53.4%" },
-  { left: "75%", top: "53.4%" },
-  { left: "51%", top: "62.4%" },
-  { left: "75%", top: "62.4%" },
+  { left: "40.72%", top: "53.23%" },
+  { left: "46.72%", top: "62.05%" },
+  { left: "50.92%", top: "71.54%" },
+  { left: "47.46%", top: "81.24%" },
 ];
 
 // A arte da montanha é o site inteiro. Por enquanto só ela e o mascote: o
