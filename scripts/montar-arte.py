@@ -3,6 +3,8 @@
 As peças que faltam são preenchidas com a arte antiga, reescalada. Em cada
 emenda vertical o tom é casado linha a linha: o degrau entre duas peças muda
 conforme o conteúdo (céu, rocha, madeira), então uma correção única deixa marca.
+
+Uso: python3 scripts/montar-arte.py [saída] [pasta das peças] [arte de reserva]
 """
 import os
 import sys
@@ -11,9 +13,9 @@ import numpy as np
 from PIL import Image
 from scipy.ndimage import gaussian_filter1d
 
-PECAS = os.path.expanduser("~/Downloads/partes-refeitas-v2")
-ANTIGA = "public/montanha-fundo.png"
 SAIDA = sys.argv[1] if len(sys.argv) > 1 else "public/montanha-v3.png"
+PECAS = os.path.expanduser(sys.argv[2] if len(sys.argv) > 2 else "~/Downloads/partes-refeitas-v2")
+ANTIGA = os.path.expanduser(sys.argv[3] if len(sys.argv) > 3 else "public/montanha-fundo.png")
 LARGURA, ALTURA_LINHA, LINHAS = 2048, 1536, 4
 
 
