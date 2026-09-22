@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
@@ -268,13 +267,17 @@ export default function Header() {
           onClick={(event) => scrollToSection(event, "#inicio")}
         >
           <span className="logo-image">
-            <Image
+            {/* Versões já recortadas (scripts/gerar-logo.py): o navegador escolhe
+                pela densidade da tela, e o logo segue nítido com zoom. */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- srcset das versões próprias */}
+            <img
               className="brand-avatar"
-              src="/avatar-logo.png"
+              src="/avatar-logo-64.webp"
+              srcSet="/avatar-logo-64.webp 64w, /avatar-logo-128.webp 128w, /avatar-logo-256.webp 256w, /avatar-logo-384.webp 384w"
+              sizes="32px"
               alt=""
-              width={64}
-              height={64}
-              priority
+              width={32}
+              height={32}
             />
           </span>
           <span className="logo-name"></span>
