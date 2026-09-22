@@ -785,9 +785,9 @@ main {
   width: 100%;
   height: auto;
   /* zoom por pose, a partir da base: deitado na grama, cresce para cima */
-  transform: scale(var(--pose-zoom, 1));
+  transform: scale(min(var(--pose-zoom, 1), var(--zoom-limite, 100)));
   transform-origin: center bottom;
-  animation: mascot-pose-in 180ms ease-out both;
+  animation: mascot-pose-in 200ms ease-in both;
 }
 
 /* o trajeto não aparece: o SVG só existe para o mascote medir a queda */
@@ -807,10 +807,12 @@ main {
   stroke: none;
 }
 
+/* entrada de cada pose; no pouso, --queda faz a pose deitada cair dos pés
+   até o fundo do campo */
 @keyframes mascot-pose-in {
   from {
     opacity: 0;
-    transform: translateY(-5px) scale(calc(var(--pose-zoom, 1) * 0.98));
+    transform: translateY(var(--queda, -5px)) scale(calc(min(var(--pose-zoom, 1), var(--zoom-limite, 100)) * 0.98));
   }
 }
 

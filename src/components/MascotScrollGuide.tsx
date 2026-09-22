@@ -13,6 +13,9 @@ type MascotScrollStep = {
   // Zoom só da imagem, sem interpolar com a pose vizinha: iguala o tamanho do
   // boneco quando o desenho ocupa o quadro de um jeito diferente das outras.
   zoom?: number;
+  // Pose de pouso: não entra pela rolagem, e sim quando os pés do mascote
+  // chegam na linha da grama ([data-mascot-chao]).
+  pouso?: boolean;
 };
 
 export const mascotScrollSteps: MascotScrollStep[] = [
@@ -63,7 +66,7 @@ export const mascotScrollSteps: MascotScrollStep[] = [
   },
   {
     start: 0.82,
-    end: 0.96,
+    end: 1,
     src: "/mascote-poses-caindo/06-estabilizando.png",
     width: 1023,
     height: 1538,
@@ -71,11 +74,11 @@ export const mascotScrollSteps: MascotScrollStep[] = [
     scale: 1,
   },
   {
-    // pouso: de cara na grama, só nos últimos 4% da rolagem. Deitado, o boneco
+    // pouso: de cara na grama, quando os pés tocam o chão. Deitado, o boneco
     // sai ~35% menor que nas outras poses (medido pelas pupilas); o zoom de
     // 1,55 iguala à pose 06. A escala fica igual à da 06 para ela não crescer
     // aos poucos antes do pouso.
-    start: 0.96,
+    start: 1,
     end: 1,
     src: "/mascote-poses-caindo/07-de-cara-na-grama.png",
     width: 1378,
@@ -83,8 +86,22 @@ export const mascotScrollSteps: MascotScrollStep[] = [
     rotate: 0,
     scale: 1,
     zoom: 1.55,
+    pouso: true,
   },
 ];
+
+const posesDaQueda = mascotScrollSteps.filter(({ pouso }) => !pouso);
+const indicePouso = mascotScrollSteps.findIndex(({ pouso }) => pouso);
+
+// Pés em relação ao centro do mascote, na pose de pé (quadro 1:1,5), em
+// proporção da largura. Fixo de propósito: medir pelo quadro da pose atual faria
+// a troca para a pose deitada (quadro mais baixo) desfazer o próprio pouso.
+const PES_ABAIXO_DO_CENTRO = 0.68;
+
+// Altura do topo do desenho da pose deitada até a base do quadro, em proporção
+// da largura (o desenho começa na linha 136 de uma imagem 1378x1142; a margem
+// transparente de baixo conta, porque o zoom cresce a partir da base do quadro).
+const DESENHO_DEITADO_POR_LARGURA = (1142 - 136) / 1378;
 
 // Trajeto em coordenadas normalizadas (0–100): ponto inicial + curvas cúbicas.
 const TRAIL_START: [number, number] = [78, 5];
@@ -175,6 +192,9 @@ export default function MascotScrollGuide() {
     let trailWidth = 0;
     let trailHeight = 0;
     let samples: { x: number; y: number }[] = [];
+    // Onde ele pousou, em coordenadas da página: depois do pouso ele fica preso
+    // ali, em vez de seguir deslizando pela grama com a rolagem.
+    let pousoFixo: { x: number; baseNaPagina: number } | null = null;
 
     // Ponto de partida: a sola do pé em cima de [data-mascot-start] (o pico da
     // montanha). Descontamos do centro do quadro o vetor até o pé, já girado e
@@ -252,10 +272,10 @@ export default function MascotScrollGuide() {
 
       const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
       const progress = clamp(window.scrollY / maxScroll, 0, 1);
-      const stepIndex = mascotScrollSteps.findIndex(({ end }) => progress < end);
-      const safeStepIndex = stepIndex < 0 ? mascotScrollSteps.length - 1 : stepIndex;
-      const step = mascotScrollSteps[safeStepIndex];
-      const nextStep = mascotScrollSteps[Math.min(safeStepIndex + 1, mascotScrollSteps.length - 1)];
+      const stepIndex = posesDaQueda.findIndex(({ end }) => progress < end);
+      const quedaIndex = stepIndex < 0 ? posesDaQueda.length - 1 : stepIndex;
+      const step = posesDaQueda[quedaIndex];
+      const nextStep = posesDaQueda[Math.min(quedaIndex + 1, posesDaQueda.length - 1)];
       const localProgress = clamp((progress - step.start) / Math.max(step.end - step.start, 0.001), 0, 1);
       const easedProgress = localProgress * localProgress * (3 - 2 * localProgress);
 
@@ -271,14 +291,54 @@ export default function MascotScrollGuide() {
       const rotate = interpolate(step.rotate, nextStep.rotate, easedProgress);
       const scale = interpolate(step.scale, nextStep.scale, easedProgress);
 
-      guide.style.setProperty("--mascot-x", `${x}px`);
-      guide.style.setProperty("--mascot-y", `${y}px`);
-      guide.style.setProperty("--mascot-rotate", `${rotate}deg`);
-      guide.style.setProperty("--mascot-scale", String(scale));
+      // Pousou quando os pés passam da linha da grama.
+      const chao = document.querySelector<HTMLElement>("[data-mascot-chao]");
+      const pes = y + guide.offsetWidth * PES_ABAIXO_DO_CENTRO * scale;
+      // No celular os pés não chegam à grama antes da rolagem acabar: no fim da
+      // página ele pousa de qualquer jeito, caindo até o campo.
+      const noFim = window.scrollY >= maxScroll - 2;
+      const pousou = indicePouso >= 0 && !!chao && (pes >= chao.getBoundingClientRect().top || noFim);
+      const pose = pousou ? indicePouso : mascotScrollSteps.indexOf(step);
+      const poseAtual = mascotScrollSteps[pose];
 
-      if (safeStepIndex !== currentPose) {
-        currentPose = safeStepIndex;
-        setActivePose(safeStepIndex);
+      let posX = x;
+      let posY = y;
+      if (pousou) {
+        if (!pousoFixo) {
+          // Deitado, ele ocupa quase toda a faixa de grama que sobra embaixo da
+          // placa: a base vai para o fundo do campo ([data-mascot-base]), e não
+          // para onde estavam os pés, que o deixaria em cima da placa. A
+          // diferença vira uma queda curta na entrada da pose (--queda).
+          const fundo = document.querySelector<HTMLElement>("[data-mascot-base]");
+          const base = fundo ? fundo.getBoundingClientRect().bottom - guide.offsetWidth * 0.1 : pes;
+          pousoFixo = { x, baseNaPagina: base + window.scrollY };
+          guide.style.setProperty("--queda", `${Math.min(pes - base, 0)}px`);
+
+          // O zoom da pose deitada não pode passar da altura do campo: em telas
+          // em que o mascote fica no tamanho mínimo, ele subiria na placa.
+          if (chao) {
+            const campo = base - chao.getBoundingClientRect().top - 6;
+            const desenhoSemZoom = guide.offsetWidth * DESENHO_DEITADO_POR_LARGURA;
+            guide.style.setProperty("--zoom-limite", String(Math.max(campo / desenhoSemZoom, 0.6)));
+          }
+        }
+        const meiaAltura = (guide.offsetWidth * poseAtual.height) / poseAtual.width / 2;
+        posX = pousoFixo.x;
+        posY = pousoFixo.baseNaPagina - window.scrollY - meiaAltura;
+      } else if (pousoFixo) {
+        pousoFixo = null;
+        guide.style.removeProperty("--queda");
+        guide.style.removeProperty("--zoom-limite");
+      }
+
+      guide.style.setProperty("--mascot-x", `${posX}px`);
+      guide.style.setProperty("--mascot-y", `${posY}px`);
+      guide.style.setProperty("--mascot-rotate", `${pousou ? poseAtual.rotate : rotate}deg`);
+      guide.style.setProperty("--mascot-scale", String(pousou ? poseAtual.scale : scale));
+
+      if (pose !== currentPose) {
+        currentPose = pose;
+        setActivePose(pose);
       }
     };
 
@@ -287,6 +347,7 @@ export default function MascotScrollGuide() {
     };
 
     const resizeObserver = new ResizeObserver(() => {
+      pousoFixo = null;
       rebuildTrail();
       requestUpdate();
     });

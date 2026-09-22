@@ -158,7 +158,7 @@ export default function Home() {
         {/* A moldura (.mapa) mostra a arte só até a metade do campo de grama;
             a cena por dentro segue do tamanho da arte inteira, e todas as
             posições em % continuam valendo. */}
-        <div className="mapa">
+        <div className="mapa" data-mascot-base>
           <div className="mapa-cena">
             <Image className="mapa-arte" src="/montanha-v6.png" alt="" fill sizes="100vw" priority />
             <h1 className="mapa-titulo">
@@ -171,7 +171,7 @@ export default function Home() {
               />
             </h1>
             <span className="mapa-pico" data-mascot-start aria-hidden="true" />
-            <span className="mapa-chao" data-neblina-fim aria-hidden="true" />
+            <span className="mapa-chao" data-neblina-fim data-mascot-chao aria-hidden="true" />
             {projetos.map((projeto, indice) => (
               <Nicho key={projeto.titulo} projeto={projeto} posicao={telas[indice]} />
             ))}
