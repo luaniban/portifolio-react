@@ -28,7 +28,7 @@
   /* ritmo */
   --header-height: 64px;
   --section-space: clamp(3.5rem, 7vw, 5rem);
-  /* a troca de tema: o sol, a lua e a arte andam juntos */
+  /* a troca de tema: o sol e a lua, a arte e o header andam juntos */
   --troca-de-tema: 0.9s;
 
   /* elevação: só para o que flutua ou se sobrepõe */
@@ -169,9 +169,55 @@ a {
 /* ================================================================
    HEADER
    ================================================================ */
-/* O header tem o azul do céu da arte (#021a49) nos dois temas: a arte não
-   muda com o tema. Os tokens são redefinidos aqui para que botões, menu de
-   idioma e menu mobile acompanhem sem regras próprias. */
+/* O header tem a cor do topo do céu da arte: o azul da noite no tema escuro e
+   o azul do dia no claro. Os tokens são redefinidos aqui para que botões,
+   menu de idioma e menu mobile acompanhem sem regras próprias. */
+
+/* Registradas como cor, as variáveis do header transitam elas mesmas na troca
+   de tema, e tudo o que as usa muda junto com o fundo - sem isso o texto
+   escurecia de uma vez enquanto o fundo ainda clareava, e sumia no meio. */
+@property --bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --surface-subtle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --line {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --line-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --text {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: black;
+}
+
+@property --muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: black;
+}
+
 .site-header {
   color-scheme: dark;
   --bg: #021a49;
@@ -195,7 +241,32 @@ a {
   border-bottom: 1px solid transparent;
   background: var(--bg);
   color: var(--text);
-  transition: border-color 200ms ease;
+  transition:
+    border-color 200ms ease,
+    --bg var(--troca-de-tema) ease,
+    --surface var(--troca-de-tema) ease,
+    --surface-subtle var(--troca-de-tema) ease,
+    --line var(--troca-de-tema) ease,
+    --line-strong var(--troca-de-tema) ease,
+    --text var(--troca-de-tema) ease,
+    --muted var(--troca-de-tema) ease;
+}
+
+/* o dia: o topo do céu da arte de dia (scripts/gerar-montanha-dia.py), com o
+   texto em azul-marinho - o branco ficava abaixo do contraste mínimo nesse
+   azul (links 4,7:1 e texto 5,8:1 sobre ele) */
+html[data-theme="light"] .site-header {
+  color-scheme: light;
+  --bg: #4aa3e8;
+  --surface: #e4f2fd;
+  --surface-subtle: #6db5ed;
+  --line: #3b92d6;
+  --line-strong: #2c7cc0;
+  --text: #0a2147;
+  --muted: #0f3063;
+  --faint: #1f4f8a;
+  --brand: #0b2f66;
+  --shadow-float: 0 14px 30px -14px rgba(6, 33, 71, 0.45);
 }
 
 .site-header.is-scrolled {
@@ -992,6 +1063,12 @@ html[data-theme="light"] .mapa-astro-lua {
   main {
     padding-top: calc(var(--header-height) + 64px);
     background: #021b48;
+    transition: background-color var(--troca-de-tema) ease;
+  }
+
+  /* o topo do céu da arte de dia (scripts/gerar-montanha-dia.py) */
+  html[data-theme="light"] main {
+    background: #4aa3e8;
   }
 
   /* aqui o mascote é proporcionalmente maior e fica em pé no pico, no canto
