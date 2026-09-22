@@ -162,7 +162,7 @@ export default function Home() {
               src="/titulo-luan-ibanhez.png"
               alt="Olá, eu sou o Luan Ibanhez, Desenvolvedor Full Stack"
               fill
-              sizes="48vw"
+              sizes="(max-width: 640px) 61vw, 54vw"
               priority
             />
           </h1>

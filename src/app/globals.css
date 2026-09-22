@@ -455,16 +455,16 @@ main {
   object-fit: cover;
 }
 
-/* título no céu, entre a lua (16,6–23,7% da largura, 4,8–7,5% da altura) e o
-   mascote no cume. A nuvem de cima fica ao lado da lua e a parte larga logo
-   abaixo dela; medido para não encostar na lua, no mascote nem na montanha
-   de 641 a 2560 px, com a base inteira na primeira tela a partir de 1280×720. */
+/* título no alto do céu, entre a lua (16,6–23,7% da largura) e o mascote no
+   cume. A largura é a maior que cabe nessa altura sem encostar na lua nem no
+   mascote de 641 a 2560 px; o limite vem das telas de 900 a 1100 px, onde o
+   mascote é proporcionalmente maior. */
 .mapa-titulo {
   position: absolute;
   z-index: 2;
-  left: 20%;
-  top: 4.4%;
-  width: 59%;
+  left: 22%;
+  top: 1.5%;
+  width: 53.5%;
   aspect-ratio: 1999 / 786;
   margin: 0;
 }
