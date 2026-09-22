@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import MascotScrollGuide from "../components/MascotScrollGuide";
 import Neblina from "../components/Neblina";
 import Nicho, { type Projeto } from "../components/Nicho";
+import Placa, { type PlacaTrajetoria } from "../components/Placa";
 import SiteFooter from "../components/SiteFooter";
 
 // Destinos dos links do header, em % da altura da arte: logo acima de cada
@@ -10,7 +11,7 @@ import SiteFooter from "../components/SiteFooter";
 const ancoras = [
   { id: "projetos", top: "20.8%" },
   { id: "sobre", top: "45.4%" },
-  { id: "trajetoria", top: "58.6%" },
+  { id: "trajetoria", top: "53%" },
   { id: "github", top: "70.2%" },
   { id: "contato", top: "80%" },
 ];
@@ -102,6 +103,47 @@ const telas = [
   { left: "56.15%", top: "41.05%", width: "20.65%", height: "3.21%" },
 ];
 
+// As placas da trajetória, em ordem cronológica. O texto está desenhado na
+// arte de cada placa (public/trajetoria, preparadas por scripts/gerar-placas.py);
+// aqui ele vai inteiro para o alt. Os cortes foram medidos por pixel nas
+// emendas das tábuas; se a arte de uma placa mudar, é aqui que se ajusta.
+const trajetoria: PlacaTrajetoria[] = [
+  {
+    imagem: "placa-tec-informatica-1",
+    texto:
+      "Fev 2021 a Dez 2023. Técnico em Informática integrado ao Ensino Médio, Instituto Federal de São Paulo (IFSP). Base sólida em lógica, programação e infraestrutura, onde nasceu o gosto por transformar ideias em software.",
+    cortes: [7.28, 19.97, 38.97, 50.28, 64.67],
+  },
+  {
+    imagem: "placa-tecnologoads-2",
+    texto:
+      "Fev 2024 até hoje. Tecnólogo em Análise e Desenvolvimento de Sistemas, Instituto Federal de São Paulo (IFSP). Graduação em andamento com foco em engenharia de software, banco de dados e desenvolvimento de aplicações.",
+    cortes: [2.43, 13.58, 32.17, 42.44, 61.6],
+  },
+  {
+    imagem: "placa-estagiario-3",
+    texto:
+      "Out 2024 até hoje. Estagiário em Desenvolvimento Full Stack PHP, Secretaria de Educação, Prefeitura de Caraguatatuba. Desenvolvo e mantenho aplicações web em PHP 7/8 e Laravel usadas pelas equipes da Secretaria: APIs RESTful, autenticação com Sanctum, MySQL com Eloquent, deploys e CI/CD.",
+    cortes: [1.54, 14.96, 33.87, 49.07, 68.8],
+  },
+  {
+    imagem: "placa-palestrante-4",
+    texto:
+      "2026. Palestrante e Instrutor de Tecnologia, IFSP Caraguatatuba, Extensão. Ministrei cursos certificados de HTML, Tailwind CSS, PHP, Laravel, MVC, desenvolvimento backend e APIs.",
+    cortes: [0.08, 11.56, 32.42, 44.54, 63.06],
+  },
+];
+
+// Onde cada placa fica, em % da arte: duas fileiras à direita da placa
+// "Trajetória", lidas da esquerda para a direita, entre o platô do "Sobre mim"
+// e as placas de "Meus commits" e "GitHub". A altura sai do aspect-ratio.
+const placas = [
+  { left: "51%", top: "53.4%" },
+  { left: "75%", top: "53.4%" },
+  { left: "51%", top: "62.4%" },
+  { left: "75%", top: "62.4%" },
+];
+
 // A arte da montanha é o site inteiro. Por enquanto só ela e o mascote: o
 // conteúdo entra depois, encaixado nos vãos e nas placas.
 export default function Home() {
@@ -129,6 +171,11 @@ export default function Home() {
           {projetos.map((projeto, indice) => (
             <Nicho key={projeto.titulo} projeto={projeto} posicao={telas[indice]} />
           ))}
+          <ol className="trajetoria" aria-label="Trajetória">
+            {trajetoria.map((placa, indice) => (
+              <Placa key={placa.imagem} placa={placa} posicao={placas[indice]} />
+            ))}
+          </ol>
           {ancoras.map(({ id, top }) => (
             <span key={id} id={id} className="mapa-ancora" style={{ top }} aria-hidden="true" />
           ))}
