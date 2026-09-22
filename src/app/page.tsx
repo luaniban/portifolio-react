@@ -161,15 +161,21 @@ export default function Home() {
         <div className="mapa" data-mascot-base>
           <div className="mapa-cena">
             {/* noite e dia: a mesma arte, recolorida por scripts/gerar-montanha-dia.py.
-                O CSS mostra a do tema (o sol no cabeçalho). */}
+                O CSS mostra a do tema (o sol no cabeçalho), com uma transição. */}
             <Image className="mapa-arte mapa-arte-noite" src="/montanha-v8.png" alt="" fill sizes="100vw" priority />
             <Image className="mapa-arte mapa-arte-dia" src="/montanha-v8-dia.png" alt="" fill sizes="100vw" />
+            {/* o sol e a lua, à esquerda do título: o CSS mostra o do tema e anima
+                a troca. Vêm antes do título para passar por trás das nuvens dele. */}
+            <span className="mapa-astro" aria-hidden="true">
+              <Image className="mapa-astro-sol" src="/astro-sol.png" alt="" fill sizes="(max-width: 640px) 11vw, 12vw" />
+              <Image className="mapa-astro-lua" src="/astro-lua.png" alt="" fill sizes="(max-width: 640px) 11vw, 12vw" />
+            </span>
             <h1 className="mapa-titulo">
               <Image
                 src="/titulo-luan-ibanhez.png"
                 alt="Olá, eu sou o Luan Ibanhez, Desenvolvedor Full Stack"
                 fill
-                sizes="(max-width: 640px) 66vw, 54vw"
+                sizes="(max-width: 640px) 57vw, 54vw"
                 priority
               />
             </h1>

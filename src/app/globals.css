@@ -28,6 +28,8 @@
   /* ritmo */
   --header-height: 64px;
   --section-space: clamp(3.5rem, 7vw, 5rem);
+  /* a troca de tema: o sol, a lua e a arte andam juntos */
+  --troca-de-tema: 0.9s;
 
   /* elevação: só para o que flutua ou se sobrepõe */
   --shadow-overlap: 0 14px 32px -20px rgba(20, 25, 40, 0.4);
@@ -474,19 +476,85 @@ main {
 /* A arte de dia só existe no tema claro: fora dele fica fora da página, e o
    navegador nem a baixa (é lazy). No tema claro ela cobre a de noite, que
    continua embaixo - assim, ao trocar pelo sol, a noite segura a tela até o
-   dia terminar de carregar, em vez de sobrar um buraco. */
+   dia terminar de carregar, em vez de sobrar um buraco. A troca é um
+   esmaecimento no ritmo do sol e da lua; o display entra na transição para
+   a arte só sair da página depois de sumir. */
 .mapa-arte-dia {
   display: none;
+  opacity: 0;
+  transition:
+    opacity var(--troca-de-tema) ease,
+    display var(--troca-de-tema) allow-discrete;
 }
 
 html[data-theme="light"] .mapa-arte-dia {
   display: block;
+  opacity: 1;
 }
 
-/* título no alto do céu, entre a lua (16,6–23,7% da largura) e o mascote no
-   cume. A largura é a maior que cabe nessa altura sem encostar na lua nem no
-   mascote de 641 a 2560 px; o limite vem das telas de 900 a 1100 px, onde o
-   mascote é proporcionalmente maior. */
+@starting-style {
+  html[data-theme="light"] .mapa-arte-dia {
+    opacity: 0;
+  }
+}
+
+/* o sol e a lua, à esquerda do título e na altura do nome, mostram o tema.
+   Na troca os dois giram num arco em volta de um eixo abaixo deles, como um
+   dia passando: o que sai se põe de um lado e o que entra nasce do outro,
+   por trás das nuvens do título. */
+.mapa-astro {
+  position: absolute;
+  z-index: 2;
+  left: 8.5%;
+  top: 2.75%;
+  width: 12%;
+  aspect-ratio: 1;
+}
+
+/* o que entra só aparece depois de começar a subir */
+.mapa-astro img {
+  object-fit: contain;
+  transform-origin: 50% 190%;
+  transition:
+    transform var(--troca-de-tema) cubic-bezier(0.65, 0, 0.35, 1),
+    opacity calc(var(--troca-de-tema) * 0.6) ease-out calc(var(--troca-de-tema) * 0.25);
+}
+
+/* o que sai some na primeira metade do arco: esmaecendo devagar sobre o céu
+   escuro, o sol virava uma estrela cinza no caminho */
+html:not([data-theme="light"]) .mapa-astro-sol,
+html[data-theme="light"] .mapa-astro-lua {
+  opacity: 0;
+  transition-duration: var(--troca-de-tema), calc(var(--troca-de-tema) * 0.45);
+  transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1), ease-in;
+  transition-delay: 0s;
+}
+
+/* no escuro o sol se pôs à esquerda; no claro a lua se pôs à direita */
+html:not([data-theme="light"]) .mapa-astro-sol {
+  transform: rotate(-70deg) scale(0.6);
+}
+
+html[data-theme="light"] .mapa-astro-lua {
+  transform: rotate(70deg) scale(0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* sem o arco: só um esmaecimento curto */
+  :root {
+    --troca-de-tema: 0.3s;
+  }
+
+  html:not([data-theme="light"]) .mapa-astro-sol,
+  html[data-theme="light"] .mapa-astro-lua {
+    transform: none;
+  }
+}
+
+/* título no alto do céu, entre o sol/a lua e o mascote no cume. A largura é
+   a maior que cabe nessa altura sem encostar no mascote de 641 a 2560 px; o
+   limite vem das telas de 900 a 1100 px, onde o mascote é proporcionalmente
+   maior. */
 .mapa-titulo {
   position: absolute;
   z-index: 2;
@@ -927,11 +995,18 @@ html[data-theme="light"] .mapa-arte-dia {
   }
 
   /* aqui o mascote é proporcionalmente maior e fica em pé no pico, no canto
-     direito do céu: o título vai para a esquerda e pode passar por cima da lua */
+     direito do céu: o título encolhe um pouco para caber entre ele e o
+     sol/a lua, que ficam colados na borda esquerda */
   .mapa-titulo {
-    left: 1.5%;
+    left: 12%;
     top: 1.8%;
-    width: 66%;
+    width: 57%;
+  }
+
+  .mapa-astro {
+    left: 1%;
+    top: 3.5%;
+    width: 10.5%;
   }
 
   /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos
