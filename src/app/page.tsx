@@ -9,11 +9,11 @@ import SiteFooter from "../components/SiteFooter";
 // Destinos dos links do header, em % da altura da arte: logo acima de cada
 // placa (medidas pela cor da madeira). Se a arte mudar, é aqui que se ajusta.
 const ancoras = [
-  { id: "projetos", top: "20.8%" },
-  { id: "sobre", top: "45.4%" },
-  { id: "trajetoria", top: "53%" },
+  { id: "projetos", top: "23.5%" },
+  { id: "sobre", top: "44.5%" },
+  { id: "trajetoria", top: "46.3%" },
   { id: "github", top: "70.2%" },
-  { id: "contato", top: "80%" },
+  { id: "contato", top: "88%" },
 ];
 
 // Os oito projetos, um por nicho, na ordem das fileiras (esquerda, direita).
@@ -93,14 +93,14 @@ const projetos: Projeto[] = [
 // a abertura escura menos uma folga nas laterais e no topo, e a base termina
 // 12 px (de arte) acima das pedrinhas dos cantos, para elas ficarem à mostra.
 const telas = [
-  { left: "28.81%", top: "25.72%", width: "19.43%", height: "2.99%" },
-  { left: "55.91%", top: "25.72%", width: "19.73%", height: "3.01%" },
-  { left: "28.61%", top: "30.75%", width: "19.63%", height: "3.09%" },
-  { left: "56.15%", top: "30.75%", width: "19.97%", height: "3.09%" },
-  { left: "28.61%", top: "35.94%", width: "19.68%", height: "2.99%" },
-  { left: "56.15%", top: "35.92%", width: "20.26%", height: "3.03%" },
-  { left: "28.71%", top: "41.05%", width: "19.63%", height: "3.19%" },
-  { left: "56.15%", top: "41.05%", width: "20.65%", height: "3.21%" },
+  { left: "27.44%", top: "26.37%", width: "18.02%", height: "2.80%" },
+  { left: "52.44%", top: "26.55%", width: "18.21%", height: "2.99%" },
+  { left: "27.34%", top: "31.01%", width: "18.07%", height: "2.99%" },
+  { left: "52.44%", top: "31.22%", width: "18.46%", height: "3.34%" },
+  { left: "27.34%", top: "36.00%", width: "18.02%", height: "3.08%" },
+  { left: "52.39%", top: "36.30%", width: "18.41%", height: "3.14%" },
+  { left: "27.29%", top: "41.03%", width: "18.07%", height: "3.17%" },
+  { left: "52.34%", top: "41.23%", width: "18.41%", height: "3.12%" },
 ];
 
 // As placas da trajetória, em ordem cronológica. O texto está desenhado na
@@ -160,7 +160,7 @@ export default function Home() {
             posições em % continuam valendo. */}
         <div className="mapa" data-mascot-base>
           <div className="mapa-cena">
-            <Image className="mapa-arte" src="/montanha-v6.png" alt="" fill sizes="100vw" priority />
+            <Image className="mapa-arte" src="/montanha-v7.png" alt="" fill sizes="100vw" priority />
             <h1 className="mapa-titulo">
               <Image
                 src="/titulo-luan-ibanhez.png"

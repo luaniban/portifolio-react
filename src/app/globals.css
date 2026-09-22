@@ -444,12 +444,13 @@ main {
    encaixados nela. Tudo é medido em % da imagem, e os textos usam vw
    para acompanhar a escala da arte.
    ================================================================ */
-/* a moldura corta a arte na metade do campo de grama (94,29% da altura),
-   para o site terminar logo depois da placa Contato */
+/* a moldura mostra a arte inteira: nesta montanha o campo de grama é só a
+   faixa de baixo (a partir de 95,12%), do tamanho que antes sobrava depois
+   do corte */
 .mapa {
   position: relative;
   width: 100%;
-  aspect-ratio: 2048 / 5793;
+  aspect-ratio: 2048 / 6144;
   /* clip, e não hidden: com hidden a moldura vira um contêiner rolável, e o
      scrollIntoView dos links do header rolava a arte por dentro dela; a roda
      do mouse não desfaz isso e o pico ficava escondido */
@@ -491,8 +492,8 @@ main {
 /* o pico, de onde o mascote cai */
 .mapa-pico {
   position: absolute;
-  left: 83.74%;
-  top: 7.58%;
+  left: 81.84%;
+  top: 6.98%;
   width: 1px;
   height: 1px;
 }
@@ -713,7 +714,7 @@ main {
 .mapa-chao {
   position: absolute;
   left: 0;
-  top: 88.57%;
+  top: 95.12%;
   width: 100%;
   height: 1px;
 }
