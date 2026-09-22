@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 type MascotScrollStep = {
@@ -135,6 +134,21 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 const interpolate = (from: number, to: number, progress: number) => from + (to - from) * progress;
 const maxScale = Math.max(...mascotScrollSteps.map(({ scale }) => scale));
 
+// Versões web das poses (scripts/gerar-mascote.py). O tamanho pedido ao
+// navegador é o do quadro vezes a maior escala e o zoom da pose: é assim que o
+// mascote aparece, e em telas 2x a imagem não precisa ser esticada.
+const POSE_WIDTHS = [240, 400, 640];
+
+const poseUrl = (src: string, width: number) =>
+  src.replace("/mascote-poses-caindo/", "/mascote-poses-caindo/web/").replace(/\.png$/, `-${width}.webp`);
+
+const poseSrcSet = (src: string) => POSE_WIDTHS.map((width) => `${poseUrl(src, width)} ${width}w`).join(", ");
+
+const poseSizes = ({ zoom = 1 }: MascotScrollStep) => {
+  const factor = (maxScale * zoom).toFixed(2);
+  return `(max-width: 640px) calc(88px * ${factor}), (max-width: 1100px) calc(140px * ${factor}), calc(184px * ${factor})`;
+};
+
 export default function MascotScrollGuide() {
   const guideRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<SVGSVGElement>(null);
@@ -147,9 +161,11 @@ export default function MascotScrollGuide() {
     const path = pathRef.current;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    mascotScrollSteps.forEach(({ src }) => {
+    // Pré-carrega a mesma versão que o <img> vai escolher para cada pose.
+    mascotScrollSteps.forEach((step) => {
       const image = new window.Image();
-      image.src = src;
+      image.sizes = poseSizes(step);
+      image.srcset = poseSrcSet(step.src);
     });
 
     if (!guide || !trail || !path || reducedMotion.matches) return;
@@ -307,16 +323,18 @@ export default function MascotScrollGuide() {
         style={initialStyle}
         aria-hidden="true"
       >
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element -- srcset das poses próprias */}
+        <img
           key={mascotScrollSteps[activePose].src}
           className="mascot-scroll-image"
-          src={mascotScrollSteps[activePose].src}
+          src={poseUrl(mascotScrollSteps[activePose].src, POSE_WIDTHS[1])}
+          srcSet={poseSrcSet(mascotScrollSteps[activePose].src)}
+          sizes={poseSizes(mascotScrollSteps[activePose])}
           alt=""
           width={mascotScrollSteps[activePose].width}
           height={mascotScrollSteps[activePose].height}
-          sizes="(max-width: 640px) 88px, (max-width: 1100px) 140px, 184px"
           style={{ "--pose-zoom": mascotScrollSteps[activePose].zoom ?? 1 } as CSSProperties}
-          priority
+          fetchPriority={activePose === 0 ? "high" : undefined}
         />
       </div>
     </>
