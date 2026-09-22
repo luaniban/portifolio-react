@@ -140,8 +140,8 @@ const trajetoria: PlacaTrajetoria[] = [
 const placas = [
   { left: "40.72%", top: "53.23%" },
   { left: "46.72%", top: "62.05%" },
-  { left: "50.92%", top: "71.54%" },
-  { left: "47.46%", top: "81.24%" },
+  { left: "50.26%", top: "71.52%" },
+  { left: "47.38%", top: "81.24%" },
 ];
 
 // A arte da montanha é o site inteiro. Por enquanto só ela e o mascote: o
@@ -160,7 +160,7 @@ export default function Home() {
             posições em % continuam valendo. */}
         <div className="mapa" data-mascot-base>
           <div className="mapa-cena">
-            <Image className="mapa-arte" src="/montanha-v7.png" alt="" fill sizes="100vw" priority />
+            <Image className="mapa-arte" src="/montanha-v8.png" alt="" fill sizes="100vw" priority />
             <h1 className="mapa-titulo">
               <Image
                 src="/titulo-luan-ibanhez.png"
