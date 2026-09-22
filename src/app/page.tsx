@@ -160,7 +160,10 @@ export default function Home() {
             posições em % continuam valendo. */}
         <div className="mapa" data-mascot-base>
           <div className="mapa-cena">
-            <Image className="mapa-arte" src="/montanha-v8.png" alt="" fill sizes="100vw" priority />
+            {/* noite e dia: a mesma arte, recolorida por scripts/gerar-montanha-dia.py.
+                O CSS mostra a do tema (o sol no cabeçalho). */}
+            <Image className="mapa-arte mapa-arte-noite" src="/montanha-v8.png" alt="" fill sizes="100vw" priority />
+            <Image className="mapa-arte mapa-arte-dia" src="/montanha-v8-dia.png" alt="" fill sizes="100vw" />
             <h1 className="mapa-titulo">
               <Image
                 src="/titulo-luan-ibanhez.png"

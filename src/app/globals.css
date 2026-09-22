@@ -471,6 +471,18 @@ main {
   object-fit: cover;
 }
 
+/* A arte de dia só existe no tema claro: fora dele fica fora da página, e o
+   navegador nem a baixa (é lazy). No tema claro ela cobre a de noite, que
+   continua embaixo - assim, ao trocar pelo sol, a noite segura a tela até o
+   dia terminar de carregar, em vez de sobrar um buraco. */
+.mapa-arte-dia {
+  display: none;
+}
+
+html[data-theme="light"] .mapa-arte-dia {
+  display: block;
+}
+
 /* título no alto do céu, entre a lua (16,6–23,7% da largura) e o mascote no
    cume. A largura é a maior que cabe nessa altura sem encostar na lua nem no
    mascote de 641 a 2560 px; o limite vem das telas de 900 a 1100 px, onde o
