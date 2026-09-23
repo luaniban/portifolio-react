@@ -141,10 +141,29 @@ de_copa *= np.clip((175 - v) / 35, 0, 1) * np.clip((s - 170) / 40, 0, 1)
 peso = (de_copa * azul * fora_nicho)[..., None]
 # a árvore de fundo, mais clara, fica verde mais apagado, como longe
 s_copa = np.minimum(s * 0.8, 200) * np.clip(1.3 - v / 200, 0.5, 1)
-copa = cv2.cvtColor(np.stack([np.full_like(h, 78), s_copa, v * 1.2 + 15], -1).clip(0, 255).astype(np.uint8), cv2.COLOR_HSV2RGB).astype(np.float32)
+# a copa na sombra precisa clarear mais que a copa no sol: escura demais, ela
+# lê como cinza ao lado da pedra clara. O reforço vai sumindo conforme a copa
+# já é clara, para a árvore no sol não estourar.
+v_copa = v * 1.2 + 15
+v_copa = v_copa * (1 + 0.35 * np.clip((120 - v_copa) / 60, 0, 1)) + 22 * np.clip((120 - v_copa) / 60, 0, 1)
+copa = cv2.cvtColor(np.stack([np.full_like(h, 78), s_copa, v_copa], -1).clip(0, 255).astype(np.uint8), cv2.COLOR_HSV2RGB).astype(np.float32)
 dia = dia * (1 - peso) + copa * peso
 fixo = ~(area_ceu | nuvens)
 saida[fixo] = dia[fixo]
+
+# --- repasse: o que sobrou cinza dentro da mata vira folha na sombra. São os
+#     vãos entre os galhos que a regra da copa não alcança; cercados de verde,
+#     eles só podem ser árvore. ---
+hsv_dia = cv2.cvtColor(np.clip(saida, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV).astype(np.float32)
+hd, sd, vd = hsv_dia[..., 0], hsv_dia[..., 1], hsv_dia[..., 2]
+verde_dia = ((hd >= 30) & (hd <= 100) & (sd > 60)).astype(np.float32)
+vizinhanca = cv2.GaussianBlur(verde_dia, (0, 0), 10)
+sobrou = (sd < 55) & (vd > 20) & ~area_ceu & ~nuvens & ~nichos
+peso_sobra = (np.clip((vizinhanca - 0.35) / 0.25, 0, 1) * sobrou)[..., None]
+s_sobra = np.maximum(sd, 90 + 60 * np.clip((vizinhanca - 0.35) / 0.3, 0, 1))
+folha = cv2.cvtColor(np.stack([np.full_like(hd, 80), s_sobra, vd * 0.96], -1).clip(0, 255).astype(np.uint8), cv2.COLOR_HSV2RGB).astype(np.float32)
+saida = saida * (1 - peso_sobra) + folha * peso_sobra
+print(f'copa na sombra reforçada; repasse em {int((peso_sobra > 0.5).sum())} px cinzas cercados de verde')
 
 Image.fromarray(np.clip(saida, 0, 255).astype(np.uint8)).save(destino)
 print('salvo', destino)
