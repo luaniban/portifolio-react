@@ -140,8 +140,8 @@ const trajetoria: PlacaTrajetoria[] = [
 const placas = [
   { left: "40.72%", top: "53.23%" },
   { left: "46.72%", top: "62.05%" },
-  { left: "50.26%", top: "71.52%" },
-  { left: "47.38%", top: "81.24%" },
+  { left: "50.63%", top: "71.56%" },
+  { left: "47.38%", top: "81.26%" },
 ];
 
 // A arte da montanha é o site inteiro. Por enquanto só ela e o mascote: o
@@ -162,8 +162,8 @@ export default function Home() {
           <div className="mapa-cena">
             {/* noite e dia: a mesma arte, recolorida por scripts/gerar-montanha-dia.py.
                 O CSS mostra a do tema (o sol no cabeçalho), com uma transição. */}
-            <Image className="mapa-arte mapa-arte-noite" src="/montanha-v8.png" alt="" fill sizes="100vw" priority />
-            <Image className="mapa-arte mapa-arte-dia" src="/montanha-v8-dia.png" alt="" fill sizes="100vw" />
+            <Image className="mapa-arte mapa-arte-noite" src="/montanha-v9.png" alt="" fill sizes="100vw" priority />
+            <Image className="mapa-arte mapa-arte-dia" src="/montanha-v9-dia.png" alt="" fill sizes="100vw" />
             {/* o sol e a lua, à esquerda do título: o CSS mostra o do tema e anima
                 a troca. Vêm antes do título para passar por trás das nuvens dele. */}
             <span className="mapa-astro" aria-hidden="true">

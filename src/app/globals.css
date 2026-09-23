@@ -518,7 +518,7 @@ main {
    para acompanhar a escala da arte.
    ================================================================ */
 /* a moldura mostra a arte inteira: nesta montanha o campo de grama é só a
-   faixa de baixo (a partir de 95,13%), do tamanho que antes sobrava depois
+   faixa de baixo (a partir de 95,12%), do tamanho que antes sobrava depois
    do corte */
 .mapa {
   position: relative;
@@ -865,7 +865,7 @@ html[data-theme="light"] .mapa-astro-lua {
 .mapa-chao {
   position: absolute;
   left: 0;
-  top: 95.13%;
+  top: 95.12%;
   width: 100%;
   height: 1px;
 }
