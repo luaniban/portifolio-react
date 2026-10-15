@@ -12,6 +12,14 @@
 
 # testing
 /coverage
+/tmp/
+
+# rascunhos e versões intermediárias dos assets gerados
+/public/montanha-preview-*.png
+/public/montanha-noite-site.png
+/public/montanha-noite-site-v2.png
+/public/montanha-noite-site-v3.png
+/public/mascote-poses-sem-fundo-v2/
 
 # next.js
 /.next/
