@@ -517,13 +517,12 @@ main {
    encaixados nela. Tudo é medido em % da imagem, e os textos usam vw
    para acompanhar a escala da arte.
    ================================================================ */
-/* a moldura mostra a arte inteira: nesta montanha o campo de grama é só a
-   faixa de baixo (a partir de 95,12%), do tamanho que antes sobrava depois
-   do corte */
+/* A moldura acompanha a proporção da arte estendida. A fonte tem 2048 px de
+   largura para não perder definição em monitores desktop. */
 .mapa {
   position: relative;
   width: 100%;
-  aspect-ratio: 2048 / 6144;
+  aspect-ratio: 2048 / 8860;
   /* clip, e não hidden: com hidden a moldura vira um contêiner rolável, e o
      scrollIntoView dos links do header rolava a arte por dentro dela; a roda
      do mouse não desfaz isso e o pico ficava escondido */
@@ -537,36 +536,20 @@ main {
   top: 0;
   left: 0;
   width: 100%;
-  aspect-ratio: 2048 / 6144;
+  aspect-ratio: 2048 / 8860;
 }
 
 .mapa-arte {
-  object-fit: cover;
+  object-fit: contain;
+  transition: opacity var(--troca-de-tema) ease;
 }
 
-/* A arte de dia só existe no tema claro: fora dele fica fora da página, e o
-   navegador nem a baixa (é lazy). No tema claro ela cobre a de noite, que
-   continua embaixo - assim, ao trocar pelo sol, a noite segura a tela até o
-   dia terminar de carregar, em vez de sobrar um buraco. A troca é um
-   esmaecimento no ritmo do sol e da lua; o display entra na transição para
-   a arte só sair da página depois de sumir. */
 .mapa-arte-dia {
-  display: none;
   opacity: 0;
-  transition:
-    opacity var(--troca-de-tema) ease,
-    display var(--troca-de-tema) allow-discrete;
 }
 
-html[data-theme="light"] .mapa-arte-dia {
-  display: block;
+html[data-theme="light"] .mapa-arte-dia.is-ready {
   opacity: 1;
-}
-
-@starting-style {
-  html[data-theme="light"] .mapa-arte-dia {
-    opacity: 0;
-  }
 }
 
 /* o sol e a lua, à esquerda do título e na altura do nome, mostram o tema.
@@ -577,7 +560,7 @@ html[data-theme="light"] .mapa-arte-dia {
   position: absolute;
   z-index: 2;
   left: 8.5%;
-  top: 2.75%;
+  top: 1.91%;
   width: 12%;
   aspect-ratio: 1;
 }
@@ -630,7 +613,7 @@ html[data-theme="light"] .mapa-astro-lua {
   position: absolute;
   z-index: 2;
   left: 22%;
-  top: 1.5%;
+  top: 1.04%;
   width: 53.5%;
   aspect-ratio: 1999 / 786;
   margin: 0;
@@ -644,7 +627,7 @@ html[data-theme="light"] .mapa-astro-lua {
 .mapa-pico {
   position: absolute;
   left: 81.84%;
-  top: 6.98%;
+  top: 4.84%;
   width: 1px;
   height: 1px;
 }
@@ -786,13 +769,22 @@ html[data-theme="light"] .mapa-astro-lua {
 .placa {
   position: absolute;
   z-index: 2;
-  /* menor que a placa "Trajetória" (19,5%), que é o título do grupo */
+  /* menor que a placa "Trajetória" (21,5%), que é o título do grupo */
   width: 17%;
-  aspect-ratio: 1063 / 1237;
+  aspect-ratio: 1063 / 1023;
+  transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%)));
+  transform-origin: bottom center;
 }
 
 .placa:hover {
   z-index: 6;
+}
+
+.placa:focus-visible {
+  z-index: 6;
+  outline: none;
+  transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%))) scale(1.55);
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.55));
 }
 
 .placa-arte {
@@ -844,13 +836,373 @@ html[data-theme="light"] .mapa-astro-lua {
   .placa-faixa {
     display: none;
   }
+
+  .placa {
+    cursor: zoom-in;
+    transition: transform 180ms ease, filter 180ms ease;
+  }
+
+  .placa:focus {
+    z-index: 6;
+    outline: none;
+    transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%))) scale(2.15);
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.55));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mapa-arte {
+    transition: none;
+  }
+
   .placa-recorte,
   .placa-faixa:hover .placa-recorte {
     transition: none;
   }
+}
+
+/* O terminal acompanha a trajetória apenas enquanto as placas passam pela
+   tela. A moldura marrom o integra à madeira; por dentro o código mantém o
+   contraste de um editor real. */
+.codigo-trajetoria-track {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.codigo-trajetoria-track .php-evolution {
+  position: sticky;
+  top: calc(var(--header-height) + 24px);
+  pointer-events: auto;
+}
+
+.codigo-trajetoria-mobile,
+.php-evolution.is-compact {
+  display: none;
+}
+
+.code-window {
+  overflow: hidden;
+  border: clamp(3px, 0.35vw, 7px) solid #4b2f2a;
+  border-radius: clamp(6px, 0.7vw, 14px);
+  outline: clamp(1px, 0.12vw, 2px) solid #a9683f;
+  background: var(--code-bg);
+  box-shadow:
+    0 0 0 clamp(2px, 0.2vw, 4px) #281a1b,
+    0 12px 24px rgba(0, 0, 0, 0.42);
+  color: var(--code-text);
+}
+
+.code-window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75em;
+  padding: 0.55em 0.9em;
+  border-bottom: 1px solid var(--code-line);
+  background: var(--code-bar);
+  color: var(--code-muted);
+  font-family: var(--font-mono);
+  font-size: clamp(0.48rem, 0.72vw, 0.8rem);
+}
+
+.code-window-count {
+  color: var(--code-faint);
+}
+
+.code-stage {
+  min-height: 17em;
+  padding: 0.85em 0;
+}
+
+.code-stage-label {
+  margin: 0 1em 0.65em;
+  color: var(--code-keyword);
+  font-family: var(--font-mono);
+  font-size: clamp(0.48rem, 0.72vw, 0.8rem);
+  animation: code-stage-in 280ms ease-out both;
+}
+
+.code-stage pre {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: clamp(0.44rem, 0.68vw, 0.76rem);
+  line-height: 1.65;
+}
+
+.code-stage code {
+  display: block;
+  min-width: 0;
+}
+
+.code-line {
+  display: grid;
+  grid-template-columns: 2.5em minmax(0, 1fr);
+  min-height: 1.65em;
+  padding-right: 0.7em;
+  white-space: pre-wrap;
+  animation: code-line-in 280ms ease-out both;
+}
+
+.code-line > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.code-line-number {
+  padding-right: 0.75em;
+  color: var(--code-faint);
+  text-align: right;
+  user-select: none;
+}
+
+.code-keyword {
+  color: var(--code-keyword);
+}
+
+.code-variable {
+  color: var(--code-variable);
+}
+
+.code-string {
+  color: var(--code-string);
+}
+
+.code-progress {
+  display: grid;
+  gap: 0.35em;
+  margin: 0.8em 0 0;
+  padding: 0.65em 0.75em;
+  border: 2px solid #4b2f2a;
+  border-radius: 6px;
+  background: rgba(20, 25, 40, 0.86);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  list-style: none;
+}
+
+.code-progress li {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--code-muted);
+  font-family: var(--font-mono);
+  font-size: clamp(0.43rem, 0.66vw, 0.74rem);
+  transition: color 200ms ease;
+}
+
+.code-progress li > span {
+  width: 0.5em;
+  height: 0.5em;
+  flex: 0 0 auto;
+  border: 1px solid var(--code-faint);
+  border-radius: 1px;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.code-progress li.is-active {
+  color: var(--code-text);
+}
+
+.code-progress li.is-active > span {
+  border-color: var(--code-string);
+  background: var(--code-string);
+}
+
+@keyframes code-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
+}
+
+@keyframes code-line-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.4em);
+  }
+}
+
+@media (max-width: 860px) {
+  .codigo-trajetoria-track {
+    display: none;
+  }
+
+  .codigo-trajetoria-mobile {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: block;
+    pointer-events: none;
+  }
+
+  .codigo-trajetoria-etapa {
+    position: absolute;
+    transform: translate(-50%, -100%);
+  }
+
+  .php-evolution.is-compact {
+    position: relative;
+    z-index: 1;
+    display: block;
+    pointer-events: auto;
+    transition: transform 180ms ease, filter 180ms ease;
+  }
+
+  .php-evolution.is-compact:focus {
+    z-index: 7;
+    outline: none;
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.55));
+    transform: scale(2.8);
+    transform-origin: right center;
+  }
+
+  .php-evolution.is-compact .code-window {
+    border-width: 2px;
+    border-radius: 4px;
+    outline-width: 1px;
+    box-shadow: 0 0 0 1px #281a1b, 0 5px 10px rgba(0, 0, 0, 0.35);
+  }
+
+  .php-evolution.is-compact .code-window-bar,
+  .php-evolution.is-compact .code-stage-label {
+    font-size: clamp(0.32rem, 1.1vw, 0.52rem);
+  }
+
+  .php-evolution.is-compact .code-stage {
+    min-height: 0;
+    padding: 0.4em 0 0.6em;
+  }
+
+  .php-evolution.is-compact .code-stage pre {
+    font-size: clamp(0.28rem, 0.95vw, 0.48rem);
+    line-height: 1.45;
+  }
+
+  .php-evolution.is-compact .code-line {
+    grid-template-columns: 1.8em minmax(0, 1fr);
+    padding-right: 0.35em;
+  }
+
+  .php-evolution.is-compact .code-line-number {
+    padding-right: 0.35em;
+  }
+}
+
+/* Placas que nomeiam cada parte da montanha. A arte é a mesma nas quatro;
+   o texto fica em HTML para acompanhar a troca de idioma e permanecer nítido. */
+.placa-secao {
+  position: absolute;
+  z-index: 2;
+  width: 21.5%;
+  aspect-ratio: 1649 / 954;
+  margin: 0;
+  transform: translate(-50%, -100%);
+  transform-origin: bottom center;
+  color: #fff8e8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.72rem, 2vw, 2.65rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 2px 2px rgba(26, 12, 8, 0.75);
+}
+
+.placa-secao-arte {
+  object-fit: contain;
+}
+
+.placa-secao > span {
+  position: absolute;
+  z-index: 1;
+  top: 18%;
+  right: 7%;
+  left: 7%;
+}
+
+.placa-secao--sobre,
+.placa-secao--contato {
+  font-size: clamp(0.62rem, 1.5vw, 2rem);
+}
+
+/* Painéis grandes que ocupam o centro das plataformas de Sobre e Contato.
+   A arte fica atrás; o texto permanece em HTML para ser nítido, traduzível e
+   acessível, inclusive nos links de contato. */
+.placa-conteudo {
+  position: absolute;
+  z-index: 2;
+  aspect-ratio: 1649 / 954;
+  margin: 0;
+  transform: translate(-50%, -100%);
+  transform-origin: bottom center;
+  color: #fff8e8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.48rem, 1.05vw, 1.35rem);
+  line-height: 1.24;
+  text-align: center;
+  text-shadow: 0 2px 2px rgba(26, 12, 8, 0.78);
+}
+
+.placa-conteudo-arte {
+  object-fit: contain;
+}
+
+.placa-conteudo-corpo {
+  position: absolute;
+  z-index: 1;
+  top: 7%;
+  right: 6.5%;
+  left: 6.5%;
+  display: flex;
+  min-height: 50%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+}
+
+.placa-conteudo-corpo p {
+  max-width: 58ch;
+  margin: 0;
+}
+
+.placa-conteudo--sobre .placa-conteudo-corpo p:first-child {
+  font-weight: 700;
+}
+
+.placa-conteudo--contato .placa-conteudo-corpo {
+  gap: 0.8em;
+}
+
+.placa-conteudo--contato .placa-conteudo-corpo p {
+  font-size: 1.35em;
+  font-weight: 700;
+}
+
+.placa-conteudo-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.placa-conteudo-acoes a {
+  padding: 0.3em 0.68em;
+  border: 1px solid rgba(255, 248, 232, 0.75);
+  border-radius: 999px;
+  background: rgba(33, 18, 16, 0.46);
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  text-shadow: inherit;
+}
+
+.placa-conteudo-acoes a:hover,
+.placa-conteudo-acoes a:focus-visible {
+  background: rgba(255, 248, 232, 0.2);
+  outline: 2px solid #fff8e8;
+  outline-offset: 2px;
 }
 
 /* destinos dos links do header: um pouco acima de cada placa da arte */
@@ -865,7 +1217,7 @@ html[data-theme="light"] .mapa-astro-lua {
 .mapa-chao {
   position: absolute;
   left: 0;
-  top: 95.12%;
+  top: 96.55%;
   width: 100%;
   height: 1px;
 }
@@ -910,6 +1262,13 @@ html[data-theme="light"] .mapa-astro-lua {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .code-stage-label,
+  .code-line,
+  .php-evolution.is-compact {
+    animation: none;
+    transition: none;
+  }
+
   .neblina::before {
     animation: none;
   }
@@ -1075,20 +1434,20 @@ html[data-theme="light"] .mapa-astro-lua {
      direito do céu: o título encolhe um pouco para caber entre ele e o
      sol/a lua, que ficam colados na borda esquerda */
   .mapa-titulo {
-    left: 12%;
-    top: 1.8%;
-    width: 57%;
+    left: 28%;
+    top: 1.25%;
+    width: 47%;
   }
 
   .mapa-astro {
-    left: 1%;
-    top: 3.5%;
+    left: 17%;
+    top: 2.43%;
     width: 10.5%;
   }
 
   /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos
      sobrar para os lados, mantendo o pico dentro da tela */
-  .mountain {
+  .mapa {
     width: 150%;
     margin-inline: -25%;
   }

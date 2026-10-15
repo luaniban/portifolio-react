@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { TRAJECTORY_IMAGE } from "../lib/mountain-layout.mjs";
 
 export type PlacaTrajetoria = {
   imagem: string;
@@ -11,20 +12,28 @@ export type PlacaTrajetoria = {
 // Uma placa da trajetória. A arte inteira fica por baixo e, por cima, cada
 // faixa de texto é recortada da mesma imagem: ao passar o mouse só aquela
 // faixa aparece ampliada. O texto completo vai no alt da arte.
-export default function Placa({ placa, posicao }: { placa: PlacaTrajetoria; posicao: CSSProperties }) {
-  const base = `/trajetoria/web/${placa.imagem}`;
+export default function Placa({
+  placa,
+  posicao,
+  stage,
+}: {
+  placa: PlacaTrajetoria;
+  posicao: CSSProperties;
+  stage: number;
+}) {
+  const base = `${TRAJECTORY_IMAGE.directory}/${placa.imagem}`;
   const arte = {
     src: `${base}-540.webp`,
-    srcSet: `${base}-540.webp 540w, ${base}-1063.webp 1063w`,
-    sizes: "17vw",
+    srcSet: `${base}-540.webp 540w, ${base}-${TRAJECTORY_IMAGE.width}.webp ${TRAJECTORY_IMAGE.width}w`,
+    sizes: "(max-width: 640px) 26vw, 17vw",
     loading: "lazy",
     decoding: "async",
   } as const;
 
   return (
-    <li className="placa" style={posicao}>
+    <li className="placa" style={posicao} tabIndex={0} aria-label={placa.texto} data-timeline-step={stage}>
       {/* eslint-disable-next-line @next/next/no-img-element -- srcset das placas próprias */}
-      <img className="placa-arte" {...arte} alt={placa.texto} />
+      <img className="placa-arte" {...arte} alt="" />
 
       {placa.cortes.slice(0, -1).map((de, indice) => {
         const altura = placa.cortes[indice + 1] - de;

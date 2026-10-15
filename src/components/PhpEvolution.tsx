@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { activeStageFromTops } from "../lib/php-evolution.mjs";
 import { useLanguage } from "./LanguageProvider";
 
 const stagesPt = [
@@ -148,13 +149,10 @@ export default function PhpEvolution({ stage: fixedStage, compact = false }: Php
     const updateStage = () => {
       frame = 0;
       const triggerLine = window.innerHeight * 0.62;
-      let nextStage = 0;
-
-      timelineItems.forEach((item, index) => {
-        if (item.getBoundingClientRect().top <= triggerLine) {
-          nextStage = index;
-        }
-      });
+      const nextStage = activeStageFromTops(
+        timelineItems.map((item) => item.getBoundingClientRect().top),
+        triggerLine,
+      );
 
       setActiveStage((current) => (current === nextStage ? current : nextStage));
     };
@@ -177,6 +175,7 @@ export default function PhpEvolution({ stage: fixedStage, compact = false }: Php
   return (
     <aside
       className={`php-evolution${compact ? " is-compact" : ""}`}
+      tabIndex={compact ? 0 : undefined}
       aria-label={language === "en" ? `PHP code evolution: ${currentStage.label}` : `Evolução do código PHP: ${currentStage.label}`}
     >
       <div className="code-window">
