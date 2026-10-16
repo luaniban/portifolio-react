@@ -17,6 +17,30 @@ function pngDimensions(path) {
   };
 }
 
+async function baseColorStats(path, firstRowRatio = 0) {
+  const { data, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const firstRow = Math.floor(info.height * firstRowRatio);
+  let greenPixels = 0;
+  let blueRockPixels = 0;
+  let firstGreenRow = info.height;
+
+  for (let y = firstRow; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const offset = (y * info.width + x) * info.channels;
+      const [red, green, blue, alpha] = data.subarray(offset, offset + 4);
+      if (alpha < 96) continue;
+
+      if (green > red * 1.12 && green > blue * 1.08 && green > 70) {
+        greenPixels += 1;
+        firstGreenRow = Math.min(firstGreenRow, y);
+      }
+      if (blue > red * 1.16 && blue >= green * 0.94 && blue > 70) blueRockPixels += 1;
+    }
+  }
+
+  return { ...info, greenPixels, blueRockPixels, firstGreenRow };
+}
+
 async function laplacianVariance(path) {
   const { data, info } = await sharp(path)
     .extract({ left: 0, top: 990, width: 2048, height: 1838 })
@@ -277,6 +301,19 @@ test("as quatro seções têm placas de título no mesmo sistema visual", () => 
   });
 });
 
+test("as placas de seção e conteúdo usam somente grama sob os postes", async () => {
+  assert.equal(layout.SECTION_SIGN_IMAGE.src, "/placas-secao/placa-secao-grama-v1.png");
+  assert.equal(layout.CONTENT_SIGN_IMAGE.src, "/placas-secao/placa-conteudo-grama-v1.png");
+
+  for (const image of [layout.SECTION_SIGN_IMAGE, layout.CONTENT_SIGN_IMAGE]) {
+    const path = join(repositoryRoot, "public", image.src.slice(1));
+    assert.equal(existsSync(path), true, `${image.src} ainda não existe`);
+    const stats = await baseColorStats(path, 0.62);
+    assert.ok(stats.greenPixels > 20_000, `${image.src} perdeu a faixa de grama`);
+    assert.ok(stats.blueRockPixels < 2_000, `${image.src} ainda conserva pedras azuis`);
+  }
+});
+
 test("Sobre mim e Contato deixam o centro livre para os painéis de conteúdo", () => {
   assert.ok(layout, "o mapeamento da montanha estendida ainda não existe");
   assert.ok(layout.CONTENT_SIGN_IMAGE, "a arte da placa grande ainda não foi configurada");
@@ -315,6 +352,7 @@ test("Sobre mim e Contato deixam o centro livre para os painéis de conteúdo", 
 test("as placas da trajetória terminam em grama, sem a base de pedras azuis", async () => {
   assert.ok(layout, "o mapeamento da montanha estendida ainda não existe");
   assert.ok(layout.TRAJECTORY_IMAGE?.directory, "a coleção sem pedras ainda não foi configurada");
+  assert.equal(layout.TRAJECTORY_IMAGE.directory, "/trajetoria-grama-v2/web");
 
   for (const name of [
     "placa-tec-informatica-1",
@@ -322,26 +360,30 @@ test("as placas da trajetória terminam em grama, sem a base de pedras azuis", a
     "placa-estagiario-3",
     "placa-palestrante-4",
   ]) {
-    const path = join(repositoryRoot, "public", layout.TRAJECTORY_IMAGE.directory.slice(1), `${name}-1063.webp`);
-    assert.equal(existsSync(path), true, `a versão sem pedras de ${name} ainda não existe`);
-
-    const { data, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    let greenPixels = 0;
-    let blueRockPixels = 0;
-    const firstRow = Math.floor(info.height * 0.66);
-
-    for (let y = firstRow; y < info.height; y += 1) {
-      for (let x = 0; x < info.width; x += 1) {
-        const offset = (y * info.width + x) * info.channels;
-        const [red, green, blue, alpha] = data.subarray(offset, offset + 4);
-        if (alpha < 96) continue;
-        if (green > red * 1.12 && green > blue * 1.08 && green > 70) greenPixels += 1;
-        if (blue > red * 1.16 && blue >= green * 0.94 && blue > 70) blueRockPixels += 1;
-      }
+    for (const variant of [
+      { width: 540, height: 520 },
+      { width: layout.TRAJECTORY_IMAGE.width, height: layout.TRAJECTORY_IMAGE.height },
+    ]) {
+      const variantPath = join(
+        repositoryRoot,
+        "public",
+        layout.TRAJECTORY_IMAGE.directory.slice(1),
+        `${name}-${variant.width}.webp`,
+      );
+      assert.equal(existsSync(variantPath), true, `a versão ${variant.width}px de ${name} ainda não existe`);
+      const dimensions = await sharp(variantPath).metadata();
+      assert.equal(dimensions.width, variant.width);
+      assert.equal(dimensions.height, variant.height);
     }
 
-    assert.ok(greenPixels > 4_000, `${name} perdeu a faixa de grama sob os pés`);
-    assert.ok(blueRockPixels < 900, `${name} ainda conserva a base de pedras azuis`);
+    const path = join(repositoryRoot, "public", layout.TRAJECTORY_IMAGE.directory.slice(1), `${name}-1063.webp`);
+    const stats = await baseColorStats(path, 0.66);
+    assert.ok(stats.greenPixels > 4_000, `${name} perdeu a faixa de grama sob os pés`);
+    assert.ok(stats.blueRockPixels < 900, `${name} ainda conserva a base de pedras azuis`);
+    assert.ok(
+      stats.firstGreenRow / stats.height <= 0.82,
+      `${name} deixa um vão grande demais entre os postes e a grama`,
+    );
   }
 });
 

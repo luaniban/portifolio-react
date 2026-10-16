@@ -12,19 +12,19 @@ export const MOUNTAIN_IMAGE = {
 };
 
 export const SECTION_SIGN_IMAGE = {
-  src: "/placas-secao/placa-secao-base.png",
+  src: "/placas-secao/placa-secao-grama-v1.png",
   width: 1649,
   height: 954,
 };
 
 export const CONTENT_SIGN_IMAGE = {
-  src: "/placas-secao/placa-conteudo-base-v1.png",
+  src: "/placas-secao/placa-conteudo-grama-v1.png",
   width: 1649,
   height: 954,
 };
 
 export const TRAJECTORY_IMAGE = {
-  directory: "/trajetoria-sem-pedra/web",
+  directory: "/trajetoria-grama-v2/web",
   width: 1063,
   height: 1023,
 };
