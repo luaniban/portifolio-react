@@ -12,23 +12,15 @@ from PIL import Image, ImageFilter
 
 
 ORIGEM = "public/trajetoria"
-DESTINO = "public/trajetoria-sem-pedra"
+DESTINO = "public/trajetoria-grama-v2"
 DESTINO_WEB = os.path.join(DESTINO, "web")
-GRAMA = os.path.join(DESTINO, "grama-base-v1.png")
+GRAMA = "public/trajetoria-sem-pedra/grama-base-v1.png"
 LARGURAS = (540, 1063)
 
-
-def caixa_comum(imagens):
-    caixas = [
-        imagem.getchannel("A").point(lambda alpha: 255 if alpha > 16 else 0).getbbox()
-        for imagem in imagens
-    ]
-    return (
-        min(caixa[0] for caixa in caixas),
-        min(caixa[1] for caixa in caixas),
-        max(caixa[2] for caixa in caixas),
-        max(caixa[3] for caixa in caixas),
-    )
+# Mantém o mesmo enquadramento da versão anterior para que somente a grama
+# suba em direção aos postes. Assim as tábuas, os textos e o alinhamento na
+# montanha não mudam quando o novo arquivo substitui o antigo.
+CAIXA_SAIDA = (33, 106, 1088, 1121)
 
 
 def limpar_rgb_transparente(imagem):
@@ -51,27 +43,15 @@ def preparar_grama():
 def substituir_base(imagem, grama):
     largura, altura = imagem.size
     inicio_base = round(altura * 0.67)
-    topo_grama = round(altura * 0.705)
+    topo_grama = round(altura * 0.65)
     resultado = imagem.copy()
     pixels = resultado.load()
 
-    # Depois da madeira, conserva somente os dois postes marrons. Toda a
-    # vegetação e toda a pedra originais saem para não criar uma segunda ilha.
+    # A limpeza começa abaixo da madeira e dos postes. Toda a vegetação e toda
+    # a pedra originais saem para não criar uma segunda ilha sob a faixa nova.
     for y in range(inicio_base, altura):
         for x in range(largura):
-            vermelho, verde, azul, alpha = pixels[x, y]
-            posicao_x = x / largura
-            dentro_dos_postes = 0.1 <= posicao_x <= 0.29 or 0.71 <= posicao_x <= 0.9
-            eh_poste = (
-                y < topo_grama
-                and alpha > 0
-                and dentro_dos_postes
-                and vermelho > 28
-                and vermelho > verde * 1.02
-                and vermelho > azul * 1.05
-            )
-            if not eh_poste:
-                pixels[x, y] = (0, 0, 0, 0)
+            pixels[x, y] = (0, 0, 0, 0)
 
     largura_grama = round(largura * 0.94)
     altura_grama = round(grama.height * largura_grama / grama.width)
@@ -88,7 +68,7 @@ def main():
     caminhos = sorted(glob.glob(os.path.join(ORIGEM, "*.png")))
     grama = preparar_grama()
     imagens = [substituir_base(Image.open(caminho).convert("RGBA"), grama) for caminho in caminhos]
-    caixa = caixa_comum(imagens)
+    caixa = CAIXA_SAIDA
     largura_comum = caixa[2] - caixa[0]
     altura_comum = caixa[3] - caixa[1]
     print(f"recorte comum sem pedras: {caixa}, {largura_comum}x{altura_comum}")
