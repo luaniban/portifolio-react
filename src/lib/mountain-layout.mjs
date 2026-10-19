@@ -61,10 +61,10 @@ export const projectPlacements = legacyProjectPlacements.map(({ top, height, ...
 // meia largura para a esquerda e uma altura para cima, fazendo a base pousar
 // exatamente no centro da plataforma, independentemente da largura da tela.
 export const trajectoryPlacements = [
+  { left: "50.05%", top: "56.55%" },
   { left: "54.69%", top: "62.21%" },
   { left: "59.08%", top: "68.34%" },
   { left: "58.59%", top: "74.92%" },
-  { left: "55.66%", top: "81.64%" },
 ];
 
 // A borda inferior das folhas entra alguns pixels no platô. Assim o contato
@@ -74,9 +74,9 @@ export function trajectoryStyle(position) {
 }
 
 export const codeEvolutionTrack = {
-  top: "59.50%",
+  top: "53.84%",
   right: "3.00%",
-  bottom: "15.50%",
+  bottom: "22.22%",
   width: "25.00%",
 };
 
@@ -103,8 +103,8 @@ export const sectionPlaques = [
   {
     id: "trajetoria",
     label: { pt: "Trajetória", en: "Journey" },
-    left: "45.17%",
-    top: "54.40%",
+    left: "30.00%",
+    top: "54.91%",
   },
   {
     id: "contato",

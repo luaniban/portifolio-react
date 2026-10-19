@@ -263,20 +263,40 @@ test("elementos do topo preservam sua posição em pixels na montanha estendida"
   assert.equal(layout.toExtendedHeight(2.8), "1.94%");
 });
 
-test("as placas ficam ancoradas pelo centro da base nas plataformas da trilha", () => {
+test("a trajetória começa no primeiro platô livre e sobe toda a sequência", () => {
   assert.ok(layout, "o mapeamento da montanha estendida ainda não existe");
 
   assert.deepEqual(layout.trajectoryPlacements, [
+    { left: "50.05%", top: "56.55%" },
     { left: "54.69%", top: "62.21%" },
     { left: "59.08%", top: "68.34%" },
     { left: "58.59%", top: "74.92%" },
-    { left: "55.66%", top: "81.64%" },
   ]);
 
   assert.deepEqual(
-    layout.trajectoryStyle({ left: "54.69%", top: "62.21%" }),
-    { left: "54.69%", top: "62.21%", "--placa-encaixe": "5.80%" },
+    layout.trajectoryStyle({ left: "50.05%", top: "56.55%" }),
+    { left: "50.05%", top: "56.55%", "--placa-encaixe": "5.80%" },
     "a linha de apoio da grama deve encaixar dentro do platô, não no último pixel da arte",
+  );
+
+  assert.deepEqual(
+    { top: layout.codeEvolutionTrack.top, bottom: layout.codeEvolutionTrack.bottom },
+    { top: "53.84%", bottom: "22.22%" },
+    "o trilho do painel de código deve começar e terminar junto da trajetória",
+  );
+  assert.deepEqual(
+    layout.codeEvolutionPlacements.map(({ top }) => top),
+    ["56.55%", "62.21%", "68.34%", "74.92%"],
+    "os painéis compactos devem continuar alinhados às quatro placas",
+  );
+});
+
+test("a placa-título Trajetória encosta a grama no platô", () => {
+  const title = layout.sectionPlaques.find((plaque) => plaque.id === "trajetoria");
+  assert.deepEqual(
+    { left: title.left, top: title.top },
+    { left: "30.00%", top: "54.91%" },
+    "o título deve pousar à esquerda sem encobrir a primeira placa da trajetória",
   );
 });
 
