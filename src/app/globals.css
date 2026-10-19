@@ -773,7 +773,7 @@ html[data-theme="light"] .mapa-astro-lua {
   width: 17%;
   aspect-ratio: 1063 / 1023;
   transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%)));
-  transform-origin: bottom center;
+  transform-origin: center calc(100% - var(--placa-encaixe, 0%));
 }
 
 .placa:hover {
@@ -1097,7 +1097,7 @@ html[data-theme="light"] .mapa-astro-lua {
   width: 21.5%;
   aspect-ratio: 1649 / 954;
   margin: 0;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%)));
   transform-origin: bottom center;
   color: #fff8e8;
   font-family: Georgia, "Times New Roman", serif;
@@ -1133,7 +1133,7 @@ html[data-theme="light"] .mapa-astro-lua {
   z-index: 2;
   aspect-ratio: 1649 / 954;
   margin: 0;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%)));
   transform-origin: bottom center;
   color: #fff8e8;
   font-family: Georgia, "Times New Roman", serif;

@@ -15,18 +15,21 @@ export const SECTION_SIGN_IMAGE = {
   src: "/placas-secao/placa-secao-grama-v1.png",
   width: 1649,
   height: 954,
+  supportInset: "17.51%",
 };
 
 export const CONTENT_SIGN_IMAGE = {
   src: "/placas-secao/placa-conteudo-grama-v1.png",
   width: 1649,
   height: 954,
+  supportInset: "9.12%",
 };
 
 export const TRAJECTORY_IMAGE = {
   directory: "/trajetoria-grama-v2/web",
   width: 1063,
   height: 1023,
+  supportInset: "7.92%",
 };
 
 /** @param {number} legacyPercent @param {number} [shiftPixels] */
@@ -70,7 +73,15 @@ export const trajectoryPlacements = [
 // A borda inferior das folhas entra alguns pixels no platô. Assim o contato
 // visual é definido pela superfície da grama, não pelo último pixel do PNG.
 export function trajectoryStyle(position) {
-  return { ...position, "--placa-encaixe": "5.80%" };
+  return { ...position, "--placa-encaixe": TRAJECTORY_IMAGE.supportInset };
+}
+
+export function sectionSignStyle(position) {
+  return { ...position, "--placa-encaixe": SECTION_SIGN_IMAGE.supportInset };
+}
+
+export function contentSignStyle(position) {
+  return { ...position, "--placa-encaixe": CONTENT_SIGN_IMAGE.supportInset };
 }
 
 export const codeEvolutionTrack = {
@@ -104,7 +115,7 @@ export const sectionPlaques = [
     id: "trajetoria",
     label: { pt: "Trajetória", en: "Journey" },
     left: "30.00%",
-    top: "54.91%",
+    top: "54.40%",
   },
   {
     id: "contato",

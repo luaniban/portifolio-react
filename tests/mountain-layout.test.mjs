@@ -23,8 +23,10 @@ async function baseColorStats(path, firstRowRatio = 0) {
   let greenPixels = 0;
   let blueRockPixels = 0;
   let firstGreenRow = info.height;
+  let lastGreenRow = -1;
 
   for (let y = firstRow; y < info.height; y += 1) {
+    let rowGreenPixels = 0;
     for (let x = 0; x < info.width; x += 1) {
       const offset = (y * info.width + x) * info.channels;
       const [red, green, blue, alpha] = data.subarray(offset, offset + 4);
@@ -32,13 +34,15 @@ async function baseColorStats(path, firstRowRatio = 0) {
 
       if (green > red * 1.12 && green > blue * 1.08 && green > 70) {
         greenPixels += 1;
+        rowGreenPixels += 1;
         firstGreenRow = Math.min(firstGreenRow, y);
       }
       if (blue > red * 1.16 && blue >= green * 0.94 && blue > 70) blueRockPixels += 1;
     }
+    if (rowGreenPixels > info.width * 0.01) lastGreenRow = y;
   }
 
-  return { ...info, greenPixels, blueRockPixels, firstGreenRow };
+  return { ...info, greenPixels, blueRockPixels, firstGreenRow, lastGreenRow };
 }
 
 async function laplacianVariance(path) {
@@ -275,7 +279,7 @@ test("a trajetória começa no primeiro platô livre e sobe toda a sequência", 
 
   assert.deepEqual(
     layout.trajectoryStyle({ left: "50.05%", top: "56.55%" }),
-    { left: "50.05%", top: "56.55%", "--placa-encaixe": "5.80%" },
+    { left: "50.05%", top: "56.55%", "--placa-encaixe": "7.92%" },
     "a linha de apoio da grama deve encaixar dentro do platô, não no último pixel da arte",
   );
 
@@ -295,7 +299,7 @@ test("a placa-título Trajetória encosta a grama no platô", () => {
   const title = layout.sectionPlaques.find((plaque) => plaque.id === "trajetoria");
   assert.deepEqual(
     { left: title.left, top: title.top },
-    { left: "30.00%", top: "54.91%" },
+    { left: "30.00%", top: "54.40%" },
     "o título deve pousar à esquerda sem encobrir a primeira placa da trajetória",
   );
 });
@@ -331,6 +335,56 @@ test("as placas de seção e conteúdo usam somente grama sob os postes", async 
     const stats = await baseColorStats(path, 0.62);
     assert.ok(stats.greenPixels > 20_000, `${image.src} perdeu a faixa de grama`);
     assert.ok(stats.blueRockPixels < 2_000, `${image.src} ainda conserva pedras azuis`);
+  }
+});
+
+test("cada tipo de placa compensa sua própria margem transparente abaixo da grama", async () => {
+  const variants = [
+    {
+      image: layout.SECTION_SIGN_IMAGE,
+      paths: [join(repositoryRoot, "public", layout.SECTION_SIGN_IMAGE.src.slice(1))],
+      style: layout.sectionSignStyle,
+    },
+    {
+      image: layout.CONTENT_SIGN_IMAGE,
+      paths: [join(repositoryRoot, "public", layout.CONTENT_SIGN_IMAGE.src.slice(1))],
+      style: layout.contentSignStyle,
+    },
+    {
+      image: layout.TRAJECTORY_IMAGE,
+      paths: [
+        "placa-tec-informatica-1",
+        "placa-tecnologoads-2",
+        "placa-estagiario-3",
+        "placa-palestrante-4",
+      ].flatMap((name) =>
+        [540, 1063].map((width) =>
+          join(
+            repositoryRoot,
+            "public",
+            layout.TRAJECTORY_IMAGE.directory.slice(1),
+            `${name}-${width}.webp`,
+          ),
+        ),
+      ),
+      style: layout.trajectoryStyle,
+    },
+  ];
+
+  for (const variant of variants) {
+    assert.equal(typeof variant.image.supportInset, "string", "a linha de apoio da arte ainda não foi configurada");
+    assert.equal(typeof variant.style, "function", "o componente ainda não aplica a linha de apoio configurada");
+
+    for (const path of variant.paths) {
+      const stats = await baseColorStats(path);
+      const transparentMargin = ((stats.height - 1 - stats.lastGreenRow) / stats.height) * 100;
+      assert.ok(
+        Math.abs(Number.parseFloat(variant.image.supportInset) - transparentMargin) <= 0.15,
+        `${path} usa uma compensação diferente da margem transparente real`,
+      );
+    }
+
+    assert.equal(variant.style({})["--placa-encaixe"], variant.image.supportInset);
   }
 });
 
@@ -439,6 +493,11 @@ test("a montanha e as placas ganham escala e interação legível no celular", (
 test("a placa completa pode ser ampliada pelo teclado no desktop", () => {
   const css = readFileSync(join(repositoryRoot, "src/app/globals.css"), "utf8");
 
+  assert.match(
+    css,
+    /\.placa\s*\{[^}]*transform-origin:\s*center calc\(100% - var\(--placa-encaixe, 0%\)\)/s,
+    "a ampliação precisa permanecer ancorada na linha da grama, não no fim transparente da imagem",
+  );
   assert.match(
     css,
     /\.placa:focus-visible\s*\{[^}]*transform:[^;}]*scale\(/s,

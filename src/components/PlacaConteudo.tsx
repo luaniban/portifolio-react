@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { CONTENT_SIGN_IMAGE } from "../lib/mountain-layout.mjs";
+import { CONTENT_SIGN_IMAGE, contentSignStyle } from "../lib/mountain-layout.mjs";
 import { useLanguage } from "./LanguageProvider";
 
 type Language = "pt" | "en";
@@ -28,11 +28,11 @@ export type ContentPanel = {
 export default function PlacaConteudo({ panel }: { panel: ContentPanel }) {
   const { language } = useLanguage();
   const copy = panel.copy[language];
-  const position = {
+  const position = contentSignStyle({
     left: panel.left,
     top: panel.top,
     width: panel.width,
-  } satisfies CSSProperties;
+  }) as CSSProperties;
 
   return (
     <article

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { SECTION_SIGN_IMAGE } from "../lib/mountain-layout.mjs";
+import { SECTION_SIGN_IMAGE, sectionSignStyle } from "../lib/mountain-layout.mjs";
 import { useLanguage } from "./LanguageProvider";
 
 type SectionLabel = {
@@ -23,7 +23,7 @@ export default function PlacaSecao({
   const titulo = label[language];
 
   return (
-    <h2 id={id} className={`placa-secao placa-secao--${id}`} style={posicao}>
+    <h2 id={id} className={`placa-secao placa-secao--${id}`} style={sectionSignStyle(posicao)}>
       <Image
         className="placa-secao-arte"
         src={SECTION_SIGN_IMAGE.src}
