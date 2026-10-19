@@ -45,6 +45,58 @@ async function baseColorStats(path, firstRowRatio = 0) {
   return { ...info, greenPixels, blueRockPixels, firstGreenRow, lastGreenRow };
 }
 
+async function woodenSupportStats(path) {
+  const { data, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const pixelAt = (x, y) => {
+    const offset = (y * info.width + x) * info.channels;
+    return data.subarray(offset, offset + 4);
+  };
+  const isWood = (x, y) => {
+    const [red, green, blue, alpha] = pixelAt(x, y);
+    return (
+      alpha > 96 &&
+      red > 45 &&
+      red < 190 &&
+      green > 25 &&
+      green < 125 &&
+      blue < 105 &&
+      red > green * 1.18
+    );
+  };
+  const isVisibleWood = (x, y) => {
+    const [red, green, blue, alpha] = pixelAt(x, y);
+    return (
+      alpha > 96 &&
+      red > 95 &&
+      red < 205 &&
+      green > 42 &&
+      green < 135 &&
+      blue < 110 &&
+      red > green * 1.22
+    );
+  };
+
+  let boardBottom = -1;
+  for (let y = 0; y < info.height; y += 1) {
+    let rowWoodPixels = 0;
+    for (let x = Math.floor(info.width * 0.15); x < Math.floor(info.width * 0.85); x += 1) {
+      if (isWood(x, y)) rowWoodPixels += 1;
+    }
+    if (rowWoodPixels > info.width * 0.5) boardBottom = y;
+  }
+
+  const supports = { left: 0, right: 0 };
+  for (let y = boardBottom + 1; y < Math.floor(info.height * 0.9); y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (!isVisibleWood(x, y)) continue;
+      if (x > info.width * 0.1 && x < info.width * 0.32) supports.left += 1;
+      if (x > info.width * 0.68 && x < info.width * 0.9) supports.right += 1;
+    }
+  }
+
+  return { ...supports, area: info.width * info.height };
+}
+
 async function laplacianVariance(path) {
   const { data, info } = await sharp(path)
     .extract({ left: 0, top: 990, width: 2048, height: 1838 })
@@ -271,10 +323,10 @@ test("a trajetória começa no primeiro platô livre e sobe toda a sequência", 
   assert.ok(layout, "o mapeamento da montanha estendida ainda não existe");
 
   assert.deepEqual(layout.trajectoryPlacements, [
-    { left: "50.05%", top: "56.55%" },
-    { left: "54.69%", top: "62.21%" },
-    { left: "59.08%", top: "68.34%" },
-    { left: "58.59%", top: "74.92%" },
+    { left: "50.05%", top: "56.55%", supportInset: "7.92%" },
+    { left: "54.69%", top: "62.21%", supportInset: "7.92%" },
+    { left: "59.08%", top: "68.34%", supportInset: "1.31%" },
+    { left: "58.59%", top: "74.92%", supportInset: "2.81%" },
   ]);
 
   assert.deepEqual(
@@ -282,6 +334,8 @@ test("a trajetória começa no primeiro platô livre e sobe toda a sequência", 
     { left: "50.05%", top: "56.55%", "--placa-encaixe": "7.92%" },
     "a linha de apoio da grama deve encaixar dentro do platô, não no último pixel da arte",
   );
+  assert.equal(layout.trajectoryStyle(layout.trajectoryPlacements[2])["--placa-encaixe"], "1.31%");
+  assert.equal(layout.trajectoryStyle(layout.trajectoryPlacements[3])["--placa-encaixe"], "2.81%");
 
   assert.deepEqual(
     { top: layout.codeEvolutionTrack.top, bottom: layout.codeEvolutionTrack.bottom },
@@ -351,13 +405,8 @@ test("cada tipo de placa compensa sua própria margem transparente abaixo da gra
       style: layout.contentSignStyle,
     },
     {
-      image: layout.TRAJECTORY_IMAGE,
-      paths: [
-        "placa-tec-informatica-1",
-        "placa-tecnologoads-2",
-        "placa-estagiario-3",
-        "placa-palestrante-4",
-      ].flatMap((name) =>
+      image: { supportInset: layout.trajectoryPlacements[0].supportInset },
+      paths: ["placa-tec-informatica-1", "placa-tecnologoads-2"].flatMap((name) =>
         [540, 1063].map((width) =>
           join(
             repositoryRoot,
@@ -367,7 +416,31 @@ test("cada tipo de placa compensa sua própria margem transparente abaixo da gra
           ),
         ),
       ),
-      style: layout.trajectoryStyle,
+      style: () => layout.trajectoryStyle(layout.trajectoryPlacements[0]),
+    },
+    {
+      image: { supportInset: layout.trajectoryPlacements[2].supportInset },
+      paths: [540, 1063].map((width) =>
+        join(
+          repositoryRoot,
+          "public",
+          layout.TRAJECTORY_IMAGE.directory.slice(1),
+          `placa-estagiario-3-${width}.webp`,
+        ),
+      ),
+      style: () => layout.trajectoryStyle(layout.trajectoryPlacements[2]),
+    },
+    {
+      image: { supportInset: layout.trajectoryPlacements[3].supportInset },
+      paths: [540, 1063].map((width) =>
+        join(
+          repositoryRoot,
+          "public",
+          layout.TRAJECTORY_IMAGE.directory.slice(1),
+          `placa-palestrante-4-${width}.webp`,
+        ),
+      ),
+      style: () => layout.trajectoryStyle(layout.trajectoryPlacements[3]),
     },
   ];
 
@@ -428,12 +501,14 @@ test("as placas da trajetória terminam em grama, sem a base de pedras azuis", a
   assert.ok(layout.TRAJECTORY_IMAGE?.directory, "a coleção sem pedras ainda não foi configurada");
   assert.equal(layout.TRAJECTORY_IMAGE.directory, "/trajetoria-grama-v2/web");
 
-  for (const name of [
-    "placa-tec-informatica-1",
-    "placa-tecnologoads-2",
-    "placa-estagiario-3",
-    "placa-palestrante-4",
-  ]) {
+  const maximumGrassStarts = new Map([
+    ["placa-tec-informatica-1", 0.82],
+    ["placa-tecnologoads-2", 0.82],
+    ["placa-estagiario-3", 0.88],
+    ["placa-palestrante-4", 0.86],
+  ]);
+
+  for (const [name, maximumGrassStart] of maximumGrassStarts) {
     for (const variant of [
       { width: 540, height: 520 },
       { width: layout.TRAJECTORY_IMAGE.width, height: layout.TRAJECTORY_IMAGE.height },
@@ -455,9 +530,43 @@ test("as placas da trajetória terminam em grama, sem a base de pedras azuis", a
     assert.ok(stats.greenPixels > 4_000, `${name} perdeu a faixa de grama sob os pés`);
     assert.ok(stats.blueRockPixels < 900, `${name} ainda conserva a base de pedras azuis`);
     assert.ok(
-      stats.firstGreenRow / stats.height <= 0.82,
+      stats.firstGreenRow / stats.height <= maximumGrassStart,
       `${name} deixa um vão grande demais entre os postes e a grama`,
     );
+  }
+});
+
+test("as placas de Estagiário e 2026 exibem os dois postes acima da grama", async () => {
+  for (const name of ["placa-estagiario-3", "placa-palestrante-4"]) {
+    for (const width of [540, 1063]) {
+      const path = join(
+        repositoryRoot,
+        "public",
+        layout.TRAJECTORY_IMAGE.directory.slice(1),
+        `${name}-${width}.webp`,
+      );
+      const supports = await woodenSupportStats(path);
+      const minimumVisibleArea = supports.area * 0.0035;
+
+      assert.ok(supports.left >= minimumVisibleArea, `${name}-${width} não mostra claramente o poste esquerdo`);
+      assert.ok(supports.right >= minimumVisibleArea, `${name}-${width} não mostra claramente o poste direito`);
+    }
+  }
+});
+
+test("o gerador preserva fontes canônicas com os postes corrigidos", async () => {
+  for (const name of ["placa-estagiario-3", "placa-palestrante-4"]) {
+    const canonicalPath = join(repositoryRoot, "scripts/assets/trajetoria-postes-v1", `${name}.png`);
+    const generatedPath = join(repositoryRoot, "public/trajetoria-grama-v2", `${name}.png`);
+
+    assert.equal(existsSync(canonicalPath), true, `a fonte corrigida de ${name} ainda não existe`);
+    assert.deepEqual(pngDimensions(canonicalPath), { width: 1055, height: 1015 });
+
+    const supports = await woodenSupportStats(canonicalPath);
+    const minimumVisibleArea = supports.area * 0.0035;
+    assert.ok(supports.left >= minimumVisibleArea, `a fonte de ${name} perdeu o poste esquerdo`);
+    assert.ok(supports.right >= minimumVisibleArea, `a fonte de ${name} perdeu o poste direito`);
+    assert.ok((await edgeCorrelation(canonicalPath, generatedPath)) >= 0.99, `${name} divergiu da fonte canônica`);
   }
 });
 

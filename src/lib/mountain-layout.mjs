@@ -64,16 +64,17 @@ export const projectPlacements = legacyProjectPlacements.map(({ top, height, ...
 // meia largura para a esquerda e uma altura para cima, fazendo a base pousar
 // exatamente no centro da plataforma, independentemente da largura da tela.
 export const trajectoryPlacements = [
-  { left: "50.05%", top: "56.55%" },
-  { left: "54.69%", top: "62.21%" },
-  { left: "59.08%", top: "68.34%" },
-  { left: "58.59%", top: "74.92%" },
+  { left: "50.05%", top: "56.55%", supportInset: "7.92%" },
+  { left: "54.69%", top: "62.21%", supportInset: "7.92%" },
+  { left: "59.08%", top: "68.34%", supportInset: "1.31%" },
+  { left: "58.59%", top: "74.92%", supportInset: "2.81%" },
 ];
 
 // A borda inferior das folhas entra alguns pixels no platô. Assim o contato
 // visual é definido pela superfície da grama, não pelo último pixel do PNG.
 export function trajectoryStyle(position) {
-  return { ...position, "--placa-encaixe": TRAJECTORY_IMAGE.supportInset };
+  const { supportInset = TRAJECTORY_IMAGE.supportInset, ...coordinates } = position;
+  return { ...coordinates, "--placa-encaixe": supportInset };
 }
 
 export function sectionSignStyle(position) {

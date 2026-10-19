@@ -2,7 +2,9 @@
 
 As artes originais continuam intactas. A ilha de pedra e o gramado volumoso
 originais são removidos; os postes são preservados e recebem uma única faixa
-estreita de grama. O recorte comum mantém as quatro placas na mesma escala.
+estreita de grama. As placas 3 e 4 usam fontes corrigidas, pois precisam de
+mais espaço e contraste entre a madeira e as folhas. O recorte comum mantém
+as quatro placas na mesma escala.
 """
 
 import glob
@@ -15,6 +17,7 @@ ORIGEM = "public/trajetoria"
 DESTINO = "public/trajetoria-grama-v2"
 DESTINO_WEB = os.path.join(DESTINO, "web")
 GRAMA = "public/trajetoria-sem-pedra/grama-base-v1.png"
+FONTES_CORRIGIDAS = "scripts/assets/trajetoria-postes-v1"
 LARGURAS = (540, 1063)
 
 # Mantém o mesmo enquadramento da versão anterior para que somente a grama
@@ -61,6 +64,17 @@ def substituir_base(imagem, grama):
     return limpar_rgb_transparente(resultado)
 
 
+def fonte_corrigida(nome, tamanho):
+    caminho = os.path.join(FONTES_CORRIGIDAS, f"{nome}.png")
+    if not os.path.exists(caminho):
+        return None
+
+    placa = limpar_rgb_transparente(Image.open(caminho).convert("RGBA"))
+    if placa.size != tamanho:
+        raise ValueError(f"{caminho} deve medir {tamanho[0]}x{tamanho[1]}, recebeu {placa.size[0]}x{placa.size[1]}")
+    return placa
+
+
 def main():
     os.makedirs(DESTINO, exist_ok=True)
     os.makedirs(DESTINO_WEB, exist_ok=True)
@@ -75,7 +89,7 @@ def main():
 
     for caminho, imagem in zip(caminhos, imagens):
         nome = os.path.splitext(os.path.basename(caminho))[0]
-        placa = imagem.crop(caixa)
+        placa = fonte_corrigida(nome, (largura_comum, altura_comum)) or imagem.crop(caixa)
         placa.putalpha(placa.getchannel("A").point(lambda alpha: 255 if alpha >= 240 else alpha))
         placa.save(os.path.join(DESTINO, f"{nome}.png"), "PNG", optimize=True)
 
