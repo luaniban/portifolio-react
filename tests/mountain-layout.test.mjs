@@ -627,7 +627,7 @@ test("o terminal compacto alcança escala legível ao receber foco", () => {
 test("os títulos de seção aparecem na mesma ordem semântica que seus conteúdos", () => {
   const page = readFileSync(join(repositoryRoot, "src/app/page.tsx"), "utf8");
   const projectsHeading = page.indexOf("aria-labelledby={placaProjetos.id}");
-  const projectsContent = page.indexOf("{projetos.map");
+  const projectsContent = page.indexOf("{projects.map");
   const aboutHeading = page.indexOf("aria-labelledby={placaSobre.id}");
   const journeyHeading = page.indexOf("aria-labelledby={placaTrajetoria.id}");
   const journeyContent = page.indexOf('<ol className="trajetoria"');
