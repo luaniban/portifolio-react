@@ -6,9 +6,15 @@ import { mascotScrollSteps, poseSrcSet, poseUrl } from "./MascotScrollGuide";
 
 // Sem isso a tela abre num céu vazio, com o mascote solto no ar, e a arte
 // aparece aos pedaços. A tela cobre tudo até a primeira cena estar pronta: a
-// arte do tema, o título, o astro e o mascote no pico. Só aparece com JS
-// (html.js); se algo travar, some sozinha depois de LIMITE_MS.
+// arte, o título, o astro e o mascote no pico. Só aparece com JS (html.js);
+// se algo travar, some sozinha depois de LIMITE_MS.
 const LIMITE_MS = 10000;
+
+// De dia o navegador baixa as duas artes, e a de dia vem por último, com
+// prioridade baixa: numa conexão lenta ela chega vários segundos depois. Com o
+// resto pronto, ela tem ESPERA_DIA_MS para chegar; se não chegar, a tela sai
+// mostrando a cena da noite e a de dia entra esmaecendo quando ficar pronta.
+const ESPERA_DIA_MS = 1500;
 
 const poseNoPico = mascotScrollSteps[0];
 
@@ -42,16 +48,22 @@ export default function Carregamento() {
       ".mapa-titulo img",
       ".mascot-scroll-image",
       dia ? ".mapa-astro-sol" : ".mapa-astro-lua",
-      // de dia a arte da noite fica coberta pela de dia, esperada abaixo
-      ...(dia ? [] : [".mapa-arte-noite"]),
+      ".mapa-arte-noite",
     ];
-    const esperas = seletores
-      .map((seletor) => document.querySelector<HTMLImageElement>(seletor))
-      .filter((imagem) => imagem !== null)
-      .map(imagemPronta);
+    let cena: Promise<void> = Promise.all(
+      seletores
+        .map((seletor) => document.querySelector<HTMLImageElement>(seletor))
+        .filter((imagem) => imagem !== null)
+        .map(imagemPronta),
+    ).then(() => undefined);
 
     const arteDia = document.querySelector(".mapa-arte-dia");
-    if (dia && arteDia) esperas.push(classePresente(arteDia, "is-ready"));
+    if (dia && arteDia) {
+      const diaPronto = classePresente(arteDia, "is-ready");
+      cena = cena.then(() =>
+        Promise.race([diaPronto, new Promise<void>((resolve) => window.setTimeout(resolve, ESPERA_DIA_MS))]),
+      );
+    }
 
     // a página não rola por baixo da tela: ao abrir, a cena começa no pico
     raiz.style.overflow = "hidden";
@@ -67,7 +79,7 @@ export default function Carregamento() {
     // Um quadro entre a cena pronta e a saída: sem ele o .is-ready da arte de
     // dia e o .is-done entram no mesmo cálculo de estilo, e a arte esmaece já
     // com a tela saindo.
-    void Promise.all(esperas).then(() =>
+    void cena.then(() =>
       window.requestAnimationFrame(() => window.requestAnimationFrame(terminar)),
     );
 
