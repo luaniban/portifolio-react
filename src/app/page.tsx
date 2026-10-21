@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Carregamento from "../components/Carregamento";
 import Header from "../components/Header";
 import MascotScrollGuide from "../components/MascotScrollGuide";
 import MountainArt from "../components/MountainArt";
@@ -60,6 +61,7 @@ export default function Home() {
 
   return (
     <>
+      <Carregamento />
       <Header />
 
       <main id="inicio">

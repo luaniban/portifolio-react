@@ -156,10 +156,10 @@ const maxScale = Math.max(...mascotScrollSteps.map(({ scale }) => scale));
 // mascote aparece, e em telas 2x a imagem não precisa ser esticada.
 const POSE_WIDTHS = [240, 400, 640];
 
-const poseUrl = (src: string, width: number) =>
+export const poseUrl = (src: string, width: number) =>
   src.replace("/mascote-poses-caindo/", "/mascote-poses-caindo/web/").replace(/\.png$/, `-${width}.webp`);
 
-const poseSrcSet = (src: string) => POSE_WIDTHS.map((width) => `${poseUrl(src, width)} ${width}w`).join(", ");
+export const poseSrcSet = (src: string) => POSE_WIDTHS.map((width) => `${poseUrl(src, width)} ${width}w`).join(", ");
 
 const poseSizes = ({ zoom = 1 }: MascotScrollStep) => {
   const factor = (maxScale * zoom).toFixed(2);

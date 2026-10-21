@@ -30,6 +30,9 @@
   --section-space: clamp(3.5rem, 7vw, 5rem);
   /* a troca de tema: o sol e a lua, a arte e o header andam juntos */
   --troca-de-tema: 0.9s;
+  /* o topo do céu das artes de noite e de dia: header e carregamento */
+  --ceu-noite: #021a49;
+  --ceu-dia: #4aa3e8;
 
   /* elevação: só para o que flutua ou se sobrepõe */
   --shadow-overlap: 0 14px 32px -20px rgba(20, 25, 40, 0.4);
@@ -220,7 +223,7 @@ a {
 
 .site-header {
   color-scheme: dark;
-  --bg: #021a49;
+  --bg: var(--ceu-noite);
   --surface: #0a2456;
   --surface-subtle: #122d63;
   --line: #1d3770;
@@ -257,7 +260,7 @@ a {
    azul (links 4,7:1 e texto 5,8:1 sobre ele) */
 html[data-theme="light"] .site-header {
   color-scheme: light;
-  --bg: #4aa3e8;
+  --bg: var(--ceu-dia);
   --surface: #e4f2fd;
   --surface-subtle: #6db5ed;
   --line: #3b92d6;
@@ -1345,6 +1348,125 @@ html[data-theme="light"] .mapa-astro-lua {
 
   .mascot-scroll-trail {
     display: none;
+  }
+}
+
+/* ================================================================
+   CARREGAMENTO: o mascote se equilibrando no pico, no céu do tema,
+   até a primeira cena estar pronta. O pico é recortado da própria
+   arte (scripts/gerar-carregamento.py, 640 x 560 px, ponta a 20 px
+   do topo). Medidas em frações de --cena, a largura do recorte: o
+   mascote tem 0,394 dela e a sola do pé de apoio fica na ponta.
+   ================================================================ */
+.carregamento {
+  display: none;
+}
+
+html.js .carregamento {
+  --cena: min(18rem, 66vw);
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--ceu-noite);
+  /* se o JS não chegar a liberar a tela, ela sai sozinha */
+  animation: carregamento-saida 0.5s ease 12s forwards;
+}
+
+html.js[data-theme="light"] .carregamento {
+  background: var(--ceu-dia);
+}
+
+html.js .carregamento.is-done {
+  opacity: 0;
+  visibility: hidden;
+  animation: none;
+  transition:
+    opacity 0.5s ease,
+    visibility 0s linear 0.5s;
+}
+
+/* por baixo da tela a arte de dia entra sem esmaecer: quando a tela sai, a
+   cena já está no tema certo */
+html:has(.carregamento:not(.is-done)) .mapa-arte {
+  transition: none;
+}
+
+.carregamento-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* a cena só aparece se a espera passar de um instante: numa visita com tudo
+   em cache, a tela é só o céu e sai sem piscar o mascote */
+.carregamento-cena {
+  position: relative;
+  width: var(--cena);
+  height: calc(var(--cena) * 1.3827);
+  animation: carregamento-entrada 0.4s ease-out 0.2s both;
+}
+
+.carregamento-pico {
+  position: absolute;
+  top: calc(var(--cena) * 0.5077);
+  left: 0;
+  width: 100%;
+  height: calc(var(--cena) * 0.875);
+  background: url("/carregamento/pico-noite.webp") center / 100% 100% no-repeat;
+}
+
+html[data-theme="light"] .carregamento-pico {
+  background-image: url("/carregamento/pico-dia.webp");
+}
+
+/* a pose 1 do mascote (desequilibrando), balançando em volta do pé de apoio */
+.carregamento-mascote {
+  position: absolute;
+  top: 0;
+  left: calc(var(--cena) * 0.3215);
+  width: 39.4%;
+  height: auto;
+  transform-origin: 45.3% 91.21%;
+  animation: carregamento-equilibrio 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes carregamento-equilibrio {
+  from {
+    transform: rotate(-8deg);
+  }
+
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes carregamento-entrada {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes carregamento-saida {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carregamento-mascote {
+    transform: rotate(-4deg);
+    animation: none;
+  }
+
+  html.js .carregamento.is-done {
+    transition-duration: 0.2s, 0s;
+    transition-delay: 0s, 0.2s;
   }
 }
 
