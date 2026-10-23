@@ -6,9 +6,12 @@ import sharp from "sharp";
 
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const nightPath = join(repositoryRoot, "public/montanha-noite-site-v4.png");
-const dayPath = process.env.MOUNTAIN_DAY_IMAGE ?? join(repositoryRoot, "public/montanha-dia-site-v4.png");
+const dayPath = process.env.MOUNTAIN_DAY_IMAGE ?? join(repositoryRoot, "public/montanha-dia-site-v5.png");
 
 const isolatedTrees = [
+  { name: "árvore apagada à esquerda de Projetos", left: 525, top: 1410, width: 55, height: 100, minimumPixels: 300 },
+  { name: "árvore pequena no canto do campo de Projetos", left: 478, top: 1470, width: 40, height: 60, minimumPixels: 400 },
+  { name: "árvore atrás da placa de Projetos", left: 1140, top: 1260, width: 70, height: 120 },
   { name: "copa junto à primeira caverna", left: 360, top: 1600, width: 55, height: 140 },
   { name: "conífera superior", left: 178, top: 1846, width: 156, height: 272 },
   { name: "galho central", left: 57, top: 2266, width: 120, height: 240 },
@@ -22,6 +25,19 @@ const protectedRockFaces = [
   { name: "paredão acima do campo", left: 1320, top: 3360, width: 80, height: 180 },
   { name: "rocha junto à escada", left: 440, top: 5310, width: 70, height: 120 },
 ];
+
+test("o céu acima das árvores de Projetos não recebe manchas de rocha ou folhagem", async () => {
+  const region = { left: 620, top: 1180, width: 60, height: 60 };
+  const data = await sharp(dayPath).extract(region).raw().toBuffer();
+  let skyPixels = 0;
+  for (let offset = 0; offset < data.length; offset += 3) {
+    const y = region.top + Math.floor(offset / 3 / region.width);
+    const t = Math.min(y / 2600, 1);
+    const expected = [74 + 102 * t, 163 + 61 * t, 232 + 18 * t];
+    if (expected.every((value, channel) => Math.abs(data[offset + channel] - value) < 3)) skyPixels += 1;
+  }
+  assert.ok(skyPixels / (region.width * region.height) >= 0.98, "a recuperação das árvores manchou o céu");
+});
 
 test("o céu diurno não apaga a silhueta das árvores e da rocha junto às cavernas", async () => {
   const region = { left: 0, top: 1500, width: 440, height: 1440 };
@@ -108,7 +124,7 @@ test("as coníferas isoladas da lateral permanecem verdes e vivas na arte diurna
   for (const region of isolatedTrees) {
     const stats = await blueSurfaceColorStats(region);
 
-    assert.ok(stats.candidatePixels >= 1_000, `${region.name} não contém amostra suficiente de folhagem`);
+    assert.ok(stats.candidatePixels >= (region.minimumPixels ?? 1_000), `${region.name} não contém amostra suficiente de folhagem`);
     assert.ok(
       stats.greenRatio >= 0.6,
       `${region.name} tem só ${(stats.greenRatio * 100).toFixed(1)}% da folhagem verde`,

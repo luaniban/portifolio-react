@@ -13,7 +13,7 @@ seu jeito, porque a noite pinta tudo de azul e o dia não é só "mais claro".
 
 Rodar de novo sempre que a arte de noite mudar:
 
-    python3 scripts/gerar-montanha-dia.py public/montanha-noite-site-v4.png public/montanha-dia-site-v4.png
+    python3 scripts/gerar-montanha-dia.py public/montanha-noite-site-v4.png public/montanha-dia-site-v5.png
 """
 import sys
 import numpy as np
@@ -46,7 +46,27 @@ familia = (im[..., 0] < 20) & (im[..., 1] < 60) & (im[..., 2] > 50) & (im[..., 2
 # à superfície. A família cromática limita o resultado, não só as sementes.
 lateral_cavernas = np.zeros((H, W), dtype=bool)
 lateral_cavernas[1500:3000, :500] = True
-ceu &= familia | ~lateral_cavernas
+# O bosque acima das cavernas também contém coníferas pequenas inteiras
+# que o removedor de estrelas confundia com ilhas isoladas no céu.
+bosque_projetos = np.zeros((H, W), dtype=np.uint8)
+# Contorno medido das copas e do chão do bosque, sem incluir o paredão.
+cv2.fillPoly(bosque_projetos, [np.array([
+    [460, 1520], [495, 1440], [520, 1480], [550, 1365],
+    [575, 1420], [610, 1325], [655, 1380], [715, 1235],
+    [770, 1340], [810, 1370], [825, 1305], [870, 1340],
+    [910, 1285], [955, 1355], [1000, 1245], [1040, 1300],
+    [1085, 1285], [1110, 1160], [1150, 1260], [1180, 1155],
+    [1220, 1260], [1250, 1280], [1250, 1420], [1170, 1450],
+    [1000, 1460], [800, 1460], [650, 1510],
+], dtype=np.int32)], 1)
+bosque_projetos = bosque_projetos.astype(bool)
+lateral_cavernas |= bosque_projetos
+# Aqui o céu ainda é escuro: não usar os limites de brilho do horizonte.
+# A proporção dos canais, descontado o vermelho, separa céu de folhagem.
+familia_bosque = (im[..., 2] > im[..., 1]) & (
+    im[..., 2] - im[..., 0] > 2.6 * (im[..., 1] - im[..., 0])
+)
+ceu &= familia | ~lateral_cavernas | (bosque_projetos & familia_bosque)
 ceu |= ndimage.binary_closing(ceu, structure=np.ones((3, 3)), iterations=4) & familia
 
 # estrelas: buracos pequenos dentro do céu
@@ -55,7 +75,7 @@ b_rot, nb = ndimage.label(buracos)
 b_tam = ndimage.sum(np.ones_like(buracos), b_rot, range(1, nb + 1))
 brilho_estrela = (im[..., 0] > 80) & (im[..., 1] > 80)
 rotulos_brilhantes = np.unique(b_rot[brilho_estrela | ~lateral_cavernas])
-estrelas = np.isin(b_rot, [i + 1 for i, t in enumerate(b_tam) if t < 2500 and i + 1 in rotulos_brilhantes])
+estrelas = np.isin(b_rot, [i + 1 for i, t in enumerate(b_tam) if t < 2500 and (t < 80 or i + 1 in rotulos_brilhantes)])
 
 # e as estrelas que não chegam a ser buraco (encostam num vão do céu): ilha
 # pequena com quase todo o contorno no céu também é estrela
@@ -64,7 +84,7 @@ for i, fatia in enumerate(ndimage.find_objects(ilhas), start=1):
     bloco = ilhas[fatia] == i
     if bloco.sum() >= 600 or fatia[0].start > 2900:
         continue
-    if (bloco & lateral_cavernas[fatia]).any() and not (bloco & brilho_estrela[fatia]).any():
+    if bloco.sum() >= 80 and (bloco & lateral_cavernas[fatia]).any() and not (bloco & brilho_estrela[fatia]).any():
         continue
     y0, y1 = max(fatia[0].start - 3, 0), min(fatia[0].stop + 3, H)
     x0, x1 = max(fatia[1].start - 3, 0), min(fatia[1].stop + 3, W)
@@ -204,8 +224,14 @@ peso_crista = (
     * np.clip((205 - v) / 30, 0, 1)
     * ~area_ceu * ~nuvens
 )
+peso_bosque = (
+    cv2.GaussianBlur(bosque_projetos.astype(np.float32), (0, 0), 8)
+    * (h >= 99) * (h <= 110) * azul * (s > 170) * (v > 25)
+    * np.clip((205 - v) / 30, 0, 1) * ~area_ceu * ~nuvens
+)
+peso_crista = np.maximum(peso_crista, peso_bosque)
 s_copa_isolada = np.maximum(s_copa, 160)
-v_copa_isolada = np.minimum(v + 25, 190)
+v_copa_isolada = np.clip(v + 25, 60, 190)
 copa_isolada = cv2.cvtColor(
     np.stack([np.full_like(h, 78), s_copa_isolada, v_copa_isolada], -1).clip(0, 255).astype(np.uint8),
     cv2.COLOR_HSV2RGB,

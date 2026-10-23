@@ -6,7 +6,7 @@ const percent = (value) => `${value.toFixed(2)}%`;
 
 export const MOUNTAIN_IMAGE = {
   src: "/montanha-noite-site-v4.png",
-  daySrc: "/montanha-dia-site-v4.png",
+  daySrc: "/montanha-dia-site-v5.png",
   width: 2048,
   height: 8860,
 };

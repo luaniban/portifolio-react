@@ -11,7 +11,7 @@ import sharp from "sharp";
 
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const nightPath = join(repositoryRoot, "public/montanha-noite-site-v4.png");
-const dayPath = join(repositoryRoot, "public/montanha-dia-site-v4.png");
+const dayPath = join(repositoryRoot, "public/montanha-dia-site-v5.png");
 const generatorPath = join(repositoryRoot, "scripts/gerar-montanha-dia.py");
 const generateDayMountain = promisify(execFile);
 
