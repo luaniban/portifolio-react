@@ -17,10 +17,10 @@ export type Projeto = {
 // focar pelo teclado) a tela cresce e a descrição abre embaixo. Se não couber,
 // abre do lado com mais espaço e, se ainda faltar, é empurrada para dentro da
 // tela: em telas baixas nenhum dos lados comporta o quadro inteiro.
-export default function Nicho({ projeto, posicao }: { projeto: Projeto; posicao: CSSProperties }) {
+export default function Nicho({ projeto: projetoOriginal, posicao }: { projeto: Projeto; posicao: CSSProperties }) {
   const { language } = useLanguage();
-  const localized = language === "en" ? projectsEn.find((item) => item.miniatura === projeto.miniatura) : projeto;
-  projeto = localized ?? projeto;
+  const localized = language === "en" ? projectsEn.find((item) => item.miniatura === projetoOriginal.miniatura) : projetoOriginal;
+  const projeto = localized ?? projetoOriginal;
   const descricaoRef = useRef<HTMLDivElement>(null);
   const [lado, setLado] = useState({ acima: false, ajuste: 0 });
 
