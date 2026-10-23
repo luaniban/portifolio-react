@@ -650,7 +650,7 @@ test("a montanha e as placas ganham escala e interação legível no celular", (
   const css = readFileSync(join(repositoryRoot, "src/app/globals.css"), "utf8");
   const placa = readFileSync(join(repositoryRoot, "src/components/Placa.tsx"), "utf8");
 
-  assert.match(css, /@media\s*\(max-width:\s*640px\)[\s\S]*?\.mapa\s*\{[^}]*width:\s*150%/);
+  assert.match(css, /@media\s*\(max-width:\s*640px\)[\s\S]*?\.mapa-cena\s*\{[^}]*width:\s*150%/);
   assert.match(css, /@media\s*\(max-width:\s*860px\)[\s\S]*?\.placa:focus[^}]*transform:[^;}]*scale/s);
   assert.match(placa, /tabIndex=\{0\}/);
 });

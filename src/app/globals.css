@@ -118,6 +118,8 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-height) + 16px);
   scrollbar-width: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* a página continua rolando; só a barra nativa some */
@@ -529,6 +531,7 @@ main {
   /* clip, e não hidden: com hidden a moldura vira um contêiner rolável, e o
      scrollIntoView dos links do header rolava a arte por dentro dela; a roda
      do mouse não desfaz isso e o pico ficava escondido */
+  overflow: hidden;
   overflow: clip;
   background: #0d1428;
 }
@@ -1585,10 +1588,36 @@ html[data-theme="light"] .carregamento-pico {
     width: 10.5%;
   }
 
-  /* no celular a arte inteira ficaria minúscula: ampliamos e deixamos
-     sobrar para os lados, mantendo o pico dentro da tela */
+  /* A moldura nunca ultrapassa o viewport: navegadores móveis ampliam o
+     layout inteiro se o próprio mapa tiver 150% de largura. A cena cresce
+     dentro dela, recortada, preservando as coordenadas e o pico visível. */
   .mapa {
+    width: 100%;
+    aspect-ratio: 2048 / 13290;
+    margin-inline: 0;
+  }
+
+  .mapa-cena {
+    left: -25%;
     width: 150%;
-    margin-inline: -25%;
+  }
+
+  /* O texto acompanha a escala da cena em vez de um mínimo que transborda
+     das tábuas nos celulares menores. */
+  .placa-conteudo {
+    font-size: 1.575vw;
+  }
+}
+
+@media (max-width: 640px) and (hover: none) {
+  /* O foco já é acionável por toque/teclado. Centralizamos a placa ampliada
+     no trecho visível da cena para ler sem cortar suas laterais. */
+  .placa-conteudo:focus,
+  .placa-conteudo:focus-within {
+    z-index: 7;
+    left: 50% !important;
+    width: 60% !important;
+    font-size: 2.8vw;
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.55));
   }
 }
