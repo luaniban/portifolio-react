@@ -71,3 +71,18 @@ export const projects = [
     url: "https://sigtu.luanibanhez.tech/",
   },
 ];
+
+// Product names and technology names stay as published; descriptive copy is localized.
+export const projectsEn = projects.map((project, index) => ({
+  ...project,
+  ...[
+    { titulo: "AvaRede — School Network Assessments", destaque: "Answer sheet grading from files or a camera", descricao: "An educational assessment platform. Schools submit answers using a photo, PDF or phone camera with a QR code. Grades are calculated automatically, with charts by student, class, school and skill, and comparisons across periods and schools." },
+    { destaque: "PDF-to-flipbook conversion", descricao: "A digital library of informational books. Administrators upload PDFs, and the system converts each page into an image to create a flipbook with page-turn animations and zoom. The public library supports search, filters and downloads." },
+    { titulo: "HelpEduc — IT Support Tickets", destaque: "Chatbot, dashboard and real-time notifications", descricao: "An internal support ticket system. Schools report issues with a category, urgency and description, while the IT team tracks and responds to requests. A chatbot guides ticket creation and offers a human agent. The dashboard groups tickets by status, period and category." },
+    { destaque: "Adaptive difficulty with machine learning", descricao: "A gamified quiz SaaS platform for children aged 6–10. Teachers create questions and playlists, run live lessons and track their classes. A machine learning service adapts difficulty to each student's level. Multi-tenant, with free and paid plans." },
+    { destaque: "Built during a 30-hour hackathon", descricao: "An educational gamification system built as a team during the 30-hour Caraguatatuba hackathon. Students answer questions aligned with Brazil's national curriculum (BNCC), earn XP, points and achievements, level up characters, complete missions and challenge classmates live. Teachers and administrators track performance by class, question and subject." },
+    { destaque: "Automatic calculation of teacher ranking scores", descricao: "A teacher registration and scoring system. Teachers submit personal and employment details, qualifications, courses, conferences and committee work. The system calculates the scores used to rank teachers for class assignments and transfers." },
+    { titulo: "Self-Assessment", destaque: "Tracking the same student across two years", descricao: "A self-assessment questionnaire completed online or on a printed sheet with a QR code. Responses become indicators of socioeconomic status, family support, digital access and study conditions, comparing the same student across two different years." },
+    { destaque: "REST API with RBAC and mutation testing", descricao: "A university transport management platform developed as a team for the Software Engineering course at IFSP. Students apply and renew their registrations. Administrators manage applications, waiting lists, institutions, courses and route capacity." },
+  ][index],
+}));

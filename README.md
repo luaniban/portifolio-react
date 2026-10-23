@@ -16,6 +16,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Mountain assets
+
+The regular test suite only needs the Node.js dependencies:
+
+```bash
+npm test
+```
+
+To regenerate and verify the daytime mountain pixel by pixel, install the pinned Python dependencies and run the asset test separately:
+
+```bash
+python3 -m pip install -r requirements-assets.txt
+npm run test:assets
+```
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

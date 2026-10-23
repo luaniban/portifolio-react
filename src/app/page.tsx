@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Carregamento from "../components/Carregamento";
 import Header from "../components/Header";
+import HeroTitle from "../components/HeroTitle";
 import MascotScrollGuide from "../components/MascotScrollGuide";
 import MountainArt from "../components/MountainArt";
 import Neblina from "../components/Neblina";
@@ -79,15 +80,7 @@ export default function Home() {
               <Image className="mapa-astro-sol" src="/astro-sol.png" alt="" fill sizes="(max-width: 640px) 16vw, 12vw" />
               <Image className="mapa-astro-lua" src="/astro-lua.png" alt="" fill sizes="(max-width: 640px) 16vw, 12vw" />
             </span>
-            <h1 className="mapa-titulo">
-              <Image
-                src="/titulo-luan-ibanhez.png"
-                alt="Olá, eu sou o Luan Ibanhez, Desenvolvedor Full Stack"
-                fill
-                sizes="(max-width: 640px) 86vw, 54vw"
-                priority
-              />
-            </h1>
+            <HeroTitle />
             <span className="mapa-pico" data-mascot-start aria-hidden="true" />
             <span className="mapa-chao" data-neblina-fim data-mascot-chao aria-hidden="true" />
             <section className="mapa-grupo" aria-labelledby={placaProjetos.id}>
@@ -114,7 +107,7 @@ export default function Home() {
                 label={placaTrajetoria.label}
                 posicao={{ left: placaTrajetoria.left, top: placaTrajetoria.top, width: placaTrajetoria.width }}
               />
-              <ol className="trajetoria" aria-label="Trajetória">
+              <ol className="trajetoria" aria-labelledby={placaTrajetoria.id}>
                 {trajetoria.map((placa, indice) => (
                   <Placa
                     key={placa.imagem}

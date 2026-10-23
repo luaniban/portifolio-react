@@ -13,7 +13,7 @@ seu jeito, porque a noite pinta tudo de azul e o dia não é só "mais claro".
 
 Rodar de novo sempre que a arte de noite mudar:
 
-    python3 scripts/gerar-montanha-dia.py public/montanha-v8.png public/montanha-v8-dia.png
+    python3 scripts/gerar-montanha-dia.py public/montanha-noite-site-v4.png public/montanha-dia-site-v4.png
 """
 import sys
 import numpy as np
@@ -42,13 +42,20 @@ ceu = mascara[1:-1, 1:-1] > 0
 # deixa vãos. Aumentar a tolerância vaza para a sombra da rocha, que é quase da
 # mesma cor; em vez disso, entra no céu o pixel da cor do céu cercado por ele.
 familia = (im[..., 0] < 20) & (im[..., 1] < 60) & (im[..., 2] > 50) & (im[..., 2] < 185) & (im[..., 2] > 2.4 * im[..., 1])
+# O preenchimento pode atravessar uma sequência de cores próximas e chegar
+# à superfície. A família cromática limita o resultado, não só as sementes.
+lateral_cavernas = np.zeros((H, W), dtype=bool)
+lateral_cavernas[1500:3000, :500] = True
+ceu &= familia | ~lateral_cavernas
 ceu |= ndimage.binary_closing(ceu, structure=np.ones((3, 3)), iterations=4) & familia
 
 # estrelas: buracos pequenos dentro do céu
 buracos = ndimage.binary_fill_holes(ceu) & ~ceu
 b_rot, nb = ndimage.label(buracos)
 b_tam = ndimage.sum(np.ones_like(buracos), b_rot, range(1, nb + 1))
-estrelas = np.isin(b_rot, [i + 1 for i, t in enumerate(b_tam) if t < 2500])
+brilho_estrela = (im[..., 0] > 80) & (im[..., 1] > 80)
+rotulos_brilhantes = np.unique(b_rot[brilho_estrela | ~lateral_cavernas])
+estrelas = np.isin(b_rot, [i + 1 for i, t in enumerate(b_tam) if t < 2500 and i + 1 in rotulos_brilhantes])
 
 # e as estrelas que não chegam a ser buraco (encostam num vão do céu): ilha
 # pequena com quase todo o contorno no céu também é estrela
@@ -56,6 +63,8 @@ ilhas, ni = ndimage.label(~ceu & ~estrelas)
 for i, fatia in enumerate(ndimage.find_objects(ilhas), start=1):
     bloco = ilhas[fatia] == i
     if bloco.sum() >= 600 or fatia[0].start > 2900:
+        continue
+    if (bloco & lateral_cavernas[fatia]).any() and not (bloco & brilho_estrela[fatia]).any():
         continue
     y0, y1 = max(fatia[0].start - 3, 0), min(fatia[0].stop + 3, H)
     x0, x1 = max(fatia[1].start - 3, 0), min(fatia[1].stop + 3, W)
@@ -76,7 +85,18 @@ for i, fatia in enumerate(ndimage.find_objects(n_rot), start=1):
     if bloco.sum() >= 1500 and borda.sum() and (borda & ceu_perto[fatia]).sum() / borda.sum() >= 0.45:
         nuvens[fatia] |= ndimage.binary_fill_holes(bloco)
 nuvens &= ~estrelas
+# Pequenos vãos internos na superfície não são céu. Fechamos apenas canais
+# estreitos para recuperar as sombras contínuas entre os galhos.
+superficie = ~(ceu | estrelas | nuvens)
+superficie_fechada = ndimage.binary_closing(superficie, structure=np.ones((3, 3)), iterations=2)
+interior = ndimage.binary_fill_holes(superficie_fechada)
+ceu &= ~(interior & lateral_cavernas)
+estrelas &= ~(interior & lateral_cavernas)
 print(f'ceu {ceu.mean():.1%}  estrelas {estrelas.sum()} px  nuvens {nuvens.sum()} px')
+# Os rótulos de segmentação não são usados na recoloração. Liberá-los aqui
+# reduz o pico de memória ao processar a arte inteira (2048 × 8860).
+del mascara, bgr, buracos, b_rot, b_tam, ilhas, n_rot, cor_nuvem, ceu_perto
+del superficie, superficie_fechada, interior
 
 # --- céu de dia: degradê contínuo do azul do alto até o horizonte ---
 ys = np.arange(H, dtype=np.float32)[:, None, None]
@@ -163,7 +183,38 @@ peso_sobra = (np.clip((vizinhanca - 0.35) / 0.25, 0, 1) * sobrou)[..., None]
 s_sobra = np.maximum(sd, 90 + 60 * np.clip((vizinhanca - 0.35) / 0.3, 0, 1))
 folha = cv2.cvtColor(np.stack([np.full_like(hd, 80), s_sobra, vd * 0.96], -1).clip(0, 255).astype(np.uint8), cv2.COLOR_HSV2RGB).astype(np.float32)
 saida = saida * (1 - peso_sobra) + folha * peso_sobra
-print(f'copa na sombra reforçada; repasse em {int((peso_sobra > 0.5).sum())} px cinzas cercados de verde')
+
+# As copas da borda têm a mesma cor das faces sombreadas da rocha.
+# Uma máscara contínua acompanha a crista na arte canônica. A transição
+# suave evita os cortes em linhas retas dos antigos retângulos/componentes.
+crista = np.zeros((H, W), np.float32)
+cv2.fillPoly(crista, [np.array([
+    [0, 1350], [490, 1350], [470, 1500], [455, 1600],
+    [430, 1720], [410, 1800], [375, 1900], [325, 2000],
+    [285, 2100], [205, 2300], [155, 2500],
+    [110, 2740], [105, 2870], [60, 2960], [0, 3000],
+], dtype=np.int32)], 1)
+crista = cv2.GaussianBlur(crista, (0, 0), 16)
+# O matiz da rocha é mais azulado (110–112); o da copa fica em 104–108.
+# Somente as sombras mais escuras admitem tons intermediários.
+matiz_crista = np.clip((111 - h) / 3, 0, 1)
+matiz_crista = np.maximum(matiz_crista, np.clip((100 - v) / 30, 0, 1))
+peso_crista = (
+    crista * matiz_crista * azul * (s > 170)
+    * np.clip((205 - v) / 30, 0, 1)
+    * ~area_ceu * ~nuvens
+)
+s_copa_isolada = np.maximum(s_copa, 160)
+v_copa_isolada = np.minimum(v + 25, 190)
+copa_isolada = cv2.cvtColor(
+    np.stack([np.full_like(h, 78), s_copa_isolada, v_copa_isolada], -1).clip(0, 255).astype(np.uint8),
+    cv2.COLOR_HSV2RGB,
+).astype(np.float32)
+saida = saida * (1 - peso_crista[..., None]) + copa_isolada * peso_crista[..., None]
+print(
+    f'copa na sombra reforçada; repasse em {int((peso_sobra > 0.5).sum())} px '
+    f'e {int((peso_crista > 0.5).sum())} px de copa na crista'
+)
 
 Image.fromarray(np.clip(saida, 0, 255).astype(np.uint8)).save(destino)
 print('salvo', destino)

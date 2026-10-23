@@ -1,5 +1,9 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import { TRAJECTORY_IMAGE } from "../lib/mountain-layout.mjs";
+import { trajectoryEn } from "../lib/trajectory-copy.mjs";
+import { useLanguage } from "./LanguageProvider";
 
 export type PlacaTrajetoria = {
   imagem: string;
@@ -21,6 +25,19 @@ export default function Placa({
   posicao: CSSProperties;
   stage: number;
 }) {
+  const { language } = useLanguage();
+  const english = trajectoryEn[stage];
+  if (language === "en") {
+    return (
+      <li className="placa placa--en" style={posicao} tabIndex={0} aria-label={english.join(". ")} data-timeline-step={stage}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- local transparent sign artwork */}
+        <img className="placa-arte" src="/trajetoria-blank-en.webp" alt="" loading="lazy" decoding="async" />
+        <div className="placa-english-copy">
+          {english.map((text, index) => <div className={`placa-english-row placa-english-row--${index}`} key={text}>{text}</div>)}
+        </div>
+      </li>
+    );
+  }
   const base = `${TRAJECTORY_IMAGE.directory}/${placa.imagem}`;
   const arte = {
     src: `${base}-540.webp`,

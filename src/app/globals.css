@@ -795,6 +795,24 @@ html[data-theme="light"] .mapa-astro-lua {
   height: 100%;
 }
 
+.placa--en { container-type: inline-size; }
+.placa-english-copy {
+  position: absolute;
+  inset: 1.8% 3% 18.5%;
+  display: grid;
+  grid-template-rows: 20% 28.5% 23% 28.5%;
+  color: #fff9ec;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 1px 1px #30231d;
+}
+.placa-english-row { display: flex; align-items: center; justify-content: center; padding: 1% 2%; font-size: 4.2cqw; line-height: 1.15; }
+.placa-english-row--0 { font-size: 5cqw; }
+.placa-english-row--1 { font-size: 6.2cqw; }
+.placa-english-row--3 { font-size: 3.8cqw; }
+.placa--en:hover { transform: translate(-50%, calc(-100% + var(--placa-encaixe, 0%))) scale(1.6); }
+
 /* a faixa é só a área do hover e não cresce: assim o mouse passa de uma
    faixa para a vizinha na emenda das tábuas, não na borda da ampliada */
 .placa-faixa {

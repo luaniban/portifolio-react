@@ -6,7 +6,7 @@ const percent = (value) => `${value.toFixed(2)}%`;
 
 export const MOUNTAIN_IMAGE = {
   src: "/montanha-noite-site-v4.png",
-  daySrc: "/montanha-dia-site-v1.png",
+  daySrc: "/montanha-dia-site-v4.png",
   width: 2048,
   height: 8860,
 };
@@ -66,8 +66,8 @@ export const projectPlacements = legacyProjectPlacements.map(({ top, height, ...
 export const trajectoryPlacements = [
   { left: "50.05%", top: "56.55%", supportInset: "7.92%" },
   { left: "54.69%", top: "62.21%", supportInset: "7.92%" },
-  { left: "59.08%", top: "68.34%", supportInset: "1.31%" },
-  { left: "58.59%", top: "74.92%", supportInset: "2.81%" },
+  { left: "59.42%", top: "68.63%", supportInset: "1.31%" },
+  { left: "56.20%", top: "75.21%", supportInset: "2.81%" },
 ];
 
 // A borda inferior das folhas entra alguns pixels no platô. Assim o contato
@@ -136,14 +136,14 @@ export const contentPanels = [
     copy: {
       pt: {
         body: [
-          "Gosto de transformar processos confusos em experiências simples. Uno lógica, design e visão de produto para criar sistemas que as pessoas realmente gostam de usar.",
-          "Atuo em todas as camadas de uma aplicação: interface, regras de negócio, banco de dados, integrações e deploy.",
+          "Sou desenvolvedor full stack e trabalho principalmente com PHP. Gosto de explorar novas ideias e, como este portfólio mostra, dar um toque criativo e bem-humorado a projetos profissionais.",
+          "Gosto de criar experiências que surpreendam e até arranquem um sorriso. Por gostar do que faço, me envolvo em cada detalhe e busco ir além do esperado, encontrando formas de tornar cada entrega melhor.",
         ],
       },
       en: {
         body: [
-          "I enjoy turning confusing processes into simple experiences. I combine logic, design, and product thinking to create systems people genuinely enjoy using.",
-          "I work across every application layer: interface, business rules, databases, integrations, and deployment.",
+          "I'm a full stack developer working mainly with PHP. I enjoy exploring new ideas and, as this portfolio shows, bringing creativity and a sense of humor to professional projects.",
+          "I enjoy creating experiences that surprise people and even make them smile. Because I love what I do, I care about the details and aim to go beyond expectations, finding ways to make each delivery better.",
         ],
       },
     },

@@ -45,6 +45,33 @@ async function baseColorStats(path, firstRowRatio = 0) {
   return { ...info, greenPixels, blueRockPixels, firstGreenRow, lastGreenRow };
 }
 
+async function greenCentroid(path, region) {
+  const { data, info } = await sharp(path)
+    .extract(region)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let pixels = 0;
+  let xTotal = 0;
+  let yTotal = 0;
+
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const offset = (y * info.width + x) * info.channels;
+      const [red, green, blue, alpha] = data.subarray(offset, offset + 4);
+
+      if (alpha >= 96 && green > red * 1.12 && green > blue * 1.08 && green > 70) {
+        pixels += 1;
+        xTotal += region.left + x;
+        yTotal += region.top + y;
+      }
+    }
+  }
+
+  assert.ok(pixels > 0, "a região medida não contém a grama do platô");
+  return { x: xTotal / pixels, y: yTotal / pixels };
+}
+
 async function woodenSupportStats(path) {
   const { data, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const pixelAt = (x, y) => {
@@ -325,8 +352,8 @@ test("a trajetória começa no primeiro platô livre e sobe toda a sequência", 
   assert.deepEqual(layout.trajectoryPlacements, [
     { left: "50.05%", top: "56.55%", supportInset: "7.92%" },
     { left: "54.69%", top: "62.21%", supportInset: "7.92%" },
-    { left: "59.08%", top: "68.34%", supportInset: "1.31%" },
-    { left: "58.59%", top: "74.92%", supportInset: "2.81%" },
+    { left: "59.42%", top: "68.63%", supportInset: "1.31%" },
+    { left: "56.20%", top: "75.21%", supportInset: "2.81%" },
   ]);
 
   assert.deepEqual(
@@ -344,9 +371,37 @@ test("a trajetória começa no primeiro platô livre e sobe toda a sequência", 
   );
   assert.deepEqual(
     layout.codeEvolutionPlacements.map(({ top }) => top),
-    ["56.55%", "62.21%", "68.34%", "74.92%"],
+    ["56.55%", "62.21%", "68.63%", "75.21%"],
     "os painéis compactos devem continuar alinhados às quatro placas",
   );
+});
+
+test("as duas últimas placas ficam no centro da superfície de grama dos platôs", async () => {
+  const mountainPath = join(repositoryRoot, "public", layout.MOUNTAIN_IMAGE.src.slice(1));
+  const dimensions = pngDimensions(mountainPath);
+  const plateaus = [
+    { index: 2, region: { left: 850, top: 5830, width: 700, height: 330 } },
+    { index: 3, region: { left: 800, top: 6400, width: 650, height: 350 } },
+  ];
+  const tolerance = 8;
+
+  for (const { index, region } of plateaus) {
+    const placement = layout.trajectoryPlacements[index];
+    const anchor = {
+      x: (Number.parseFloat(placement.left) / 100) * dimensions.width,
+      y: (Number.parseFloat(placement.top) / 100) * dimensions.height,
+    };
+    const center = await greenCentroid(mountainPath, region);
+
+    assert.ok(
+      Math.abs(anchor.x - center.x) <= tolerance,
+      `a placa ${index + 1} saiu do centro horizontal da grama`,
+    );
+    assert.ok(
+      Math.abs(anchor.y - center.y) <= tolerance,
+      `a placa ${index + 1} saiu do centro vertical da grama`,
+    );
+  }
 });
 
 test("a placa-título Trajetória encosta a grama no platô", () => {
@@ -580,11 +635,12 @@ test("a troca de tema mantém a noite opaca e carrega o dia com prioridade secun
   assert.doesNotMatch(css, /html\[data-theme="light"\]\s+\.mapa-arte-noite\s*\{[^}]*opacity/s);
   assert.equal(existsSync(mountainArtPath), true, "a arte diurna precisa aguardar a decodificação");
   const mountainArt = readFileSync(mountainArtPath, "utf8");
+  const heroTitle = readFileSync(join(repositoryRoot, "src/components/HeroTitle.tsx"), "utf8");
   assert.match(mountainArt, /\.decode\(\)/);
   assert.match(mountainArt, /loading="eager"/);
   assert.match(mountainArt, /fetchPriority="low"/);
   assert.equal(
-    ((page + mountainArt).match(/\bpriority\b/g) ?? []).length,
+    ((page + mountainArt + heroTitle).match(/\bpriority\b/g) ?? []).length,
     2,
     "só a noite e o título devem receber preload",
   );

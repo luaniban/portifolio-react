@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, type CSSProperties } from "react";
+import { useLanguage } from "./LanguageProvider";
+import { projectsEn } from "../lib/projects.mjs";
 
 export type Projeto = {
   titulo: string;
@@ -16,6 +18,9 @@ export type Projeto = {
 // abre do lado com mais espaço e, se ainda faltar, é empurrada para dentro da
 // tela: em telas baixas nenhum dos lados comporta o quadro inteiro.
 export default function Nicho({ projeto, posicao }: { projeto: Projeto; posicao: CSSProperties }) {
+  const { language } = useLanguage();
+  const localized = language === "en" ? projectsEn.find((item) => item.miniatura === projeto.miniatura) : projeto;
+  projeto = localized ?? projeto;
   const descricaoRef = useRef<HTMLDivElement>(null);
   const [lado, setLado] = useState({ acima: false, ajuste: 0 });
 
@@ -45,7 +50,7 @@ export default function Nicho({ projeto, posicao }: { projeto: Projeto; posicao:
       src={`${base}-360.webp`}
       srcSet={`${base}-360.webp 360w, ${base}-720.webp 720w`}
       sizes="(max-width: 860px) 42vw, 21vw"
-      alt={`Tela do sistema ${projeto.titulo}`}
+      alt={language === "en" ? `${projeto.titulo} screenshot` : `Tela do sistema ${projeto.titulo}`}
       loading="lazy"
       decoding="async"
     />
