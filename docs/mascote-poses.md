@@ -1,5 +1,15 @@
 # Poses intermediárias da queda
 
+## Padronização da saída do giro
+
+A etapa lógica `05b-saindo-do-giro` agora reutiliza diretamente o arquivo
+`06-estabilizando.png`, inclinado em 120 graus e retornando à posição normal
+pela animação. Não há redesenho, edição de rosto ou nova geração de imagem:
+os pixels são os mesmos da arte original. A sequência conserva doze etapas
+visuais, sendo a saída do giro e a estabilização duas orientações dessa arte.
+As versões redesenhadas de 05b foram preservadas no repositório como histórico,
+mas não são mais usadas pelo site. O tamanho segue a calibração comum.
+
 ## Normalização de tamanho durante a queda
 
 As doze poses usam agora escala externa fixa de 1,08, preservando o tamanho

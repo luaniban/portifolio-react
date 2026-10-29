@@ -4,6 +4,17 @@ import sharp from "sharp";
 
 const animation = await import("../src/lib/mascot-animation.mjs").catch(() => null);
 
+test("a saída do giro usa os mesmos pixels da arte original, sem redesenhar o personagem", async () => {
+  const exiting = animation.mascotScrollSteps[9];
+  const actual = await sharp(new URL("../public" + exiting.src, import.meta.url).pathname)
+    .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const reference = await sharp(new URL("../public/mascote-poses-caindo/06-estabilizando.png", import.meta.url).pathname)
+    .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  assert.equal(actual.info.width, reference.info.width, "mesma proporção da arte original");
+  assert.equal(actual.info.height, reference.info.height, "mesma proporção da arte original");
+  assert.ok(actual.data.equals(reference.data), "o rosto, o cabelo, a roupa e o corpo devem ser idênticos à referência");
+});
+
 // As pupilas são círculos pretos isolados: sua área permite comparar o tamanho
 // do rosto mesmo quando o desenho está girado ou tem margens diferentes.
 async function pupilMetrics(step) {
@@ -49,8 +60,8 @@ async function pupilMetrics(step) {
 }
 
 test("a saída do giro conserva o tamanho do rosto da pose original", async () => {
-  const exiting = animation.mascotScrollSteps.find(step => step.src.includes("05b-saindo-do-giro"));
-  const canonical = animation.mascotScrollSteps.find(step => step.src.includes("06-estabilizando"));
+  const exiting = animation.mascotScrollSteps.find(step => step.id === "05b-saindo-do-giro");
+  const canonical = animation.mascotScrollSteps.find(step => step.id === "06-estabilizando");
   const ratio = (await pupilMetrics(exiting)).size / (await pupilMetrics(canonical)).size;
   assert.ok(ratio > 0.88 && ratio < 1.12, `tamanho relativo do rosto: ${(ratio * 100).toFixed(1)}%`);
 });
@@ -67,7 +78,7 @@ test("todas as poses da queda mantêm o mesmo tamanho aparente de rosto", async 
 });
 
 test("a cabeça na saída do giro acompanha o eixo do corpo, sem torção lateral", async () => {
-  const step = animation.mascotScrollSteps.find(step => step.src.includes("05b-saindo-do-giro"));
+  const step = animation.mascotScrollSteps.find(step => step.id === "05b-saindo-do-giro");
   const { eyeLine } = await pupilMetrics(step);
   const radians = step.angle * Math.PI / 180;
   // A linha entre os olhos deve ser transversal ao corpo; permitimos uma
@@ -105,11 +116,11 @@ test("as pernas da pose invertida mantêm proporções chibi próximas da pose c
     `pernas/cabeça: pose 05=${inverted.toFixed(2)}, referência=${reference.toFixed(2)}`);
 });
 
-test("a queda tem doze desenhos distintos, sem lacunas nem pouso antecipado", () => {
+test("a queda tem doze etapas visuais distintas, sem lacunas nem pouso antecipado", () => {
   assert.ok(animation, "a sequência deve estar disponível");
   const falling = animation.mascotScrollSteps.filter(step => !step.pouso);
   assert.equal(falling.length, 12);
-  assert.equal(new Set(falling.map(step => step.src)).size, 12);
+  assert.equal(new Set(falling.map(step => `${step.src}:${step.rotate}`)).size, 12);
   assert.equal(falling[0].start, 0);
   assert.equal(falling.at(-1).end, 1);
   falling.forEach((step, index) => {

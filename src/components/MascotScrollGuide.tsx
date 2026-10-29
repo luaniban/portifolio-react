@@ -314,7 +314,7 @@ export default function MascotScrollGuide() {
         {previousPose !== activePose && !mascotScrollSteps[activePose].pouso && (
           /* eslint-disable-next-line @next/next/no-img-element -- camada anterior do sprite */
           <img
-            key={`previous-${mascotScrollSteps[previousPose].src}`}
+            key={`previous-${previousPose}-${activePose}`}
             className="mascot-scroll-image is-previous"
             src={poseUrl(mascotScrollSteps[previousPose].src, POSE_WIDTHS[1])}
             srcSet={poseSrcSet(mascotScrollSteps[previousPose].src)}

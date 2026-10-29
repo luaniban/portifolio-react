@@ -1,5 +1,5 @@
 /**
- * @typedef {{start: number, end: number, src: string, width: number,
+ * @typedef {{id: string, start: number, end: number, src: string, width: number,
  * height: number, rotate: number, scale: number, zoom?: number,
  * pouso?: boolean, angle?: number}} MascotScrollStep
  */
@@ -21,16 +21,19 @@ const frames = [
   ["04-girando", 1024, 1536, 7, -60, 1.22371],
   ["04b-meio-giro", 1024, 1536, 2, -125, 1.30127],
   ["05-de-cabeca-para-baixo-v2", 1024, 1536, -2, -180, 0.98946],
-  ["05b-saindo-do-giro", 1024, 1536, 0, -240, 1.25535],
+  // A saída do giro usa a arte canônica inclinada; só a rotação muda.
+  // Isso mantém cabeça, anatomia, roupa e traço exatamente iguais à pose 06.
+  ["05b-saindo-do-giro", 1023, 1538, 120, -360, 0.99969, "06-estabilizando"],
   ["06-estabilizando", 1023, 1538, 1, -360, 0.99969],
   ["06b-preparando-impacto", 1024, 1536, 0, -360, 0.93972],
 ];
 
 /** @type {MascotScrollStep[]} */
-export const mascotScrollSteps = frames.map(([name, width, height, rotate, angle, zoom], index) => ({
+export const mascotScrollSteps = frames.map(([name, width, height, rotate, angle, zoom, asset = name], index) => ({
+  id: String(name),
   start: index / frames.length,
   end: (index + 1) / frames.length,
-  src: `/mascote-poses-caindo/${name}.png`,
+  src: `/mascote-poses-caindo/${asset}.png`,
   width: Number(width),
   height: Number(height),
   rotate: Number(rotate),
@@ -51,6 +54,7 @@ export function poseRotation(current, next, progress) {
 }
 
 mascotScrollSteps.push({
+  id: "07-de-cara-na-grama",
   start: 1,
   end: 1,
   src: "/mascote-poses-caindo/07-de-cara-na-grama.png",
