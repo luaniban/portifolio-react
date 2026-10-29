@@ -16,13 +16,13 @@ const frames = [
   ["04-girando", 1024, 1536, 7, 0.96, -60],
   ["04b-meio-giro", 1024, 1536, 2, 0.97, -125],
   ["05-de-cabeca-para-baixo-v2", 1024, 1536, -2, 0.95, -180],
-  ["05b-saindo-do-giro", 1024, 1536, 0, 0.99, -225],
+  ["05b-saindo-do-giro", 1024, 1536, 0, 0.99, -255, 1.3],
   ["06-estabilizando", 1023, 1538, 1, 1, -360],
   ["06b-preparando-impacto", 1024, 1536, 0, 1, -360],
 ];
 
 /** @type {MascotScrollStep[]} */
-export const mascotScrollSteps = frames.map(([name, width, height, rotate, scale, angle], index) => ({
+export const mascotScrollSteps = frames.map(([name, width, height, rotate, scale, angle, zoom], index) => ({
   start: index / frames.length,
   end: (index + 1) / frames.length,
   src: `/mascote-poses-caindo/${name}.png`,
@@ -31,6 +31,7 @@ export const mascotScrollSteps = frames.map(([name, width, height, rotate, scale
   rotate: Number(rotate),
   scale: Number(scale),
   angle: Number(angle),
+  zoom: Number(zoom ?? 1),
 }));
 
 /**

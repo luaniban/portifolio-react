@@ -24,6 +24,25 @@ texto. Preservar identidade e proporções, com quadril, joelhos e pés coerente
 
 ## Integração
 
+### Revisão da saída do giro (05b)
+
+A pose `05b-saindo-do-giro.png` foi redesenhada com a ferramenta integrada
+de geração de imagens usando a pose 06 como referência principal. Foram
+preservados rosto, cabelo, traço e proporções chibi. As margens transparentes
+foram corrigidas para evitar cortar os cachos. O zoom individual de 1,3
+iguala o tamanho aparente do rosto sem interpolar essa compensação com a
+pose vizinha. O ângulo do novo desenho foi ajustado na sequência.
+
+Prompt de desenho:
+
+> Use case: identity-preserve. Edit target: the supplied CANONICAL mascot, pose06. Create one intermediate falling animation sprite, keeping this EXACT character identity and proportions. Rotate the WHOLE character approximately135 degrees CLOCKWISE in the image plane, so his HEAD is toward LOWER RIGHT and his FEET toward UPPER LEFT. This is the exit-from-somersault pose05b, NOT a different character. Face rotates coherently with body. Preserve the enormous round head-to-body ratio, same exact hair curls, peach skin, tiny moustache and mouth, huge round black eyes with white rims, navy blazer, white button shirt, teal tropical floral drawstring shorts, navy flipflops. Keep small compact torso and SHORT SLIM legs as input; no longer torso, no broad muscular thighs/calves. Let arms extend to sides with hands opening for balance, both knees softly bent. One full-body FRONT view, anatomically consistent hands hips knees toes. Maintain same crisp black outlines, painterly shading and colors. Head diameter around650px at this1024x1536 frame scale; fullbody centered with generous transparent margins, not stretched to fill canvas. Truly transparent background with no glow, no halo, no scenery, no text, no added props. Prioritize matching the canonical mascot over inventing extra details.
+
+Prompt de enquadramento:
+
+> Precise sprite framing fix. Edit target: supplied mascot falling sprite. KEEP THIS EXACT DRAWING, face, hair, eyes, moustache, clothing, anatomy and diagonal pose unchanged. The hair is currently cut off along right canvas edge: restore the missing outer curls naturally. Uniformly scale the WHOLE character down about12% and center it within the SAME1024x1536 transparent canvas, leaving at least60px completely transparent margin at LEFT AND RIGHT. All fingers, toes, flipflops, hair curls fully visible with no clipping. Preserve proportional relationships; do NOT change face, limb shapes, pose or colors. Background genuinely transparent. Remove any glow/halo outside the silhouette; no scene, no text, no other characters. This is only a framing/margin correction of the exact supplied sprite.
+
+### Comportamento da sequência
+
 As doze poses de queda ocupam intervalos contínuos da rolagem. A pose de
 pouso permanece independente, acionada pela grama. Uma sobreposição de
 100 ms conserva a imagem anterior enquanto a próxima aparece, evitando

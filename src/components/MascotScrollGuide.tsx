@@ -336,7 +336,10 @@ export default function MascotScrollGuide() {
           alt=""
           width={mascotScrollSteps[activePose].width}
           height={mascotScrollSteps[activePose].height}
-          style={{ "--pose-zoom": mascotScrollSteps[activePose].zoom ?? 1 } as CSSProperties}
+          style={{
+            "--pose-zoom": mascotScrollSteps[activePose].zoom ?? 1,
+            transformOrigin: mascotScrollSteps[activePose].pouso ? "center bottom" : "center",
+          } as CSSProperties}
           fetchPriority={activePose === 0 ? "high" : undefined}
         />
       </div>

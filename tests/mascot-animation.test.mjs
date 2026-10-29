@@ -4,6 +4,52 @@ import sharp from "sharp";
 
 const animation = await import("../src/lib/mascot-animation.mjs").catch(() => null);
 
+// As pupilas são círculos pretos isolados: sua área permite comparar o tamanho
+// do rosto mesmo quando o desenho está girado ou tem margens diferentes.
+async function pupilSize(step) {
+  const { data, info } = await sharp(new URL("../public" + step.src, import.meta.url).pathname)
+    .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width, height } = info;
+  const mask = new Uint8Array(width * height);
+  const queue = new Uint32Array(mask.length);
+  for (let i = 0; i < mask.length; i++) {
+    mask[i] = data[i * 4 + 3] > 200 && Math.max(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]) < 25 ? 1 : 0;
+  }
+  const circles = [];
+  for (let i = 0; i < mask.length; i++) {
+    if (!mask[i]) continue;
+    let first = 0, last = 1, area = 0;
+    let minX = width, minY = height, maxX = 0, maxY = 0;
+    queue[0] = i;
+    mask[i] = 0;
+    while (first < last) {
+      const pixel = queue[first++];
+      const x = pixel % width, y = Math.floor(pixel / width);
+      area++;
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      for (const neighbor of [x > 0 ? pixel - 1 : -1, x < width - 1 ? pixel + 1 : -1,
+        y > 0 ? pixel - width : -1, y < height - 1 ? pixel + width : -1]) {
+        if (neighbor < 0 || !mask[neighbor]) continue;
+        mask[neighbor] = 0;
+        queue[last++] = neighbor;
+      }
+    }
+    const dx = maxX - minX + 1, dy = maxY - minY + 1;
+    if (area > 1000 && dx / dy > 0.7 && dx / dy < 1.3 && area / dx / dy > 0.6) circles.push(area);
+  }
+  circles.sort((a, b) => b - a);
+  assert.ok(circles.length >= 2, `as pupilas devem estar visíveis: ${step.src}`);
+  return Math.sqrt((circles[0] + circles[1]) / 2) / width * step.scale * (step.zoom ?? 1);
+}
+
+test("a saída do giro conserva o tamanho do rosto da pose original", async () => {
+  const exiting = animation.mascotScrollSteps.find(step => step.src.includes("05b-saindo-do-giro"));
+  const canonical = animation.mascotScrollSteps.find(step => step.src.includes("06-estabilizando"));
+  const ratio = await pupilSize(exiting) / await pupilSize(canonical);
+  assert.ok(ratio > 0.88 && ratio < 1.12, `tamanho relativo do rosto: ${(ratio * 100).toFixed(1)}%`);
+});
+
 // Compara a massa visual das pernas com cabeça/mãos, independentemente da
 // orientação. A pose 05 antiga tinha quase três vezes a proporção da pose 06.
 async function legToHeadRatio(filename, upright = false) {
