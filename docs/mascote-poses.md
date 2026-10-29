@@ -1,5 +1,16 @@
 # Poses intermediárias da queda
 
+## Normalização de tamanho durante a queda
+
+As doze poses usam agora escala externa fixa de 1,08, preservando o tamanho
+inicial. Cada PNG tem um zoom individual calculado pela área média das duas
+pupilas, dividida pela largura da imagem, em relação à pose 01. Essa medida é
+independente da rotação e das margens transparentes. O zoom compensatório não
+é interpolado entre poses e a escala externa não cresce durante a rolagem.
+Os ajustes antigos de escala descritos nas revisões abaixo foram substituídos
+por essa calibração comum. O pouso mantém seu ajuste próprio para caber no campo.
+As imagens existentes foram preservadas; nenhuma pose foi redesenhada.
+
 Geradas em 26/10/2026 com a ferramenta integrada de geração de imagens,
 usando as poses vizinhas como referências de identidade, proporção e estilo.
 Arquivos finais em `public/mascote-poses-caindo/`; derivados responsivos em

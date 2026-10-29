@@ -6,30 +6,35 @@
 
 // Cada desenho intermediário ocupa um trecho real da rolagem; o pouso
 // continua separado e só é disparado pelo contato com a grama.
+export const MASCOT_FALL_SCALE = 1.08;
+
+// Zoom calibrado pela área das pupilas / largura de cada PNG, tomando a
+// primeira pose como referência. Não usamos a caixa do corpo: braços abertos,
+// joelhos dobrados e rotação mudam essa caixa sem mudar o tamanho do mascote.
 const frames = [
-  ["01-desequilibrando", 1024, 1536, -4, 1.08, 15],
-  ["01b-perdendo-apoio", 1024, 1536, 0, 1.03, 5],
-  ["02-inicio-da-queda", 1023, 1538, 4, 0.98, 0],
-  ["02b-abrindo-pernas", 1024, 1536, -1, 0.99, -20],
-  ["03-queda-livre", 1024, 1536, -6, 1, -32],
-  ["03b-inclinando", 1024, 1536, 0, 0.98, -43],
-  ["04-girando", 1024, 1536, 7, 0.96, -60],
-  ["04b-meio-giro", 1024, 1536, 2, 0.97, -125],
-  ["05-de-cabeca-para-baixo-v2", 1024, 1536, -2, 0.95, -180],
-  ["05b-saindo-do-giro", 1024, 1536, 0, 0.99, -240, 1.3],
-  ["06-estabilizando", 1023, 1538, 1, 1, -360],
-  ["06b-preparando-impacto", 1024, 1536, 0, 1, -360],
+  ["01-desequilibrando", 1024, 1536, -4, 15, 1],
+  ["01b-perdendo-apoio", 1024, 1536, 0, 5, 0.97499],
+  ["02-inicio-da-queda", 1023, 1538, 4, 0, 1.00303],
+  ["02b-abrindo-pernas", 1024, 1536, -1, -20, 1.03161],
+  ["03-queda-livre", 1024, 1536, -6, -32, 1.13201],
+  ["03b-inclinando", 1024, 1536, 0, -43, 1.1374],
+  ["04-girando", 1024, 1536, 7, -60, 1.22371],
+  ["04b-meio-giro", 1024, 1536, 2, -125, 1.30127],
+  ["05-de-cabeca-para-baixo-v2", 1024, 1536, -2, -180, 0.98946],
+  ["05b-saindo-do-giro", 1024, 1536, 0, -240, 1.25535],
+  ["06-estabilizando", 1023, 1538, 1, -360, 0.99969],
+  ["06b-preparando-impacto", 1024, 1536, 0, -360, 0.93972],
 ];
 
 /** @type {MascotScrollStep[]} */
-export const mascotScrollSteps = frames.map(([name, width, height, rotate, scale, angle, zoom], index) => ({
+export const mascotScrollSteps = frames.map(([name, width, height, rotate, angle, zoom], index) => ({
   start: index / frames.length,
   end: (index + 1) / frames.length,
   src: `/mascote-poses-caindo/${name}.png`,
   width: Number(width),
   height: Number(height),
   rotate: Number(rotate),
-  scale: Number(scale),
+  scale: MASCOT_FALL_SCALE,
   angle: Number(angle),
   zoom: Number(zoom ?? 1),
 }));

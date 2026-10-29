@@ -55,6 +55,17 @@ test("a saída do giro conserva o tamanho do rosto da pose original", async () =
   assert.ok(ratio > 0.88 && ratio < 1.12, `tamanho relativo do rosto: ${(ratio * 100).toFixed(1)}%`);
 });
 
+// A altura da silhueta varia com joelhos, braços e rotação. As pupilas permitem
+// comparar a mesma medida física em todas as poses, inclusive na invertida.
+test("todas as poses da queda mantêm o mesmo tamanho aparente de rosto", async () => {
+  const falling = animation.mascotScrollSteps.filter(step => !step.pouso);
+  const reference = (await pupilMetrics(falling[0])).size;
+  for (const step of falling) {
+    const difference = Math.abs((await pupilMetrics(step)).size / reference - 1);
+    assert.ok(difference < 0.01, `${step.src}: diferença de ${(difference * 100).toFixed(2)}%`);
+  }
+});
+
 test("a cabeça na saída do giro acompanha o eixo do corpo, sem torção lateral", async () => {
   const step = animation.mascotScrollSteps.find(step => step.src.includes("05b-saindo-do-giro"));
   const { eyeLine } = await pupilMetrics(step);
@@ -92,28 +103,6 @@ test("as pernas da pose invertida mantêm proporções chibi próximas da pose c
   const inverted = await legToHeadRatio("05-de-cabeca-para-baixo-v2.png");
   assert.ok(inverted <= reference * 1.6,
     `pernas/cabeça: pose 05=${inverted.toFixed(2)}, referência=${reference.toFixed(2)}`);
-});
-
-test("a pose 05 não aumenta a altura aparente do mascote em relação à pose 06", async () => {
-  const height = async step => {
-    const { data, info } = await sharp(new URL("../public" + step.src, import.meta.url).pathname)
-      .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    let top = info.height;
-    let bottom = 0;
-    for (let y = 0; y < info.height; y++) {
-      for (let x = 0; x < info.width; x++) {
-        if (data[(y * info.width + x) * 4 + 3] < 200) continue;
-        top = Math.min(top, y);
-        bottom = Math.max(bottom, y);
-      }
-    }
-    return (bottom - top + 1) / info.width * step.scale;
-  };
-  const inverted = animation.mascotScrollSteps.find(step => step.src.includes("05-de-cabeca-para-baixo-v2"));
-  const canonical = animation.mascotScrollSteps.find(step => step.src.includes("06-estabilizando"));
-  const referenceHeight = await height(canonical);
-  const difference = Math.abs(await height(inverted) - referenceHeight) / referenceHeight;
-  assert.ok(difference < 0.02, `diferença de altura visível: ${(difference * 100).toFixed(2)}%`);
 });
 
 test("a queda tem doze desenhos distintos, sem lacunas nem pouso antecipado", () => {

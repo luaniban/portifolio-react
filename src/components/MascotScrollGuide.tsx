@@ -60,7 +60,7 @@ const initialStyle = {
   "--mascot-x": "78vw",
   "--mascot-y": "36vh",
   "--mascot-rotate": "-4deg",
-  "--mascot-scale": 1.08,
+  "--mascot-scale": mascotScrollSteps[0].scale,
 } as CSSProperties;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -213,7 +213,9 @@ export default function MascotScrollGuide() {
       const x = rect.left + point.x * scaleX;
       const y = rect.top + point.y * scaleY;
       const rotate = poseRotation(step, nextStep, easedProgress);
-      const scale = interpolate(step.scale, nextStep.scale, easedProgress);
+      // O zoom da imagem compensa o enquadramento de cada desenho. A escala
+      // do boneco não varia com a rolagem nem antecipa o tamanho da próxima pose.
+      const scale = step.scale;
 
       // Pousou quando os pés passam da linha da grama.
       const chao = document.querySelector<HTMLElement>("[data-mascot-chao]");
