@@ -6,7 +6,7 @@ const animation = await import("../src/lib/mascot-animation.mjs").catch(() => nu
 
 // As pupilas são círculos pretos isolados: sua área permite comparar o tamanho
 // do rosto mesmo quando o desenho está girado ou tem margens diferentes.
-async function pupilSize(step) {
+async function pupilMetrics(step) {
   const { data, info } = await sharp(new URL("../public" + step.src, import.meta.url).pathname)
     .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width, height } = info;
@@ -36,18 +36,34 @@ async function pupilSize(step) {
       }
     }
     const dx = maxX - minX + 1, dy = maxY - minY + 1;
-    if (area > 1000 && dx / dy > 0.7 && dx / dy < 1.3 && area / dx / dy > 0.6) circles.push(area);
+    if (area > 1000 && dx / dy > 0.7 && dx / dy < 1.3 && area / dx / dy > 0.6) {
+      circles.push({ area, x: (minX + maxX) / 2, y: (minY + maxY) / 2 });
+    }
   }
-  circles.sort((a, b) => b - a);
+  circles.sort((a, b) => b.area - a.area);
   assert.ok(circles.length >= 2, `as pupilas devem estar visíveis: ${step.src}`);
-  return Math.sqrt((circles[0] + circles[1]) / 2) / width * step.scale * (step.zoom ?? 1);
+  return {
+    size: Math.sqrt((circles[0].area + circles[1].area) / 2) / width * step.scale * (step.zoom ?? 1),
+    eyeLine: { x: circles[1].x - circles[0].x, y: circles[1].y - circles[0].y },
+  };
 }
 
 test("a saída do giro conserva o tamanho do rosto da pose original", async () => {
   const exiting = animation.mascotScrollSteps.find(step => step.src.includes("05b-saindo-do-giro"));
   const canonical = animation.mascotScrollSteps.find(step => step.src.includes("06-estabilizando"));
-  const ratio = await pupilSize(exiting) / await pupilSize(canonical);
+  const ratio = (await pupilMetrics(exiting)).size / (await pupilMetrics(canonical)).size;
   assert.ok(ratio > 0.88 && ratio < 1.12, `tamanho relativo do rosto: ${(ratio * 100).toFixed(1)}%`);
+});
+
+test("a cabeça na saída do giro acompanha o eixo do corpo, sem torção lateral", async () => {
+  const step = animation.mascotScrollSteps.find(step => step.src.includes("05b-saindo-do-giro"));
+  const { eyeLine } = await pupilMetrics(step);
+  const radians = step.angle * Math.PI / 180;
+  // A linha entre os olhos deve ser transversal ao corpo; permitimos uma
+  // inclinação natural, mas não a torção acentuada da imagem anterior.
+  const dot = Math.abs(eyeLine.x * Math.sin(radians) - eyeLine.y * Math.cos(radians));
+  const deviation = dot / Math.hypot(eyeLine.x, eyeLine.y);
+  assert.ok(deviation < 0.6, `desalinhamento da cabeça: ${deviation.toFixed(2)}`);
 });
 
 // Compara a massa visual das pernas com cabeça/mãos, independentemente da
