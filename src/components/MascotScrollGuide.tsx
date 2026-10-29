@@ -1,94 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { mascotScrollSteps, poseRotation } from "../lib/mascot-animation.mjs";
 
-type MascotScrollStep = {
-  start: number;
-  end: number;
-  src: string;
-  width: number;
-  height: number;
-  rotate: number;
-  scale: number;
-  // Zoom só da imagem, sem interpolar com a pose vizinha: iguala o tamanho do
-  // boneco quando o desenho ocupa o quadro de um jeito diferente das outras.
-  zoom?: number;
-  // Pose de pouso: não entra pela rolagem, e sim quando os pés do mascote
-  // chegam na linha da grama ([data-mascot-chao]).
-  pouso?: boolean;
-};
-
-export const mascotScrollSteps: MascotScrollStep[] = [
-  {
-    start: 0,
-    end: 0.15,
-    src: "/mascote-poses-caindo/01-desequilibrando.png",
-    width: 1024,
-    height: 1536,
-    rotate: -4,
-    scale: 1.08,
-  },
-  {
-    start: 0.15,
-    end: 0.3,
-    src: "/mascote-poses-caindo/02-inicio-da-queda.png",
-    width: 1023,
-    height: 1538,
-    rotate: 4,
-    scale: 0.98,
-  },
-  {
-    start: 0.3,
-    end: 0.48,
-    src: "/mascote-poses-caindo/03-queda-livre.png",
-    width: 1024,
-    height: 1536,
-    rotate: -6,
-    scale: 1,
-  },
-  {
-    start: 0.48,
-    end: 0.65,
-    src: "/mascote-poses-caindo/04-girando.png",
-    width: 1024,
-    height: 1536,
-    rotate: 7,
-    scale: 0.96,
-  },
-  {
-    start: 0.65,
-    end: 0.82,
-    src: "/mascote-poses-caindo/05-de-cabeca-para-baixo.png",
-    width: 1023,
-    height: 1538,
-    rotate: -2,
-    scale: 0.98,
-  },
-  {
-    start: 0.82,
-    end: 1,
-    src: "/mascote-poses-caindo/06-estabilizando.png",
-    width: 1023,
-    height: 1538,
-    rotate: 1,
-    scale: 1,
-  },
-  {
-    // pouso: de cara na grama, quando os pés tocam o chão. Deitado, o boneco
-    // sai ~35% menor que nas outras poses (medido pelas pupilas); o zoom de
-    // 1,55 iguala à pose 06. A escala fica igual à da 06 para ela não crescer
-    // aos poucos antes do pouso.
-    start: 1,
-    end: 1,
-    src: "/mascote-poses-caindo/07-de-cara-na-grama.png",
-    width: 1378,
-    height: 1142,
-    rotate: 0,
-    scale: 1,
-    zoom: 1.55,
-    pouso: true,
-  },
-];
+export { mascotScrollSteps };
+type MascotScrollStep = (typeof mascotScrollSteps)[number];
 
 const posesDaQueda = mascotScrollSteps.filter(({ pouso }) => !pouso);
 const indicePouso = mascotScrollSteps.findIndex(({ pouso }) => pouso);
@@ -171,6 +87,7 @@ export default function MascotScrollGuide() {
   const trailRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const [activePose, setActivePose] = useState(0);
+  const [previousPose, setPreviousPose] = useState(0);
 
   useEffect(() => {
     const guide = guideRef.current;
@@ -295,7 +212,7 @@ export default function MascotScrollGuide() {
 
       const x = rect.left + point.x * scaleX;
       const y = rect.top + point.y * scaleY;
-      const rotate = interpolate(step.rotate, nextStep.rotate, easedProgress);
+      const rotate = poseRotation(step, nextStep, easedProgress);
       const scale = interpolate(step.scale, nextStep.scale, easedProgress);
 
       // Pousou quando os pés passam da linha da grama.
@@ -344,6 +261,7 @@ export default function MascotScrollGuide() {
       guide.style.setProperty("--mascot-scale", String(pousou ? poseAtual.scale : scale));
 
       if (pose !== currentPose) {
+        setPreviousPose(currentPose);
         currentPose = pose;
         setActivePose(pose);
       }
@@ -391,10 +309,27 @@ export default function MascotScrollGuide() {
         style={initialStyle}
         aria-hidden="true"
       >
+        {previousPose !== activePose && !mascotScrollSteps[activePose].pouso && (
+          /* eslint-disable-next-line @next/next/no-img-element -- camada anterior do sprite */
+          <img
+            key={`previous-${mascotScrollSteps[previousPose].src}`}
+            className="mascot-scroll-image is-previous"
+            src={poseUrl(mascotScrollSteps[previousPose].src, POSE_WIDTHS[1])}
+            srcSet={poseSrcSet(mascotScrollSteps[previousPose].src)}
+            sizes={poseSizes(mascotScrollSteps[previousPose])}
+            alt=""
+            width={mascotScrollSteps[previousPose].width}
+            height={mascotScrollSteps[previousPose].height}
+            style={{
+              "--pose-angle-offset": `${(mascotScrollSteps[activePose].angle ?? 0) - (mascotScrollSteps[previousPose].angle ?? 0)}deg`,
+              "--pose-zoom": mascotScrollSteps[previousPose].zoom ?? 1,
+            } as CSSProperties}
+          />
+        )}
         {/* eslint-disable-next-line @next/next/no-img-element -- srcset das poses próprias */}
         <img
           key={mascotScrollSteps[activePose].src}
-          className="mascot-scroll-image"
+          className={`mascot-scroll-image${mascotScrollSteps[activePose].pouso ? " is-landing" : ""}`}
           src={poseUrl(mascotScrollSteps[activePose].src, POSE_WIDTHS[1])}
           srcSet={poseSrcSet(mascotScrollSteps[activePose].src)}
           sizes={poseSizes(mascotScrollSteps[activePose])}

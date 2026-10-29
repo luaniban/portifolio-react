@@ -1322,7 +1322,31 @@ html[data-theme="light"] .mapa-astro-lua {
   /* zoom por pose, a partir da base: deitado na grama, cresce para cima */
   transform: scale(min(var(--pose-zoom, 1), var(--zoom-limite, 100)));
   transform-origin: center bottom;
-  animation: mascot-pose-in 200ms ease-in both;
+  /* A camada anterior permanece durante a troca, sem apagar o mascote. */
+  animation: mascot-pose-blend-in 100ms linear both;
+}
+
+.mascot-scroll-image.is-previous {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(var(--pose-angle-offset, 0deg)) scale(var(--pose-zoom, 1));
+  transform-origin: center;
+  animation: mascot-pose-blend-out 100ms linear both;
+}
+
+@keyframes mascot-pose-blend-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mascot-pose-blend-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.mascot-scroll-image.is-landing {
+  animation: mascot-pose-in 200ms ease-out both;
 }
 
 /* o trajeto não aparece: o SVG só existe para o mascote medir a queda */
@@ -1365,6 +1389,10 @@ html[data-theme="light"] .mapa-astro-lua {
 
   .mascot-scroll-image {
     animation: none;
+  }
+
+  .mascot-scroll-image.is-previous {
+    display: none;
   }
 
   .mascot-scroll-trail {
